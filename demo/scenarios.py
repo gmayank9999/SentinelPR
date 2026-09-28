@@ -51,7 +51,16 @@ SCENARIOS = [
         [("unierp/registration/credits.py", "HONOURS_CGPA = 3.5", "HONOURS_CGPA = 3.4"),
          ("unierp/registration/credits.py", "    if cgpa >= HONOURS_CGPA:\n        return FULL_TIME_MIN_CREDITS, HONOURS_MAX_CREDITS",
           "    if cgpa > HONOURS_CGPA:\n        return FULL_TIME_MIN_CREDITS, HONOURS_MAX_CREDITS")],
-        "all tests pass, but the boundary is untested and the policy (issue #47) changes",
+        "a one-constant policy change: tests pass and one boundary mutant survives; a known weak spot "
+        "(expect PASS or CANARY, and a surviving-mutant annotation on the comparison)",
+    ),
+    Scenario(
+        "hidden", 105, "Clean up guard in register",
+        "Small cleanup while reading this code.",
+        [("unierp/registration/enrollment.py",
+          'if e.status is EnrollmentStatus.COMPLETED and is_passing(e.grade) and e.grade != "D":',
+          'if e.status is EnrollmentStatus.COMPLETED or is_passing(e.grade) or e.grade != "D":')],
+        "every visible test passes but the repeat-registration rule is broken: held back by the gate",
     ),
     Scenario(
         "credits", 103, "Count pass/fail courses as attempted credits",
