@@ -82,9 +82,12 @@ class HistorianAgent:
                 issue_text = ""
                 if bug.get("issue"):
                     bug_issues.add(bug["issue"])
-                    evidence.insert(0, f"issue:{bug['issue']}")
                     issue = store.issue(bug["issue"])
-                    issue_text = f" (issue #{bug['issue']}: {issue['title']})" if issue else f" (issue #{bug['issue']})"
+                    if issue:  # only cite what the tracker can back up
+                        evidence.insert(0, f"issue:{bug['issue']}")
+                        issue_text = f" (issue #{bug['issue']}: {issue['title']})"
+                    else:
+                        issue_text = f" (refs #{bug['issue']})"
                 subject = fix["message"].splitlines()[0]
                 claims.append(Claim(
                     claim_id=ids.next(), agent=self.name, type="history_link", target=unit.id,

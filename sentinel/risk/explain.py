@@ -26,16 +26,21 @@ def template_explanation(assessment: RiskAssessment, top: int = 3) -> str:
         if abs(c.contribution) < 0.05:
             continue
         direction = "raises" if c.contribution > 0 else "lowers"
-        parts.append(f"{c.label} ({_fmt(c.value)}) {direction} the risk ({c.contribution:+.2f}) [{feature_evidence(c.feature)}].")
+        parts.append(f"{c.label} ({_fmt(c.value, c.feature)}) {direction} the risk ({c.contribution:+.2f}) [{feature_evidence(c.feature)}].")
     return " ".join(parts) or "No single factor dominates the score."
 
 
-def _fmt(value: float) -> str:
+RATIO_FEATURES = {"changed_line_coverage", "mutation_score", "refuted_claim_ratio", "entropy", "llm_risk"}
+
+
+def _fmt(value: float, feature: str = "") -> str:
+    if feature in RATIO_FEATURES:
+        return f"{value:.0%}"
     return f"{value:.0f}" if float(value).is_integer() else f"{value:.2f}"
 
 
 def llm_explanation(llm, assessment: RiskAssessment, decision: str, extra_evidence: dict[str, str]) -> tuple[str | None, list[GuardEvent]]:
-    contributions = "\n".join(f"- {c.feature} = {_fmt(c.value)} ({c.contribution:+.2f}): {c.label}" for c in assessment.contributions[:5])
+    contributions = "\n".join(f"- {c.feature} = {_fmt(c.value, c.feature)} ({c.contribution:+.2f}): {c.label}" for c in assessment.contributions[:5])
     evidence = {feature_evidence(c.feature): c.label for c in assessment.contributions[:5]}
     evidence.update(extra_evidence)
     try:

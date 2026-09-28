@@ -27,10 +27,10 @@ def decide(risk: float, verified_test_failures: int, thresholds: dict[str, float
     if verified_test_failures > 0:
         return PolicyDecision("BLOCK", f"{verified_test_failures} test(s) fail on the head revision", thresholds)
     if risk >= block:
-        return PolicyDecision("BLOCK", f"calibrated risk {risk:.2f} >= block threshold {block:.2f}", thresholds)
+        return PolicyDecision("BLOCK", f"risk {risk:.2f} >= block threshold {block:.2f}", thresholds)
     if risk >= canary:
-        return PolicyDecision("CANARY", f"calibrated risk {risk:.2f} >= canary threshold {canary:.2f}", thresholds)
-    return PolicyDecision("PASS", f"calibrated risk {risk:.2f} below canary threshold {canary:.2f}", thresholds)
+        return PolicyDecision("CANARY", f"risk {risk:.2f} >= canary threshold {canary:.2f}", thresholds)
+    return PolicyDecision("PASS", f"risk {risk:.2f} below canary threshold {canary:.2f}", thresholds)
 
 
 def choose_thresholds(scores, labels, *, max_false_block: float = 0.05, canary_recall: float = 0.9) -> dict[str, float]:
