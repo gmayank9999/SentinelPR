@@ -1,0 +1,11 @@
+# Optional backends. SentinelPR detects these at runtime and falls back gracefully.
+-r requirements.txt
+chromadb>=0.5            # persistent vector store
+sentence-transformers    # code embeddings + cross-encoder reranker
+faiss-cpu                # embedding ablations
+lightgbm>=4.3            # gradient-boosted risk model
+shap>=0.45               # per-PR explanations for tree models
+pydriller>=2.6           # alternative history miner
+lizard>=1.17             # multi-language complexity
+ragas>=0.1               # RAG evaluation
+locust>=2.24             # canary load generation

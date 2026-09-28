@@ -1,0 +1,65 @@
+# SentinelPR configuration. Every key can be overridden with an environment variable
+# of the form SENTINEL__SECTION__KEY (e.g. SENTINEL__RETRIEVAL__TOP_K=5).
+
+project:
+  root: demo/uni-erp          # analysed project, relative to the repository root
+  package: unierp             # import package measured for coverage
+  tests: tests                # test directory, relative to project.root
+  history_repo: null          # separate git repo to mine history from (defaults to the repo itself)
+  tracker_dir: null           # directory holding issues.json / pulls.json (offline tracker data)
+
+workdir: .sentinel            # index, caches and run outputs
+
+retrieval:
+  mode: hybrid                # lexical | dense | graph | hybrid
+  top_k: 10
+  reranker: true
+  embedder: hashing           # hashing | st:<sentence-transformers model> | ollama:<model>
+  vector_store: auto          # auto | chroma | numpy
+  graph_hops: 2
+  sourcegraph_url: null       # e.g. https://sourcegraph.com for public repos
+  zoekt_url: null             # e.g. http://localhost:6070
+
+llm:
+  enabled: true
+  temperature: 0.0
+  budget_tokens: 60000
+  low_budget_threshold: 8000
+  cache: true
+  timeout_s: 60
+  providers:
+    groq:
+      model: llama-3.3-70b-versatile
+    gemini:
+      model: gemini-2.0-flash
+    ollama:
+      model: qwen2.5-coder:1.5b
+      host: http://localhost:11434
+  routing:
+    easy: [ollama, gemini, groq]
+    medium: [gemini, groq, ollama]
+    hard: [groq, gemini, ollama]
+
+verify:
+  test_timeout_s: 600
+  mutation:
+    enabled: true
+    max_mutants: 24
+    per_mutant_timeout_s: 60
+  selection_budget_s: 300
+
+risk:
+  model_path: sentinel/risk/artifacts/model.json
+  thresholds:
+    canary: 0.35
+    block: 0.65
+
+guards:
+  max_diff_lines: 2500         # above this, the diff is summarised hierarchically
+  hard_limit_lines: 15000      # above this, the PR is rejected outright
+  max_files: 150
+
+publish:
+  check_name: SentinelPR Gate
+  comment_marker: "<!-- sentinelpr:report -->"
+  dashboard_url: null
