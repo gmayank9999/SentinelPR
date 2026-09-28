@@ -1,0 +1,53 @@
+name: SentinelPR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: sentinelpr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Restore SentinelPR index
+        uses: actions/cache/restore@v4
+        with:
+          path: .sentinel
+          key: sentinel-${{ github.event.pull_request.base.sha }}
+          restore-keys: sentinel-
+
+      - run: pip install -r sentinel/requirements.txt
+
+      - name: Run SentinelPR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Secrets are not exposed to pull requests from forks; SentinelPR then runs
+          # without cloud LLMs (deterministic agents, same verification and risk model).
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m sentinel.run --event "$GITHUB_EVENT_PATH" --out .sentinel/run.json --publish
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sentinel-run-${{ github.event.pull_request.number }}
+          path: .sentinel/run.json
+          if-no-files-found: ignore

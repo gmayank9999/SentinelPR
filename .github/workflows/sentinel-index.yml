@@ -1,0 +1,52 @@
+name: SentinelPR index
+
+# Rebuild the coverage map, SZZ links, embeddings and code graph for main, and cache them
+# under the commit SHA so pull requests targeting it can restore the index instead of
+# rebuilding it.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sentinel-index
+  cancel-in-progress: false
+
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r sentinel/requirements.txt
+
+      - name: Build index
+        run: |
+          python -m sentinel.data.index --seed-demo --force
+          python - <<'PY'
+          import subprocess
+          from sentinel.config import Config
+          from sentinel.data.index import open_store
+          sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          store = open_store(Config.load("."))
+          store.set_meta("indexed_revision", sha)
+          print("indexed", sha)
+          PY
+
+      - uses: actions/cache/save@v4
+        with:
+          path: .sentinel
+          key: sentinel-${{ github.sha }}

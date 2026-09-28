@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r sentinel/requirements.txt
+
+      - name: SentinelPR tests
+        run: |
+          git config --global user.email "ci@example.com"
+          git config --global user.name "CI"
+          python -m pytest tests
+
+      - name: UniERP tests
+        working-directory: demo/uni-erp
+        run: python -m pytest
+
+      - name: Rebuild UniERP history
+        run: python demo/uni-erp/history/seed_history.py --out .sentinel/uni-erp-repo

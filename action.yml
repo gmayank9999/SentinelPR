@@ -1,0 +1,92 @@
+name: SentinelPR
+description: Evidence-gated release intelligence for pull requests - verified impact, calibrated risk, PASS / CANARY / BLOCK.
+author: Mayank Gupta
+branding:
+  icon: shield
+  color: green
+
+inputs:
+  github_token:
+    description: Token used to post the Check Run and PR comment.
+    default: ${{ github.token }}
+  groq_api_key:
+    description: Optional Groq API key (free tier).
+    default: ""
+  gemini_api_key:
+    description: Optional Google AI Studio key (free tier).
+    default: ""
+  config:
+    description: Path to a sentinel.yaml in the repository (project root, package, tests...).
+    default: sentinel.yaml
+  python-version:
+    description: Python used to run SentinelPR and the project's tests.
+    default: "3.11"
+  project-requirements:
+    description: Optional requirements file for the analysed project, installed before analysis.
+    default: ""
+  fail-on-block:
+    description: Also fail this step when the decision is BLOCK (useful when Check Runs cannot be created).
+    default: "false"
+
+outputs:
+  decision:
+    description: PASS, CANARY or BLOCK.
+    value: ${{ steps.run.outputs.decision }}
+  risk:
+    description: Calibrated risk in [0, 1].
+    value: ${{ steps.run.outputs.risk }}
+  report:
+    description: Path to the run report JSON.
+    value: ${{ steps.run.outputs.report }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install SentinelPR
+      shell: bash
+      run: |
+        pip install -r "${{ github.action_path }}/sentinel/requirements.txt"
+        if [ -n "${{ inputs.project-requirements }}" ]; then pip install -r "${{ inputs.project-requirements }}"; fi
+
+    - name: Restore index
+      uses: actions/cache/restore@v4
+      with:
+        path: .sentinel
+        key: sentinel-${{ github.event.pull_request.base.sha }}
+        restore-keys: sentinel-
+
+    - name: Analyse pull request
+      id: run
+      shell: bash
+      env:
+        PYTHONPATH: ${{ github.action_path }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        GROQ_API_KEY: ${{ inputs.groq_api_key }}
+        GEMINI_API_KEY: ${{ inputs.gemini_api_key }}
+      run: |
+        args=(--event "$GITHUB_EVENT_PATH" --out .sentinel/run.json --publish)
+        if [ -f "${{ inputs.config }}" ]; then args+=(--config "${{ inputs.config }}"); fi
+        if [ "${{ inputs.fail-on-block }}" = "true" ]; then args+=(--fail-on-block); fi
+        set +e
+        python -m sentinel.run "${args[@]}"
+        status=$?
+        set -e
+        python - <<'PY' >> "$GITHUB_OUTPUT"
+        import json
+        report = json.load(open(".sentinel/run.json"))
+        print(f"decision={report['decision']}")
+        print(f"risk={report['risk'] if report['risk'] is not None else ''}")
+        print("report=.sentinel/run.json")
+        PY
+        exit $status
+
+    - name: Save index
+      if: always()
+      uses: actions/cache/save@v4
+      with:
+        path: .sentinel
+        key: sentinel-${{ github.event.pull_request.base.sha }}
