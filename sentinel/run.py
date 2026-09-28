@@ -16,6 +16,7 @@ import argparse
 import json
 import logging
 import os
+import shutil
 import sys
 from pathlib import Path
 
@@ -34,6 +35,10 @@ def worktree(cfg: Config, rev: str, name: str) -> Path:
     path = cfg.workdir / "worktrees" / name
     if path.exists():
         gitutil.git(cfg.repo_root, "worktree", "remove", "--force", str(path), check=False)
+    if path.exists():
+        # left behind by an interrupted run and no longer registered with git
+        shutil.rmtree(path, ignore_errors=True)
+    gitutil.git(cfg.repo_root, "worktree", "prune", check=False)
     path.parent.mkdir(parents=True, exist_ok=True)
     gitutil.git(cfg.repo_root, "worktree", "add", "--detach", "--force", str(path), rev)
     return path

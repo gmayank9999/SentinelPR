@@ -16,6 +16,7 @@ import argparse
 import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -50,6 +51,9 @@ def _worker_tree(job: dict) -> Path:
         tree = Path(job["work_root"]) / "trees" / f"w{os.getpid()}"
         if tree.exists():
             subprocess.run(["git", "worktree", "remove", "--force", str(tree)], cwd=job["repo_path"], capture_output=True)
+        if tree.exists():
+            shutil.rmtree(tree, ignore_errors=True)
+        subprocess.run(["git", "worktree", "prune"], cwd=job["repo_path"], capture_output=True)
         tree.parent.mkdir(parents=True, exist_ok=True)
         _git(Path(job["repo_path"]), "worktree", "add", "--detach", "--force", str(tree), job["base_sha"])
         _WORKER[key] = tree
