@@ -1,0 +1,8 @@
+# Repository-level settings for analysing the bundled UniERP demo.
+# The demo's development history is rebuilt by `python -m sentinel.data.index --seed-demo`.
+project:
+  root: demo/uni-erp
+  package: unierp
+  tests: tests
+  history_repo: .sentinel/uni-erp-repo
+  tracker_dir: .sentinel/uni-erp-repo-meta
