@@ -30,6 +30,21 @@ def project_fingerprint(project_root: Path, package: str, tests_dir: str) -> str
     return digest.hexdigest()[:16]
 
 
+PYTEST_CONFIG_FILES = ("pytest.ini", "pyproject.toml", "tox.ini", "setup.cfg")
+
+
+def pytest_isolation(project_root: Path, scratch: Path) -> list[str]:
+    """Pin pytest's rootdir to the project so node ids are stable, and stop a config file in a
+    parent directory from leaking into the project's test run."""
+    args = [f"--rootdir={project_root.resolve()}"]
+    if not any((project_root / name).exists() for name in PYTEST_CONFIG_FILES):
+        scratch.mkdir(parents=True, exist_ok=True)
+        empty = scratch / "pytest.ini"
+        empty.write_text("[pytest]\n", encoding="utf-8")
+        args += ["-c", str(empty.resolve())]
+    return args
+
+
 def pytest_env(extra: dict | None = None) -> dict:
     env = dict(os.environ)
     sentinel_root = str(PACKAGE_DIR.parent)
@@ -59,7 +74,7 @@ def build_coverage_map(
         python, "-m", "pytest", tests_dir,
         f"--cov={package}", "--cov-context=test", "--cov-report=",
         "-p", "sentinel.verify.pytest_plugin", "-p", "no:cacheprovider",
-        "-q", "-o", "addopts=",
+        "-q", "-o", "addopts=", *pytest_isolation(project_root, workdir),
     ]
     started = time.time()
     proc = subprocess.run(

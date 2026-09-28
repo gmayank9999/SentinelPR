@@ -12,7 +12,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from sentinel.data.coverage_map import pytest_env
+from sentinel.data.coverage_map import pytest_env, pytest_isolation
 from sentinel.models import TestOutcome, TestRun
 
 IGNORED = shutil.ignore_patterns(
@@ -62,6 +62,7 @@ def run_tests(
     for stale in (report, data_file):
         stale.unlink(missing_ok=True)
     cmd = pytest_command(test_ids, (scratch / "tests.args").resolve(), package=package, coverage=coverage, stop_first=stop_first, python=python)
+    cmd += pytest_isolation(project_root, scratch)
     env = pytest_env({"SENTINEL_TEST_REPORT": str(report), "COVERAGE_FILE": str(data_file)})
 
     started = time.time()

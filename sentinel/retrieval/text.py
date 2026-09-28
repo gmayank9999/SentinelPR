@@ -16,6 +16,23 @@ STOPWORDS = frozenset(
 )
 
 
+_SUFFIXES = ("ing", "ies", "ed", "es", "ly", "s")
+
+
+def stem(word: str) -> str:
+    """A deliberately light suffix stripper: 'rounded' -> 'round', 'rupees' -> 'rupee'."""
+    if len(word) <= 4:
+        return word
+    for suffix in _SUFFIXES:
+        if word.endswith(suffix) and len(word) - len(suffix) >= 3:
+            if suffix == "ies":
+                return word[:-3] + "y"
+            if suffix == "es" and not word.endswith(("ses", "xes", "zes", "ches", "shes")):
+                return word[:-1]
+            return word[: -len(suffix)]
+    return word
+
+
 def tokenize(text: str) -> list[str]:
     """Identifiers are kept whole *and* split into sub-words, so ``calculateStudentCredits``
     matches queries for "student credits" as well as the exact name."""
@@ -27,5 +44,5 @@ def tokenize(text: str) -> list[str]:
             tokens.append(lowered)
         for part in parts:
             if part not in STOPWORDS and len(part) > 1:
-                tokens.append(part)
+                tokens.append(stem(part))
     return tokens

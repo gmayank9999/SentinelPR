@@ -77,7 +77,7 @@ def test_graph_roundtrip(graph, tmp_path):
 
 def test_tokenize_splits_identifiers():
     tokens = tokenize("calculateStudentCredits(rows) + self.compute_gpa")
-    assert {"calculatestudentcredits", "calculate", "student", "credits", "compute", "gpa", "rows"} <= set(tokens)
+    assert {"calculatestudentcredits", "calculate", "student", "credit", "compute", "gpa", "rows"} <= set(tokens)
     assert "self" not in tokens
 
 
