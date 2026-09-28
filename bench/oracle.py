@@ -42,6 +42,7 @@ class Oracle:
         self.package = package
         self.tests_dir = tests_dir
         self.base_passing: set[str] | None = None
+        self.base_visible_failing: set[str] = set()
 
     def _materialise(self, tree: Path) -> list[str]:
         oracle = tree / ORACLE_DIR
@@ -70,6 +71,9 @@ class Oracle:
     def baseline(self, tree: Path, scratch: Path) -> set[str]:
         passed, _, _ = self._oracle_run(tree, scratch)
         self.base_passing = passed
+        # Tests that already fail on the base are not the PR's doing.
+        visible = run_tests(tree, [self.tests_dir], timeout_s=600, scratch=scratch / "visible")
+        self.base_visible_failing = {o.nodeid for o in visible.run.failed}
         return passed
 
     def evaluate(self, tree: Path, changed: dict[str, set[int]], scratch: Path) -> OracleResult:
@@ -81,7 +85,7 @@ class Oracle:
         newly_failing = sorted(self.base_passing - passed)
 
         visible = run_tests(tree, [self.tests_dir], package=self.package, coverage=True, timeout_s=600, scratch=scratch / "visible")
-        visible_failing = sorted(o.nodeid for o in visible.run.failed)
+        visible_failing = sorted({o.nodeid for o in visible.run.failed} - self.base_visible_failing)
         impacted: set[str] = set(visible_failing)
         modules: set[str] = set()
         executed_by: dict[str, set[str]] = {}

@@ -221,7 +221,7 @@ def index_base(repo: Path, spec: dict, base_sha: str, index_dir: Path) -> None:
     ensure_index(cfg, base_sha).close()
 
 
-def run(repo_name: str, *, bases: list[str] | None, workers: int, limit: int | None, out: Path, llm: bool) -> None:
+def run(repo_name: str, *, bases: list[str] | None, workers: int, limit: int | None, out: Path, llm: bool, resume: bool = False) -> None:
     repos = yaml.safe_load((ROOT / "bench" / "repos.yaml").read_text())["repos"]
     spec = repos[repo_name]
     repo = ensure_repo(repo_name, spec)
@@ -231,8 +231,16 @@ def run(repo_name: str, *, bases: list[str] | None, workers: int, limit: int | N
     counts = spec["per_base"]
     environ = {k: v for k, v in os.environ.items() if k in ("GROQ_API_KEY", "GEMINI_API_KEY")} if llm else {}
     labelled_all, rows = [], []
+    done_bases: set[str] = set()
+    if resume and (out / "results.jsonl").exists():
+        rows = [json.loads(l) for l in (out / "results.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+        labelled_all = [json.loads(l) for l in (out / "prs.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+        done_bases = {r["base"] for r in rows}
+        log.info("resuming: %d PRs already analysed on %s", len(rows), ", ".join(sorted(done_bases)) or "no bases")
 
     for order, base_ref in enumerate(bases or spec["bases"]):
+        if base_ref in done_bases:
+            continue
         base_sha, base_time = resolve_base(repo, base_ref)
         index_dir = work_root / "index" / base_sha[:10]
         log.info("[%s] base %s (%s): indexing", repo_name, base_ref, base_sha[:10])
@@ -334,10 +342,11 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--limit", type=int, help="cap candidates per base (smoke runs)")
     parser.add_argument("--llm", action="store_true", help="use configured LLM providers")
     parser.add_argument("--out", type=Path)
+    parser.add_argument("--resume", action="store_true", help="keep results for bases already completed")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
     logging.getLogger("sentinel").setLevel(logging.WARNING)
-    run(args.repo, bases=args.bases, workers=args.workers, limit=args.limit, out=args.out or ROOT / "bench" / "out" / args.repo, llm=args.llm)
+    run(args.repo, bases=args.bases, workers=args.workers, limit=args.limit, out=args.out or ROOT / "bench" / "out" / args.repo, llm=args.llm, resume=args.resume)
 
 
 if __name__ == "__main__":
