@@ -146,7 +146,6 @@ _PRIOR_WEIGHTS = {
     "mutation_score": -1.2,
     "test_only": -1.8,
     "docs_only": -2.5,
-    "intent_refactor": -0.2,
 }
 PRIOR = RiskModel(
     kind="logistic",

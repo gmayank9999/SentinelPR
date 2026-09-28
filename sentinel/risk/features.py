@@ -42,8 +42,8 @@ FEATURES: tuple[Feature, ...] = (
     Feature("test_only", "jit", "only tests changed"),
     Feature("docs_only", "jit", "only documentation changed"),
     Feature("tests_changed", "jit", "tests were updated alongside the code"),
-    Feature("intent_bugfix", "jit", "change is a bug fix"),
-    Feature("intent_refactor", "jit", "change is a refactor"),
+    # The change intent (refactor, bug fix, ...) is deliberately not a feature: it is read from
+    # the PR title and description, which the author controls.
     Feature("verified_test_failures", "verified", "tests failing on the head revision"),
     Feature("changed_line_coverage", "verified", "share of changed lines executed by tests", 1.0),
     Feature("uncovered_changed_lines", "verified", "changed lines no test executes"),
@@ -69,6 +69,8 @@ DIRECTIONS: dict[str, int] = {
     "touches_config": 1, "touches_ci": 1, "verified_test_failures": 1, "uncovered_changed_lines": 1,
     "surviving_mutants": 1, "verified_api_breaks": 1, "verified_bug_links": 1, "llm_risk": 1,
     "injection_attempts": 1, "verified_impacted_modules": 1, "signature_changes": 1, "change_units": 1,
+    # execution contradicting the static picture of a change cannot make it safer
+    "refuted_claim_ratio": 1,
     # mature, long-unchanged code is less defect-prone (Graves et al., 2000)
     "log_code_age_days": -1,
     "log_author_prior_commits": -1, "test_only": -1, "docs_only": -1, "tests_changed": -1,
@@ -89,7 +91,7 @@ def build_features(signals: dict[str, float], verification=None, claims=None, ve
     f = {feat.name: feat.default for feat in FEATURES}
     for name in ("log_churn", "files_touched", "change_units", "entropy", "author_is_new", "recent_churn",
                  "complexity_delta", "max_complexity", "szz_defects", "touches_dependencies", "touches_config",
-                 "touches_ci", "signature_changes", "test_only", "docs_only", "tests_changed", "intent_bugfix", "intent_refactor"):
+                 "touches_ci", "signature_changes", "test_only", "docs_only", "tests_changed"):
         f[name] = float(signals.get(name, f[name]))
     f["log_author_prior_commits"] = math.log1p(signals.get("author_prior_commits", 0.0))
     f["log_code_age_days"] = math.log1p(max(signals.get("code_age_days", 0.0), 0.0))
