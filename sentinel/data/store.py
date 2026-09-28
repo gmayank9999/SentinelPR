@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import threading
 import time
 from collections import defaultdict
 from collections.abc import Iterable
@@ -123,6 +124,48 @@ CREATE TABLE IF NOT EXISTS verdicts (
 """
 
 
+class _Rows(list):
+    def fetchone(self):
+        return self[0] if self else None
+
+    def fetchall(self):
+        return list(self)
+
+
+class _LockedConnection:
+    """Serialises access to one SQLite connection so parallel agents can share the store.
+
+    Results are materialised inside the lock, so no cursor is ever iterated concurrently.
+    """
+
+    def __init__(self, conn: sqlite3.Connection):
+        self._conn = conn
+        self._lock = threading.RLock()
+
+    def execute(self, sql: str, args=()) -> _Rows:
+        with self._lock:
+            return _Rows(self._conn.execute(sql, args).fetchall())
+
+    def executemany(self, sql: str, rows) -> None:
+        with self._lock:
+            self._conn.executemany(sql, rows)
+
+    def executescript(self, script: str) -> None:
+        with self._lock:
+            self._conn.executescript(script)
+
+    def commit(self) -> None:
+        with self._lock:
+            self._conn.commit()
+
+    def close(self) -> None:
+        with self._lock:
+            self._conn.close()
+
+    def cursor(self) -> "_LockedConnection":
+        return self
+
+
 def _j(value: Any) -> str:
     return json.dumps(value, default=str)
 
@@ -132,8 +175,9 @@ class Store:
         self.path = Path(path)
         if str(path) != ":memory:":
             self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.conn = sqlite3.connect(str(path), check_same_thread=False)
-        self.conn.row_factory = sqlite3.Row
+        raw = sqlite3.connect(str(path), check_same_thread=False)
+        raw.row_factory = sqlite3.Row
+        self.conn = _LockedConnection(raw)
         self.conn.executescript(SCHEMA)
 
     def close(self) -> None:
@@ -333,12 +377,13 @@ class Store:
 
     # runs -----------------------------------------------------------------
     def save_run(self, run: dict) -> None:
+        pr = run.get("pr") if isinstance(run.get("pr"), dict) else {"number": run.get("pr")}
         cur = self.conn.cursor()
         cur.execute(
             "INSERT OR REPLACE INTO runs VALUES (?,?,?,?,?,?,?,?,?,?)",
             (
-                run["run_id"], run.get("pr"), run.get("head_sha"), run.get("base_sha"), run.get("decision"),
-                run.get("risk"), run.get("tokens", 0), run.get("latency", 0.0), time.time(), _j(run),
+                run["run_id"], pr.get("number"), pr.get("head_sha"), pr.get("base_sha"), run.get("decision"),
+                run.get("risk"), run.get("tokens", 0), run.get("elapsed_s", 0.0), time.time(), _j(run),
             ),
         )
         cur.execute("DELETE FROM claims WHERE run_id = ?", (run["run_id"],))
