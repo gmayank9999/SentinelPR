@@ -166,12 +166,21 @@ def run_mutation(
     broken_tests: set[str] | None = None,
     per_mutant_timeout_s: float = 60,
     scratch: Path | None = None,
+    import_lines: set[tuple[str, int]] | None = None,
+    fallback_tests: list[str] | None = None,
 ) -> MutationReport:
-    """Execute each mutant against the tests that cover its line, restoring the file after."""
+    """Execute each mutant against the tests that cover its line, restoring the file after.
+
+    Lines that only run at import time (module constants, say) have no per-test coverage;
+    their mutants are run against ``fallback_tests`` (the PR's selected tests) instead.
+    """
     started = time.time()
     broken_tests = broken_tests or set()
     for mutant, mutated_source in mutants:
-        tests = sorted(t for t in line_tests.get((mutant.file, mutant.line), set()) if t not in broken_tests)
+        covering = line_tests.get((mutant.file, mutant.line), set())
+        if not covering and (mutant.file, mutant.line) in (import_lines or set()):
+            covering = set(fallback_tests or [])
+        tests = sorted(t for t in covering if t not in broken_tests)
         if not tests:
             mutant.status = "survived"  # no test executes this line: nothing could notice the bug
             continue

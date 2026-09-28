@@ -19,6 +19,7 @@ from sentinel.retrieval.graph import is_test_path
 
 PRIORITY = {"coverage": 0, "claim": 1, "static": 2, "changed": 1}
 DEFAULT_TEST_SECONDS = 0.5
+MODULE_TEST_CAP = 25
 
 
 @dataclass
@@ -65,6 +66,15 @@ def select_tests(ctx: AgentContext, evidence: ImpactEvidence | None, claims: lis
     for claim in claims:
         if claim.type == "test_impact":
             offer(claim.target, "claim")
+    # Module-level edits (imports, constants) run at import time: pick tests of that module's code.
+    for unit in ctx.units:
+        if unit.kind == "module" and not is_test_path(unit.file):
+            module_tests: set[str] = set()
+            for node, data in graph.g.nodes(data=True):
+                if node.startswith("sym:") and data.get("path") == unit.file:
+                    module_tests.update(graph.covering_tests(node))
+            for test in sorted(module_tests)[:MODULE_TEST_CAP]:
+                offer(test_target(graph, test), "static")
     for change in ctx.changes:
         if is_test_path(change.path) and change.status != "removed":
             for test_id in known:

@@ -28,6 +28,7 @@ class VerificationResult:
     line_tests: dict[tuple[str, int], set[str]]
     mutation: MutationReport
     verdicts: list[Verdict]
+    import_lines: set[tuple[str, int]] = field(default_factory=set)
     changed_lines_total: int = 0
     changed_lines_covered: int = 0
     uncovered: list[tuple[str, int]] = field(default_factory=list)
@@ -79,9 +80,10 @@ class Verifier:
         self.cfg = cfg
         self.project_root = project_root
         self.sources = sources
-        self.scratch = cfg.workdir / "verify"
+        configured = cfg.get("verify.scratch")
+        self.scratch = Path(configured) if configured else cfg.workdir / "verify"
 
-    def execute(self, units: list[ChangeUnit], test_ids: list[str]) -> tuple[TestRun, dict, MutationReport, dict[str, set[int]]]:
+    def execute(self, units: list[ChangeUnit], test_ids: list[str]) -> tuple[TestRun, dict, MutationReport, dict[str, set[int]], set]:
         package = self.cfg.get("project.package")
         execution = run_tests(
             self.project_root, test_ids, package=package, coverage=True,
@@ -99,14 +101,15 @@ class Verifier:
                     workspace, mutants, execution.line_tests, broken_tests=broken,
                     per_mutant_timeout_s=float(self.cfg.get("verify.mutation.per_mutant_timeout_s", 60)),
                     scratch=self.scratch / "mutant",
+                    import_lines=execution.import_lines, fallback_tests=test_ids,
                 )
-        return execution.run, execution.line_tests, mutation, changed
+        return execution.run, execution.line_tests, mutation, changed, execution.import_lines
 
     def verify(self, units: list[ChangeUnit], claims: list[Claim], test_ids: list[str], *, graph, store, llm=None, llm_allowed: bool = False) -> VerificationResult:
-        run, line_tests, mutation, changed = self.execute(units, test_ids)
+        run, line_tests, mutation, changed, import_lines = self.execute(units, test_ids)
         facts = Facts(units, run, line_tests, mutation, graph, store, llm, llm_allowed, changed)
         verdicts = [check(c, facts) for c in claims]
-        return self._result(run, line_tests, mutation, verdicts, changed)
+        return self._result(run, line_tests, mutation, verdicts, changed, import_lines)
 
     def recheck(self, previous: VerificationResult, units: list[ChangeUnit], claims: list[Claim], *, graph, store, llm=None, llm_allowed=False) -> list[Verdict]:
         """Check new claims against observations already made (used after the impact retry)."""
@@ -115,8 +118,9 @@ class Verifier:
         return [check(c, facts) for c in claims]
 
     @staticmethod
-    def _result(run, line_tests, mutation, verdicts, changed) -> VerificationResult:
+    def _result(run, line_tests, mutation, verdicts, changed, import_lines=frozenset()) -> VerificationResult:
         total = sum(len(v) for v in changed.values())
-        covered_keys = {k for k in line_tests if k[1] in changed.get(k[0], ())}
+        executed = set(line_tests) | set(import_lines)
+        covered_keys = {k for k in executed if k[1] in changed.get(k[0], ())}
         uncovered = sorted((f, n) for f, lines in changed.items() for n in lines if (f, n) not in covered_keys)
-        return VerificationResult(run, line_tests, mutation, verdicts, total, len(covered_keys), uncovered)
+        return VerificationResult(run, line_tests, mutation, verdicts, set(import_lines), total, len(covered_keys), uncovered)

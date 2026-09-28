@@ -28,6 +28,8 @@ class ExecutionResult:
     exit_code: int
     # (file, line) -> test ids that executed it (only when run with coverage)
     line_tests: dict[tuple[str, int], set[str]] = field(default_factory=dict)
+    # lines executed while test modules were imported (no test context), e.g. module constants
+    import_lines: set[tuple[str, int]] = field(default_factory=set)
     timed_out: bool = False
     stderr: str = ""
 
@@ -52,6 +54,7 @@ def run_tests(
     timeout_s: float = 600,
     python: str = sys.executable,
     scratch: Path | None = None,
+    extra_args: list[str] | None = None,
 ) -> ExecutionResult:
     if not test_ids:
         return ExecutionResult(TestRun(), 0)
@@ -62,7 +65,7 @@ def run_tests(
     for stale in (report, data_file):
         stale.unlink(missing_ok=True)
     cmd = pytest_command(test_ids, (scratch / "tests.args").resolve(), package=package, coverage=coverage, stop_first=stop_first, python=python)
-    cmd += pytest_isolation(project_root, scratch)
+    cmd += pytest_isolation(project_root, scratch) + list(extra_args or [])
     env = pytest_env({"SENTINEL_TEST_REPORT": str(report), "COVERAGE_FILE": str(data_file)})
 
     started = time.time()
@@ -84,6 +87,7 @@ def run_tests(
         collection_error = stderr[-3000:] or f"pytest exited with {exit_code} and no report"
 
     line_tests: dict[tuple[str, int], set[str]] = defaultdict(set)
+    import_lines: set[tuple[str, int]] = set()
     if coverage and data_file.exists():
         import coverage as coverage_lib
 
@@ -99,9 +103,11 @@ def run_tests(
                 for context in contexts:
                     if context:
                         line_tests[(rel, line)].add(context.split("|", 1)[0])
+                    else:
+                        import_lines.add((rel, line))
 
     run = TestRun(selected=list(test_ids), outcomes=outcomes, duration_s=round(duration, 3), collection_error=collection_error)
-    return ExecutionResult(run, exit_code, dict(line_tests), timed_out, stderr)
+    return ExecutionResult(run, exit_code, dict(line_tests), import_lines, timed_out, stderr)
 
 
 def make_workspace(project_root: Path, destination: Path) -> Path:
