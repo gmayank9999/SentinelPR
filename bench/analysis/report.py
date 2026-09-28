@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -146,6 +147,7 @@ def main(argv: list[str] | None = None) -> None:
     out_dir = args.results.parent
     (out_dir / "results.json").write_text(json.dumps(results, indent=1), encoding="utf-8")
     (out_dir / "report.md").write_text(markdown(results), encoding="utf-8")
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # Windows consoles default to cp1252
     print(markdown(results))
 
 
