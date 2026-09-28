@@ -59,12 +59,13 @@ export default function Pipeline() {
     if (clock < t.end - t0) return "active";
     return t.status === "error" ? "error" : "done";
   };
+  // [box, label] classes; stroke stays on the box so labels are not outlined
   const style = {
-    idle: "fill-slate-900 stroke-slate-800 text-slate-600",
-    pending: "fill-slate-900 stroke-slate-600 text-slate-400",
-    active: "fill-emerald-950 stroke-emerald-400 text-emerald-200",
-    done: "fill-slate-800 stroke-emerald-600 text-slate-100",
-    error: "fill-rose-950 stroke-rose-500 text-rose-200",
+    idle: ["fill-slate-900 stroke-slate-800", "fill-slate-600"],
+    pending: ["fill-slate-900 stroke-slate-600", "fill-slate-400"],
+    active: ["fill-emerald-950 stroke-emerald-400", "fill-emerald-200"],
+    done: ["fill-slate-800 stroke-emerald-600", "fill-slate-100"],
+    error: ["fill-rose-950 stroke-rose-500", "fill-rose-200"],
   };
 
   return (
@@ -78,7 +79,7 @@ export default function Pipeline() {
       {!run ? <NoData /> : (
         <>
           <div className="card overflow-x-auto">
-            <svg width={LAYOUT.length * GX + 20} height={3 * GY + 40}>
+            <svg viewBox={`0 0 ${LAYOUT.length * GX + 20} ${3 * GY + 40}`} className="w-full min-w-[900px]">
               <defs>
                 <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
                   <path d="M0,0 L10,5 L0,10 z" className="fill-slate-600" />
@@ -92,9 +93,9 @@ export default function Pipeline() {
                 const s = state(node);
                 const t = byNode[node];
                 return (
-                  <g key={node} transform={`translate(${p.x},${p.y})`} className={style[s]}>
-                    <rect width={W} height={H} rx="10" strokeWidth="1.5" className={s === "active" ? "node-active" : ""} />
-                    <text x={W / 2} y="22" textAnchor="middle" className="fill-current text-[13px] font-medium">{node}</text>
+                  <g key={node} transform={`translate(${p.x},${p.y})`}>
+                    <rect width={W} height={H} rx="10" strokeWidth="1.5" className={`${style[s][0]} ${s === "active" ? "node-active" : ""}`} />
+                    <text x={W / 2} y="22" textAnchor="middle" className={`${style[s][1]} text-[13px] font-medium`}>{node}</text>
                     <text x={W / 2} y="40" textAnchor="middle" className="fill-slate-400 text-[11px]">
                       {t ? `${(t.end - t.start).toFixed(2)}s${t.tokens ? ` · ${t.tokens} tok` : ""}` : "not run"}
                     </text>

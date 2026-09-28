@@ -11,12 +11,12 @@ function CurveChart({ curves, kind, x, y }) {
   const names = HEADLINE.filter((n) => curves[n]?.[kind]);
   return (
     <ResponsiveContainer width="100%" height={260}>
-      <LineChart margin={{ top: 5, right: 10, bottom: 15, left: 0 }}>
+      <LineChart margin={{ top: 5, right: 10, bottom: 30, left: 0 }}>
         <CartesianGrid stroke="#1e293b" />
         <XAxis type="number" dataKey="x" domain={[0, 1]} tick={axis} label={{ value: x, position: "insideBottom", offset: -8, fill: "#64748b", fontSize: 11 }} />
         <YAxis type="number" dataKey="y" domain={[0, 1]} tick={axis} label={{ value: y, angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 11 }} />
         <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid #334155" }} formatter={(v) => num(v)} />
-        <Legend wrapperStyle={{ fontSize: 11 }} />
+        <Legend verticalAlign="top" wrapperStyle={{ fontSize: 11, paddingBottom: 8 }} />
         {names.map((n, i) => (
           <Line key={n} name={n} data={curves[n][kind].map(([a, b]) => ({ x: a, y: b }))} dataKey="y" type="stepAfter" dot={false} stroke={COLORS[i]} strokeWidth={n === "SentinelPR" ? 2.5 : 1.5} isAnimationActive={false} />
         ))}
@@ -29,7 +29,7 @@ function Reliability({ rows }) {
   const data = (rows || []).map((r) => ({ x: r.mean_pred, y: r.frac_pos, z: r.count }));
   return (
     <ResponsiveContainer width="100%" height={260}>
-      <ScatterChart margin={{ top: 5, right: 10, bottom: 15, left: 0 }}>
+      <ScatterChart margin={{ top: 5, right: 10, bottom: 30, left: 0 }}>
         <CartesianGrid stroke="#1e293b" />
         <XAxis type="number" dataKey="x" domain={[0, 1]} tick={axis} name="predicted" label={{ value: "predicted risk", position: "insideBottom", offset: -8, fill: "#64748b", fontSize: 11 }} />
         <YAxis type="number" dataKey="y" domain={[0, 1]} tick={axis} name="observed" label={{ value: "defective share", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 11 }} />
@@ -82,7 +82,7 @@ export default function EvaluationLab() {
                 <td>{name}</td><td>{num(m.roc_auc)}</td><td>{num(m.pr_auc)}</td>
                 <td className="text-slate-500">{m.pr_auc_ci ? `${num(m.pr_auc_ci[0])}–${num(m.pr_auc_ci[1])}` : "—"}</td>
                 <td>{pct(m.recall_at_5fpr)}</td><td>{num(m.brier, 3)}</td><td>{num(m.ece, 3)}</td><td>{pct(m.false_block_rate)}</td><td>{pct(m.block_recall)}</td>
-                <td className="text-slate-400">{gate.mcnemar_vs_sentinel[name]?.p_value ?? ""}</td>
+                <td className="text-slate-400">{gate.mcnemar_vs_sentinel[name] ? num(gate.mcnemar_vs_sentinel[name].p_value, 3) : ""}</td>
               </tr>
             ))}
           </tbody>

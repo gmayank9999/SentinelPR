@@ -111,7 +111,7 @@ export default function RunReport() {
                 <td>{c.agent}</td>
                 <td className="text-slate-400">{c.type}</td>
                 <td className="max-w-md">
-                  <div className="font-mono text-xs text-slate-200">{c.target}</div>
+                  <div className="break-all font-mono text-xs text-slate-200">{c.target}</div>
                   <div className="text-xs text-slate-500">{c.assertion !== "affected" ? c.assertion : c.reason}</div>
                 </td>
                 <td><StatusPill status={c.status} /></td>
