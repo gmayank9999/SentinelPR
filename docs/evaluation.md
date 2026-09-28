@@ -63,11 +63,19 @@ The full report with confidence intervals is in
 * **Circularity in RQ2.** A test-impact claim is verified by executing the test on the head, and the
   ground truth is also execution-based, so post-verification precision is close to 1 by
   construction. The meaningful quantity is how many *true* claims verification loses (8%).
-* **Model choices made after inspection.** The first trained model was unconstrained; its
-  coefficients showed small-sample artefacts (e.g. younger code judged safer), after which sign
-  constraints from the JIT-prediction literature were added. Both models are reported; the
-  constrained one is deployed. The untrained hand-weighted prior is also reported and is
-  competitive, which says the evidence features themselves carry most of the signal.
+* **Model choices made after inspection.** In order: (1) an unconstrained logistic model showed
+  small-sample artefacts (e.g. recently changed code judged safer); (2) sign constraints from
+  the JIT-prediction literature were added, and the refuted-claim ratio was bounded after its
+  negative weight turned out to re-encode failing tests; (3) the PR-title intent features were
+  removed because authors control them; (4) because the expert-weighted prior kept outperforming
+  fitted weights, an "expert weights + learned calibration" family was added and the family is
+  now selected by forward-chained PR-AUC. Every variant is still reported. The expert weights
+  were written before the benchmark existed, but the choice to deploy them was made after seeing
+  these results, so the headline numbers carry some selection optimism.
+* **What the ablations say.** Verification evidence carries the signal (PR-AUC 0.98 → 0.86
+  without it). Mutation adds little over changed-line coverage on UniERP, whose visible suite
+  already covers 94% of lines; it matters where coverage is high but assertions are weak, which
+  the hidden-fault category exercises only with 14 PRs.
 * **Small sample.** 154 PRs in total and 75 scored out-of-fold; confidence intervals are wide.
 * **External validity.** One small Python project so far. `bench/repos.yaml` is ready for two real
   open-source repositories (they need hidden oracle tests before they can be enabled).
