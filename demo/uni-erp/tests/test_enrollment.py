@@ -1,3 +1,4 @@
+from dataclasses import replace
 from datetime import date
 
 import pytest
@@ -24,6 +25,13 @@ def test_register_rejects_duplicate(store):
 def test_register_rejects_missing_prerequisites(store):
     with pytest.raises(RegistrationError, match="CS101"):
         register(store, "S1", "CS102", "2026-FALL")
+
+
+def test_register_rejects_full_section(store):
+    store.catalog["HS101"] = replace(store.catalog["HS101"], capacity=1)
+    store.add_enrollment(Enrollment("S9", "HS101", "2026-FALL"))
+    with pytest.raises(RegistrationError, match="full"):
+        register(store, "S1", "HS101", "2026-FALL")
 
 
 def test_register_rejects_timetable_clash(store):

@@ -41,9 +41,9 @@ def test_gpa_is_credit_weighted(catalog):
 
 
 def test_gpa_rounds_half_up(catalog):
-    history = [graded("CS101", "2025-FALL", "B+"), graded("CS102", "2025-FALL", "B")]
-    # (3.3*4 + 3.0*4) / 8 = 3.15
-    assert compute_gpa(history, catalog) == 3.15
+    history = [graded("CS101", "2025-FALL", "B"), graded("MA101", "2025-FALL", "A")]
+    # (3.0*4 + 4.0*3) / 7 = 3.428... -> 3.43, not truncated to 3.42
+    assert compute_gpa(history, catalog) == 3.43
 
 
 def test_gpa_ignores_withdrawals(catalog):
