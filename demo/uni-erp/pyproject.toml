@@ -1,0 +1,10 @@
+[project]
+name = "unierp"
+version = "1.4.0"
+description = "University ERP demo service"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests"]
+addopts = "-q"
