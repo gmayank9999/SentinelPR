@@ -27,7 +27,7 @@ bench/out/
 # Node / dashboard
 node_modules/
 dashboard/dist/
-dashboard/public/data/runs/
+dashboard/public/data/
 
 # Editors / OS
 .vscode/
