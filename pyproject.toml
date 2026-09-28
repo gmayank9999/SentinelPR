@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentinelpr"
+version = "0.1.0"
+description = "Evidence-gated release intelligence for pull requests"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Mayank Gupta", email = "gmayank9999@gmail.com" }]
+
+[project.scripts]
+sentinel = "sentinel.run:main"
+
+[tool.setuptools.packages.find]
+include = ["sentinel*", "bench*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

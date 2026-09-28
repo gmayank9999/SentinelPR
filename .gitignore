@@ -1,0 +1,41 @@
+# Local notes
+plan.md
+*Implementation_Plan*.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+mutants/
+
+# SentinelPR working state (index, caches, run outputs)
+.sentinel/
+bench/out/
+
+# Node / dashboard
+node_modules/
+dashboard/dist/
+dashboard/public/data/runs/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+.env.*
+!.env.example
