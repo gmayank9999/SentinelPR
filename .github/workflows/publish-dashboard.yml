@@ -1,6 +1,9 @@
 name: Publish dashboard
 
 on:
+  push:
+    branches: [main]
+    paths: ["dashboard/**", "bench/results/**", "sentinel/publish/dashboard_data.py"]
   workflow_run:
     workflows: ["SentinelPR benchmark", "SentinelPR canary", "SentinelPR"]
     types: [completed]

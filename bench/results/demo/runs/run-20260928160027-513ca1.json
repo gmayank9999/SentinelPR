@@ -1,0 +1,526 @@
+{
+  "schema": "sentinelpr.run/1",
+  "run_id": "run-20260928160027-513ca1",
+  "created_at": "2026-09-28T16:00:27.333136+00:00",
+  "sentinel_version": "0.1.0",
+  "repository": "",
+  "project_root": ".",
+  "pr": {
+    "number": 105,
+    "title": "Clean up guard in register",
+    "author": "Demo Author",
+    "base_sha": "fcc6a7fa4a6e570dbaa1ef762f389869175473fd",
+    "head_sha": "55159b5b5966e0a7ee7de44d487b263e67f3c128",
+    "is_fork": false
+  },
+  "rejected": false,
+  "decision": "BLOCK",
+  "decision_reason": "risk 0.89 >= block threshold 0.87",
+  "thresholds": {
+    "canary": 0.4982,
+    "block": 0.8672
+  },
+  "risk": 0.8895,
+  "risk_model": "logistic:uni-erp-benchmark",
+  "calibrated": true,
+  "contributions": [
+    {
+      "feature": "changed_line_coverage",
+      "value": 1.0,
+      "contribution": -1.4,
+      "label": "share of changed lines executed by tests"
+    },
+    {
+      "feature": "surviving_mutants",
+      "value": 3.0,
+      "contribution": 1.35,
+      "label": "mutants on changed lines that no test notices"
+    },
+    {
+      "feature": "szz_defects",
+      "value": 1.0,
+      "contribution": 0.55,
+      "label": "past bug fixes in the touched functions"
+    },
+    {
+      "feature": "llm_risk",
+      "value": 0.5,
+      "contribution": 0.4,
+      "label": "LLM risk rating"
+    },
+    {
+      "feature": "log_churn",
+      "value": 1.0986,
+      "contribution": 0.3845,
+      "label": "size of the change"
+    },
+    {
+      "feature": "verified_bug_links",
+      "value": 1.0,
+      "contribution": 0.35,
+      "label": "verified links to past bugs"
+    },
+    {
+      "feature": "mutation_score",
+      "value": 0.25,
+      "contribution": -0.3,
+      "label": "share of mutants on changed lines the tests kill"
+    },
+    {
+      "feature": "author_is_new",
+      "value": 1.0,
+      "contribution": 0.25,
+      "label": "author has not touched these files before"
+    }
+  ],
+  "features": {
+    "log_churn": 1.0986,
+    "files_touched": 1.0,
+    "change_units": 1.0,
+    "entropy": 0.0,
+    "author_is_new": 1.0,
+    "log_author_prior_commits": 0.0,
+    "log_code_age_days": 4.42,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 18.0,
+    "szz_defects": 1.0,
+    "touches_dependencies": 0.0,
+    "touches_config": 0.0,
+    "touches_ci": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "verified_test_failures": 0.0,
+    "changed_line_coverage": 1.0,
+    "uncovered_changed_lines": 0.0,
+    "mutation_score": 0.25,
+    "surviving_mutants": 3.0,
+    "verified_impacted_tests": 1.0,
+    "verified_impacted_modules": 0.0,
+    "verified_api_breaks": 0.0,
+    "verified_bug_links": 1.0,
+    "refuted_claim_ratio": 0.0,
+    "llm_risk": 0.5,
+    "injection_attempts": 0.0
+  },
+  "explanation": "share of changed lines executed by tests (100%) lowers the risk (-1.40) [feat:changed_line_coverage]. mutants on changed lines that no test notices (3) raises the risk (+1.35) [feat:surviving_mutants]. past bug fixes in the touched functions (1) raises the risk (+0.55) [feat:szz_defects].",
+  "explanation_source": "template",
+  "changes": [
+    {
+      "path": "unierp/registration/enrollment.py",
+      "old_path": "unierp/registration/enrollment.py",
+      "status": "modified",
+      "added_lines": [
+        33
+      ],
+      "removed_lines": [
+        33
+      ],
+      "insertion_points": [],
+      "is_binary": false
+    }
+  ],
+  "change_units": [
+    {
+      "id": "unierp/registration/enrollment.py::register",
+      "file": "unierp/registration/enrollment.py",
+      "symbol": "register",
+      "qualname": "register",
+      "kind": "function",
+      "change_type": "modified",
+      "old_range": [
+        19,
+        60
+      ],
+      "new_range": [
+        19,
+        60
+      ],
+      "changed_lines": [
+        33
+      ],
+      "removed_lines": [
+        33
+      ],
+      "old_signature": "def register(store: Store, student_id: str, course_code: str, term: str) -> Enrollment",
+      "new_signature": "def register(store: Store, student_id: str, course_code: str, term: str) -> Enrollment"
+    }
+  ],
+  "impact_mode": "rules",
+  "impact_retried": false,
+  "llm_risk": null,
+  "claims": [
+    {
+      "claim_id": "imp-001",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_rejects_already_passed_course",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of register",
+      "evidence_ids": [
+        "cov:tests/test_enrollment.py::test_register_rejects_already_passed_course"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-002",
+      "agent": "impact",
+      "type": "module_impact",
+      "target": "unierp/api/app.py",
+      "assertion": "affected",
+      "reason": "calls into changed code",
+      "evidence_ids": [
+        "graph:calls:create_app.add_registration->register"
+      ],
+      "status": "UNVERIFIABLE"
+    },
+    {
+      "claim_id": "his-001",
+      "agent": "historian",
+      "type": "history_link",
+      "target": "unierp/registration/enrollment.py::register",
+      "assertion": "register was involved in bug fix 5d57477 (issue #60: Course section accepts one student over capacity)",
+      "reason": "fixed by \"Reject registrations once a section is full (#61)\"; the buggy lines came from commit ecdec9a",
+      "evidence_ids": [
+        "issue:60",
+        "commit:5d57477e13",
+        "commit:ecdec9a6ff"
+      ],
+      "status": "VERIFIED"
+    }
+  ],
+  "verdicts": [
+    {
+      "claim_id": "imp-001",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_enrollment.py::test_register_rejects_already_passed_course->unierp/registration/enrollment.py#L33",
+        "kill:m:unierp/registration/enrollment.py:33:cond:0"
+      ],
+      "detail": "executes 1 changed line(s); kills 1 mutant(s) of changed lines"
+    },
+    {
+      "claim_id": "imp-002",
+      "status": "UNVERIFIABLE",
+      "method": "call-graph",
+      "evidence": [
+        "graph:calls:create_app.add_registration->register"
+      ],
+      "detail": "reachable by calls, but no executed test exercises both"
+    },
+    {
+      "claim_id": "his-001",
+      "status": "VERIFIED",
+      "method": "repository",
+      "evidence": [
+        "issue:60",
+        "commit:5d57477e13",
+        "commit:ecdec9a6ff"
+      ],
+      "detail": "cited history exists and touches the symbol"
+    }
+  ],
+  "verdict_counts": {
+    "VERIFIED": 2,
+    "REFUTED": 0,
+    "UNVERIFIABLE": 1
+  },
+  "selection": {
+    "tests": [
+      "tests/test_api.py::test_registration_flow",
+      "tests/test_enrollment.py::test_drop_after_window_records_w",
+      "tests/test_enrollment.py::test_drop_inside_window",
+      "tests/test_enrollment.py::test_register_happy_path",
+      "tests/test_enrollment.py::test_register_rejects_already_passed_course",
+      "tests/test_enrollment.py::test_register_rejects_duplicate",
+      "tests/test_enrollment.py::test_register_rejects_full_section",
+      "tests/test_enrollment.py::test_register_rejects_missing_prerequisites",
+      "tests/test_enrollment.py::test_register_rejects_suspended_student",
+      "tests/test_enrollment.py::test_register_rejects_timetable_clash"
+    ],
+    "reasons": {
+      "tests/test_api.py::test_registration_flow": "coverage",
+      "tests/test_enrollment.py::test_drop_after_window_records_w": "coverage",
+      "tests/test_enrollment.py::test_drop_inside_window": "coverage",
+      "tests/test_enrollment.py::test_register_happy_path": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_already_passed_course": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_duplicate": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_full_section": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_missing_prerequisites": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_suspended_student": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_timetable_clash": "coverage"
+    },
+    "total_available": 107,
+    "estimated_s": 0.092,
+    "full_suite_s": 0.961,
+    "time_saved_ratio": 0.9043
+  },
+  "verification": {
+    "tests": {
+      "selected": 10,
+      "passed": 10,
+      "failed": [],
+      "duration_s": 1.835,
+      "collection_error": null
+    },
+    "changed_lines": {
+      "total": 1,
+      "covered": 1,
+      "coverage": 1.0,
+      "uncovered": []
+    },
+    "mutation": {
+      "score": 0.25,
+      "mutants": [
+        {
+          "id": "m:unierp/registration/enrollment.py:33:bool:1",
+          "file": "unierp/registration/enrollment.py",
+          "line": 33,
+          "operator": "bool",
+          "original": "e.status is EnrollmentStatus.COMPLETED or is_passing(e.grade) or e.grade != \"D\"",
+          "mutated": "(e.status is EnrollmentStatus.COMPLETED and is_passing(e.grade) and (e.grade != 'D'))",
+          "symbol": "register",
+          "status": "survived",
+          "killed_by": []
+        },
+        {
+          "id": "m:unierp/registration/enrollment.py:33:cmp:2",
+          "file": "unierp/registration/enrollment.py",
+          "line": 33,
+          "operator": "cmp",
+          "original": "e.status is EnrollmentStatus.COMPLETED",
+          "mutated": "(e.status is not EnrollmentStatus.COMPLETED)",
+          "symbol": "register",
+          "status": "survived",
+          "killed_by": []
+        },
+        {
+          "id": "m:unierp/registration/enrollment.py:33:cmp:3",
+          "file": "unierp/registration/enrollment.py",
+          "line": 33,
+          "operator": "cmp",
+          "original": "e.grade != \"D\"",
+          "mutated": "(e.grade == 'D')",
+          "symbol": "register",
+          "status": "survived",
+          "killed_by": []
+        },
+        {
+          "id": "m:unierp/registration/enrollment.py:33:cond:0",
+          "file": "unierp/registration/enrollment.py",
+          "line": 33,
+          "operator": "cond",
+          "original": "e.status is EnrollmentStatus.COMPLETED or is_passing(e.grade) or e.grade != \"D\"",
+          "mutated": "not (e.status is EnrollmentStatus.COMPLETED or is_passing(e.grade) or e.grade != \"D\")",
+          "symbol": "register",
+          "status": "killed",
+          "killed_by": [
+            "tests/test_enrollment.py::test_register_rejects_already_passed_course"
+          ]
+        }
+      ],
+      "duration_s": 4.07
+    },
+    "behaviour_preserving_units": []
+  },
+  "signals": {
+    "lines_added": 1.0,
+    "lines_deleted": 1.0,
+    "log_churn": 1.0986,
+    "files_touched": 1.0,
+    "source_files_touched": 1.0,
+    "change_units": 1.0,
+    "entropy": 0.0,
+    "author_prior_commits": 0.0,
+    "author_is_new": 1.0,
+    "distinct_file_authors": 1.0,
+    "code_age_days": 82.1,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 18.0,
+    "szz_defects": 1.0,
+    "units_with_tests_ratio": 1.0,
+    "touches_dependencies": 0.0,
+    "touches_ci": 0.0,
+    "touches_config": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "intent_refactor": 1.0,
+    "intent_feature": 0.0,
+    "intent_bugfix": 0.0,
+    "intent_config": 0.0,
+    "intent_test": 0.0,
+    "intent_docs": 0.0
+  },
+  "intent": {
+    "label": "refactor",
+    "source": "heuristic"
+  },
+  "history": {
+    "memories": [
+      "register has been changed by 1 bug-fix commit(s): 5d57477"
+    ],
+    "features": {
+      "szz_bug_fixes": 1.0,
+      "szz_introducers": 1.0,
+      "bug_issues": 1.0,
+      "history_commits": 2.0,
+      "history_authors": 1.0
+    },
+    "documents": [
+      "commit:5d57477e13",
+      "issue:60",
+      "commit:ecdec9a6ff",
+      "commit:4188286fef",
+      "issue:47",
+      "commit:81c7b2635d",
+      "commit:9f9f760475",
+      "issue:23",
+      "commit:21b2880499",
+      "pr:13",
+      "issue:31",
+      "pr:32"
+    ]
+  },
+  "guard_events": [],
+  "trace": [
+    {
+      "node": "guard_in",
+      "start": 1790611217.497191,
+      "end": 1790611217.497191,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    },
+    {
+      "node": "parse_diff",
+      "start": 1790611217.4981902,
+      "end": 1790611217.4981902,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "1 change unit(s)"
+    },
+    {
+      "node": "historian",
+      "start": 1790611217.4991903,
+      "end": 1790611221.2526233,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "1 claims"
+    },
+    {
+      "node": "impact",
+      "start": 1790611217.5007005,
+      "end": 1790611221.2516422,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "rules: 2 claims"
+    },
+    {
+      "node": "signals",
+      "start": 1790611217.5007005,
+      "end": 1790611221.2496483,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "intent=refactor"
+    },
+    {
+      "node": "select_tests",
+      "start": 1790611221.253626,
+      "end": 1790611221.254641,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "10/107 tests"
+    },
+    {
+      "node": "verify",
+      "start": 1790611221.2555752,
+      "end": 1790611227.3291347,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "10 passed, 0 failed, mutation 0.25"
+    },
+    {
+      "node": "reconcile",
+      "start": 1790611227.3301349,
+      "end": 1790611227.3301349,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "{'VERIFIED': 2, 'REFUTED': 0, 'UNVERIFIABLE': 1}; impact refuted 0%"
+    },
+    {
+      "node": "score",
+      "start": 1790611227.3311348,
+      "end": 1790611227.3311348,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "risk 0.89 (logistic:uni-erp-benchmark)"
+    },
+    {
+      "node": "decide",
+      "start": 1790611227.332133,
+      "end": 1790611227.332133,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "risk 0.89 >= block threshold 0.87"
+    },
+    {
+      "node": "guard_out",
+      "start": 1790611227.332133,
+      "end": 1790611227.332133,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    }
+  ],
+  "llm": {
+    "calls": 0,
+    "cache_hits": 0,
+    "tokens": 0,
+    "by_provider": {},
+    "by_tier": {
+      "easy": 0,
+      "medium": 0,
+      "hard": 0
+    },
+    "calls_detail": [],
+    "available": false
+  },
+  "prompts": {},
+  "retrieval": {
+    "mode": "hybrid",
+    "top_k": 10,
+    "queries": [
+      "register"
+    ]
+  },
+  "elapsed_s": 9.86,
+  "tokens": 0
+}

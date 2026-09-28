@@ -1,0 +1,775 @@
+{
+  "schema": "sentinelpr.run/1",
+  "run_id": "run-20260928155925-ff7782",
+  "created_at": "2026-09-28T15:59:25.577325+00:00",
+  "sentinel_version": "0.1.0",
+  "repository": "",
+  "project_root": ".",
+  "pr": {
+    "number": 102,
+    "title": "Let honours students overload from 3.4 CGPA",
+    "author": "Demo Author",
+    "base_sha": "fcc6a7fa4a6e570dbaa1ef762f389869175473fd",
+    "head_sha": "43e722b2f1ec759b44b90e7d59d9ff5281a9cfe4",
+    "is_fork": false
+  },
+  "rejected": false,
+  "decision": "PASS",
+  "decision_reason": "risk 0.36 below canary threshold 0.50",
+  "thresholds": {
+    "canary": 0.4982,
+    "block": 0.8672
+  },
+  "risk": 0.3554,
+  "risk_model": "logistic:uni-erp-benchmark",
+  "calibrated": true,
+  "contributions": [
+    {
+      "feature": "changed_line_coverage",
+      "value": 1.0,
+      "contribution": -1.4,
+      "label": "share of changed lines executed by tests"
+    },
+    {
+      "feature": "mutation_score",
+      "value": 0.5,
+      "contribution": -0.6,
+      "label": "share of mutants on changed lines the tests kill"
+    },
+    {
+      "feature": "log_churn",
+      "value": 1.6094,
+      "contribution": 0.5633,
+      "label": "size of the change"
+    },
+    {
+      "feature": "surviving_mutants",
+      "value": 1.0,
+      "contribution": 0.45,
+      "label": "mutants on changed lines that no test notices"
+    },
+    {
+      "feature": "llm_risk",
+      "value": 0.5,
+      "contribution": 0.4,
+      "label": "LLM risk rating"
+    },
+    {
+      "feature": "author_is_new",
+      "value": 1.0,
+      "contribution": 0.25,
+      "label": "author has not touched these files before"
+    },
+    {
+      "feature": "files_touched",
+      "value": 1.0,
+      "contribution": 0.0,
+      "label": "number of files touched"
+    },
+    {
+      "feature": "change_units",
+      "value": 2.0,
+      "contribution": 0.0,
+      "label": "number of changed functions/classes"
+    }
+  ],
+  "features": {
+    "log_churn": 1.6094,
+    "files_touched": 1.0,
+    "change_units": 2.0,
+    "entropy": 0.0,
+    "author_is_new": 1.0,
+    "log_author_prior_commits": 0.0,
+    "log_code_age_days": 1.3863,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 4.0,
+    "szz_defects": 0.0,
+    "touches_dependencies": 0.0,
+    "touches_config": 0.0,
+    "touches_ci": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "verified_test_failures": 0.0,
+    "changed_line_coverage": 1.0,
+    "uncovered_changed_lines": 0.0,
+    "mutation_score": 0.5,
+    "surviving_mutants": 1.0,
+    "verified_impacted_tests": 7.0,
+    "verified_impacted_modules": 2.0,
+    "verified_api_breaks": 0.0,
+    "verified_bug_links": 0.0,
+    "refuted_claim_ratio": 0.3077,
+    "llm_risk": 0.5,
+    "injection_attempts": 0.0
+  },
+  "explanation": "share of changed lines executed by tests (100%) lowers the risk (-1.40) [feat:changed_line_coverage]. share of mutants on changed lines the tests kill (50%) lowers the risk (-0.60) [feat:mutation_score]. size of the change (1.61) raises the risk (+0.56) [feat:log_churn].",
+  "explanation_source": "template",
+  "changes": [
+    {
+      "path": "unierp/registration/credits.py",
+      "old_path": "unierp/registration/credits.py",
+      "status": "modified",
+      "added_lines": [
+        22,
+        69
+      ],
+      "removed_lines": [
+        22,
+        69
+      ],
+      "insertion_points": [],
+      "is_binary": false
+    }
+  ],
+  "change_units": [
+    {
+      "id": "unierp/registration/credits.py::<module>",
+      "file": "unierp/registration/credits.py",
+      "symbol": "<module>",
+      "qualname": "<module>",
+      "kind": "module",
+      "change_type": "modified",
+      "old_range": null,
+      "new_range": null,
+      "changed_lines": [
+        22
+      ],
+      "removed_lines": [
+        22
+      ],
+      "old_signature": null,
+      "new_signature": null
+    },
+    {
+      "id": "unierp/registration/credits.py::credit_load_limits",
+      "file": "unierp/registration/credits.py",
+      "symbol": "credit_load_limits",
+      "qualname": "credit_load_limits",
+      "kind": "function",
+      "change_type": "modified",
+      "old_range": [
+        65,
+        71
+      ],
+      "new_range": [
+        65,
+        71
+      ],
+      "changed_lines": [
+        69
+      ],
+      "removed_lines": [
+        69
+      ],
+      "old_signature": "def credit_load_limits(cgpa: float, *, on_probation: bool = False) -> tuple[int, int]",
+      "new_signature": "def credit_load_limits(cgpa: float, *, on_probation: bool = False) -> tuple[int, int]"
+    }
+  ],
+  "impact_mode": "rules",
+  "impact_retried": false,
+  "llm_risk": null,
+  "claims": [
+    {
+      "claim_id": "imp-001",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_api.py::test_registration_flow",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of credit_load_limits",
+      "evidence_ids": [
+        "cov:tests/test_api.py::test_registration_flow"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-002",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_credits.py::test_credit_load_limits",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of credit_load_limits",
+      "evidence_ids": [
+        "cov:tests/test_credits.py::test_credit_load_limits"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-003",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_drop_after_window_records_w",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of credit_load_limits",
+      "evidence_ids": [
+        "cov:tests/test_enrollment.py::test_drop_after_window_records_w"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-004",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_drop_inside_window",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of credit_load_limits",
+      "evidence_ids": [
+        "cov:tests/test_enrollment.py::test_drop_inside_window"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-005",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_happy_path",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of credit_load_limits",
+      "evidence_ids": [
+        "cov:tests/test_enrollment.py::test_register_happy_path"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-006",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_rejects_duplicate",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of credit_load_limits",
+      "evidence_ids": [
+        "cov:tests/test_enrollment.py::test_register_rejects_duplicate"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-007",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_rejects_timetable_clash",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of credit_load_limits",
+      "evidence_ids": [
+        "cov:tests/test_enrollment.py::test_register_rejects_timetable_clash"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-008",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_rejects_missing_prerequisites",
+      "assertion": "affected",
+      "reason": "reaches the change through test_register_rejects_missing_prerequisites -> register -> credit_load_limits",
+      "evidence_ids": [
+        "graph:calls:test_register_rejects_missing_prerequisites->register",
+        "graph:calls:register->credit_load_limits"
+      ],
+      "status": "REFUTED"
+    },
+    {
+      "claim_id": "imp-009",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_rejects_full_section",
+      "assertion": "affected",
+      "reason": "reaches the change through test_register_rejects_full_section -> register -> credit_load_limits",
+      "evidence_ids": [
+        "graph:calls:test_register_rejects_full_section->register",
+        "graph:calls:register->credit_load_limits"
+      ],
+      "status": "REFUTED"
+    },
+    {
+      "claim_id": "imp-010",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_rejects_suspended_student",
+      "assertion": "affected",
+      "reason": "reaches the change through test_register_rejects_suspended_student -> register -> credit_load_limits",
+      "evidence_ids": [
+        "graph:calls:test_register_rejects_suspended_student->register",
+        "graph:calls:register->credit_load_limits"
+      ],
+      "status": "REFUTED"
+    },
+    {
+      "claim_id": "imp-011",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_enrollment.py::test_register_rejects_already_passed_course",
+      "assertion": "affected",
+      "reason": "reaches the change through test_register_rejects_already_passed_course -> register -> credit_load_limits",
+      "evidence_ids": [
+        "graph:calls:test_register_rejects_already_passed_course->register",
+        "graph:calls:register->credit_load_limits"
+      ],
+      "status": "REFUTED"
+    },
+    {
+      "claim_id": "imp-012",
+      "agent": "impact",
+      "type": "module_impact",
+      "target": "unierp/api/app.py",
+      "assertion": "affected",
+      "reason": "calls into changed code",
+      "evidence_ids": [
+        "graph:calls:create_app.add_registration->register",
+        "graph:calls:register->credit_load_limits"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-013",
+      "agent": "impact",
+      "type": "module_impact",
+      "target": "unierp/registration/enrollment.py",
+      "assertion": "affected",
+      "reason": "calls into changed code",
+      "evidence_ids": [
+        "graph:calls:register->credit_load_limits"
+      ],
+      "status": "VERIFIED"
+    }
+  ],
+  "verdicts": [
+    {
+      "claim_id": "imp-001",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_api.py::test_registration_flow->unierp/registration/credits.py#L69"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-002",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_credits.py::test_credit_load_limits->unierp/registration/credits.py#L69",
+        "kill:m:unierp/registration/credits.py:69:cond:0"
+      ],
+      "detail": "executes 1 changed line(s); kills 1 mutant(s) of changed lines"
+    },
+    {
+      "claim_id": "imp-003",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_enrollment.py::test_drop_after_window_records_w->unierp/registration/credits.py#L69"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-004",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_enrollment.py::test_drop_inside_window->unierp/registration/credits.py#L69"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-005",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_enrollment.py::test_register_happy_path->unierp/registration/credits.py#L69"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-006",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_enrollment.py::test_register_rejects_duplicate->unierp/registration/credits.py#L69"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-007",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_enrollment.py::test_register_rejects_timetable_clash->unierp/registration/credits.py#L69"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-008",
+      "status": "REFUTED",
+      "method": "execution",
+      "evidence": [
+        "run:tests/test_enrollment.py::test_register_rejects_missing_prerequisites"
+      ],
+      "detail": "ran the test on the head: it never executes a changed line, passes, and kills no mutant"
+    },
+    {
+      "claim_id": "imp-009",
+      "status": "REFUTED",
+      "method": "execution",
+      "evidence": [
+        "run:tests/test_enrollment.py::test_register_rejects_full_section"
+      ],
+      "detail": "ran the test on the head: it never executes a changed line, passes, and kills no mutant"
+    },
+    {
+      "claim_id": "imp-010",
+      "status": "REFUTED",
+      "method": "execution",
+      "evidence": [
+        "run:tests/test_enrollment.py::test_register_rejects_suspended_student"
+      ],
+      "detail": "ran the test on the head: it never executes a changed line, passes, and kills no mutant"
+    },
+    {
+      "claim_id": "imp-011",
+      "status": "REFUTED",
+      "method": "execution",
+      "evidence": [
+        "run:tests/test_enrollment.py::test_register_rejects_already_passed_course"
+      ],
+      "detail": "ran the test on the head: it never executes a changed line, passes, and kills no mutant"
+    },
+    {
+      "claim_id": "imp-012",
+      "status": "VERIFIED",
+      "method": "call-graph+execution",
+      "evidence": [
+        "graph:calls:create_app.add_registration->register",
+        "graph:calls:register->credit_load_limits",
+        "exec:tests/test_api.py::test_registration_flow"
+      ],
+      "detail": "reachable, and 1 test(s) execute both the module and changed lines"
+    },
+    {
+      "claim_id": "imp-013",
+      "status": "VERIFIED",
+      "method": "call-graph+execution",
+      "evidence": [
+        "graph:calls:register->credit_load_limits",
+        "exec:tests/test_enrollment.py::test_register_happy_path"
+      ],
+      "detail": "reachable, and 6 test(s) execute both the module and changed lines"
+    }
+  ],
+  "verdict_counts": {
+    "VERIFIED": 9,
+    "REFUTED": 4,
+    "UNVERIFIABLE": 0
+  },
+  "selection": {
+    "tests": [
+      "tests/test_api.py::test_registration_flow",
+      "tests/test_credits.py::test_credit_load_limits",
+      "tests/test_enrollment.py::test_drop_after_window_records_w",
+      "tests/test_enrollment.py::test_drop_inside_window",
+      "tests/test_enrollment.py::test_register_happy_path",
+      "tests/test_enrollment.py::test_register_rejects_duplicate",
+      "tests/test_enrollment.py::test_register_rejects_timetable_clash",
+      "tests/test_enrollment.py::test_register_rejects_already_passed_course",
+      "tests/test_enrollment.py::test_register_rejects_full_section",
+      "tests/test_enrollment.py::test_register_rejects_missing_prerequisites",
+      "tests/test_enrollment.py::test_register_rejects_suspended_student",
+      "tests/test_api.py::test_credits_endpoint",
+      "tests/test_api.py::test_fees_and_late_fee",
+      "tests/test_api.py::test_gpa_endpoint",
+      "tests/test_api.py::test_transcript_standing_audit",
+      "tests/test_credits.py::test_attempted_credits_include_failures",
+      "tests/test_credits.py::test_dropped_courses_never_count",
+      "tests/test_credits.py::test_earned_credits_count_passing_grades_only",
+      "tests/test_credits.py::test_full_time_threshold",
+      "tests/test_credits.py::test_term_filter",
+      "tests/test_credits.py::test_unknown_course_rejected",
+      "tests/test_credits.py::test_unknown_mode_rejected",
+      "tests/test_credits.py::test_withdrawn_courses_are_not_attempted",
+      "tests/test_fees.py::test_breakdown_adds_lab_fee_and_applies_scholarship",
+      "tests/test_fees.py::test_international_surcharge",
+      "tests/test_fees.py::test_tuition_uses_in_progress_credits",
+      "tests/test_grades.py::test_gpa_ignores_withdrawals",
+      "tests/test_grades.py::test_gpa_is_credit_weighted",
+      "tests/test_grades.py::test_gpa_of_empty_record_is_zero"
+    ],
+    "reasons": {
+      "tests/test_api.py::test_registration_flow": "coverage",
+      "tests/test_credits.py::test_credit_load_limits": "coverage",
+      "tests/test_enrollment.py::test_drop_after_window_records_w": "coverage",
+      "tests/test_enrollment.py::test_drop_inside_window": "coverage",
+      "tests/test_enrollment.py::test_register_happy_path": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_duplicate": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_timetable_clash": "coverage",
+      "tests/test_enrollment.py::test_register_rejects_already_passed_course": "claim",
+      "tests/test_enrollment.py::test_register_rejects_full_section": "claim",
+      "tests/test_enrollment.py::test_register_rejects_missing_prerequisites": "claim",
+      "tests/test_enrollment.py::test_register_rejects_suspended_student": "claim",
+      "tests/test_api.py::test_credits_endpoint": "static",
+      "tests/test_api.py::test_fees_and_late_fee": "static",
+      "tests/test_api.py::test_gpa_endpoint": "static",
+      "tests/test_api.py::test_transcript_standing_audit": "static",
+      "tests/test_credits.py::test_attempted_credits_include_failures": "static",
+      "tests/test_credits.py::test_dropped_courses_never_count": "static",
+      "tests/test_credits.py::test_earned_credits_count_passing_grades_only": "static",
+      "tests/test_credits.py::test_full_time_threshold": "static",
+      "tests/test_credits.py::test_term_filter": "static",
+      "tests/test_credits.py::test_unknown_course_rejected": "static",
+      "tests/test_credits.py::test_unknown_mode_rejected": "static",
+      "tests/test_credits.py::test_withdrawn_courses_are_not_attempted": "static",
+      "tests/test_fees.py::test_breakdown_adds_lab_fee_and_applies_scholarship": "static",
+      "tests/test_fees.py::test_international_surcharge": "static",
+      "tests/test_fees.py::test_tuition_uses_in_progress_credits": "static",
+      "tests/test_grades.py::test_gpa_ignores_withdrawals": "static",
+      "tests/test_grades.py::test_gpa_is_credit_weighted": "static",
+      "tests/test_grades.py::test_gpa_of_empty_record_is_zero": "static"
+    },
+    "total_available": 107,
+    "estimated_s": 0.321,
+    "full_suite_s": 0.961,
+    "time_saved_ratio": 0.666
+  },
+  "verification": {
+    "tests": {
+      "selected": 29,
+      "passed": 29,
+      "failed": [],
+      "duration_s": 2.133,
+      "collection_error": null
+    },
+    "changed_lines": {
+      "total": 2,
+      "covered": 2,
+      "coverage": 1.0,
+      "uncovered": []
+    },
+    "mutation": {
+      "score": 0.5,
+      "mutants": [
+        {
+          "id": "m:unierp/registration/credits.py:69:cmp:1",
+          "file": "unierp/registration/credits.py",
+          "line": 69,
+          "operator": "cmp",
+          "original": "cgpa > HONOURS_CGPA",
+          "mutated": "(cgpa >= HONOURS_CGPA)",
+          "symbol": "credit_load_limits",
+          "status": "survived",
+          "killed_by": []
+        },
+        {
+          "id": "m:unierp/registration/credits.py:69:cond:0",
+          "file": "unierp/registration/credits.py",
+          "line": 69,
+          "operator": "cond",
+          "original": "cgpa > HONOURS_CGPA",
+          "mutated": "not (cgpa > HONOURS_CGPA)",
+          "symbol": "credit_load_limits",
+          "status": "killed",
+          "killed_by": [
+            "tests/test_credits.py::test_credit_load_limits"
+          ]
+        }
+      ],
+      "duration_s": 3.03
+    },
+    "behaviour_preserving_units": []
+  },
+  "signals": {
+    "lines_added": 2.0,
+    "lines_deleted": 2.0,
+    "log_churn": 1.6094,
+    "files_touched": 1.0,
+    "source_files_touched": 1.0,
+    "change_units": 2.0,
+    "entropy": 0.0,
+    "author_prior_commits": 0.0,
+    "author_is_new": 1.0,
+    "distinct_file_authors": 1.0,
+    "code_age_days": 3.0,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 4.0,
+    "szz_defects": 0.0,
+    "units_with_tests_ratio": 0.5,
+    "touches_dependencies": 0.0,
+    "touches_ci": 0.0,
+    "touches_config": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "intent_refactor": 0.0,
+    "intent_feature": 1.0,
+    "intent_bugfix": 0.0,
+    "intent_config": 0.0,
+    "intent_test": 0.0,
+    "intent_docs": 0.0
+  },
+  "intent": {
+    "label": "feature",
+    "source": "heuristic"
+  },
+  "history": {
+    "memories": [],
+    "features": {
+      "szz_bug_fixes": 0.0,
+      "szz_introducers": 0.0,
+      "bug_issues": 0.0,
+      "history_commits": 1.0,
+      "history_authors": 1.0
+    },
+    "documents": [
+      "issue:47",
+      "commit:daa65dca17",
+      "pr:88",
+      "commit:80a028b8c3",
+      "commit:b15da3540d",
+      "issue:87",
+      "commit:ecdec9a6ff",
+      "pr:8",
+      "issue:70",
+      "issue:45",
+      "issue:56",
+      "issue:78"
+    ]
+  },
+  "guard_events": [],
+  "trace": [
+    {
+      "node": "guard_in",
+      "start": 1790611156.7594938,
+      "end": 1790611156.7594938,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    },
+    {
+      "node": "parse_diff",
+      "start": 1790611156.7605088,
+      "end": 1790611156.7605088,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "2 change unit(s)"
+    },
+    {
+      "node": "historian",
+      "start": 1790611156.7614968,
+      "end": 1790611160.174222,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "0 claims"
+    },
+    {
+      "node": "impact",
+      "start": 1790611156.776423,
+      "end": 1790611160.2694504,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "rules: 13 claims"
+    },
+    {
+      "node": "signals",
+      "start": 1790611156.777419,
+      "end": 1790611160.2837782,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "intent=feature"
+    },
+    {
+      "node": "select_tests",
+      "start": 1790611160.2858796,
+      "end": 1790611160.2878857,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "29/107 tests"
+    },
+    {
+      "node": "verify",
+      "start": 1790611160.2888882,
+      "end": 1790611165.57433,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "29 passed, 0 failed, mutation 0.5"
+    },
+    {
+      "node": "reconcile",
+      "start": 1790611165.57433,
+      "end": 1790611165.5753338,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "{'VERIFIED': 9, 'REFUTED': 4, 'UNVERIFIABLE': 0}; impact refuted 31%"
+    },
+    {
+      "node": "score",
+      "start": 1790611165.5753338,
+      "end": 1790611165.5753338,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "risk 0.36 (logistic:uni-erp-benchmark)"
+    },
+    {
+      "node": "decide",
+      "start": 1790611165.576343,
+      "end": 1790611165.576343,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "risk 0.36 below canary threshold 0.50"
+    },
+    {
+      "node": "guard_out",
+      "start": 1790611165.576343,
+      "end": 1790611165.576343,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    }
+  ],
+  "llm": {
+    "calls": 0,
+    "cache_hits": 0,
+    "tokens": 0,
+    "by_provider": {},
+    "by_tier": {
+      "easy": 0,
+      "medium": 0,
+      "hard": 0
+    },
+    "calls_detail": [],
+    "available": false
+  },
+  "prompts": {},
+  "retrieval": {
+    "mode": "hybrid",
+    "top_k": 10,
+    "queries": [
+      "credit_load_limits",
+      "honours"
+    ]
+  },
+  "elapsed_s": 8.83,
+  "tokens": 0
+}

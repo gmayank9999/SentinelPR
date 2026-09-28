@@ -1,0 +1,744 @@
+{
+  "schema": "sentinelpr.run/1",
+  "run_id": "run-20260928155947-4180d7",
+  "created_at": "2026-09-28T15:59:47.610383+00:00",
+  "sentinel_version": "0.1.0",
+  "repository": "",
+  "project_root": ".",
+  "pr": {
+    "number": 104,
+    "title": "Charge the late fee from the first day",
+    "author": "Demo Author",
+    "base_sha": "fcc6a7fa4a6e570dbaa1ef762f389869175473fd",
+    "head_sha": "00a20a64746ba512a512b85fa7b391a65f90a30e",
+    "is_fork": false
+  },
+  "rejected": false,
+  "decision": "BLOCK",
+  "decision_reason": "1 test(s) fail on the head revision",
+  "thresholds": {
+    "canary": 0.4982,
+    "block": 0.8672
+  },
+  "risk": 0.9981,
+  "risk_model": "logistic:uni-erp-benchmark",
+  "calibrated": true,
+  "contributions": [
+    {
+      "feature": "verified_test_failures",
+      "value": 1.0,
+      "contribution": 3.0,
+      "label": "tests failing on the head revision"
+    },
+    {
+      "feature": "changed_line_coverage",
+      "value": 1.0,
+      "contribution": -1.4,
+      "label": "share of changed lines executed by tests"
+    },
+    {
+      "feature": "szz_defects",
+      "value": 2.0,
+      "contribution": 1.1,
+      "label": "past bug fixes in the touched functions"
+    },
+    {
+      "feature": "surviving_mutants",
+      "value": 2.0,
+      "contribution": 0.9,
+      "label": "mutants on changed lines that no test notices"
+    },
+    {
+      "feature": "mutation_score",
+      "value": 0.3333,
+      "contribution": -0.4,
+      "label": "share of mutants on changed lines the tests kill"
+    },
+    {
+      "feature": "llm_risk",
+      "value": 0.5,
+      "contribution": 0.4,
+      "label": "LLM risk rating"
+    },
+    {
+      "feature": "log_churn",
+      "value": 1.0986,
+      "contribution": 0.3845,
+      "label": "size of the change"
+    },
+    {
+      "feature": "verified_bug_links",
+      "value": 1.0,
+      "contribution": 0.35,
+      "label": "verified links to past bugs"
+    }
+  ],
+  "features": {
+    "log_churn": 1.0986,
+    "files_touched": 1.0,
+    "change_units": 1.0,
+    "entropy": 0.0,
+    "author_is_new": 1.0,
+    "log_author_prior_commits": 0.0,
+    "log_code_age_days": 4.2166,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 2.0,
+    "szz_defects": 2.0,
+    "touches_dependencies": 0.0,
+    "touches_config": 0.0,
+    "touches_ci": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "verified_test_failures": 1.0,
+    "changed_line_coverage": 1.0,
+    "uncovered_changed_lines": 0.0,
+    "mutation_score": 0.3333,
+    "surviving_mutants": 2.0,
+    "verified_impacted_tests": 9.0,
+    "verified_impacted_modules": 2.0,
+    "verified_api_breaks": 0.0,
+    "verified_bug_links": 1.0,
+    "refuted_claim_ratio": 0.0769,
+    "llm_risk": 0.5,
+    "injection_attempts": 0.0
+  },
+  "explanation": "tests failing on the head revision (1) raises the risk (+3.00) [feat:verified_test_failures]. share of changed lines executed by tests (100%) lowers the risk (-1.40) [feat:changed_line_coverage]. past bug fixes in the touched functions (2) raises the risk (+1.10) [feat:szz_defects].",
+  "explanation_source": "template",
+  "changes": [
+    {
+      "path": "unierp/fees/calculator.py",
+      "old_path": "unierp/fees/calculator.py",
+      "status": "modified",
+      "added_lines": [
+        76
+      ],
+      "removed_lines": [
+        76
+      ],
+      "insertion_points": [],
+      "is_binary": false
+    }
+  ],
+  "change_units": [
+    {
+      "id": "unierp/fees/calculator.py::late_fee_rate",
+      "file": "unierp/fees/calculator.py",
+      "symbol": "late_fee_rate",
+      "qualname": "late_fee_rate",
+      "kind": "function",
+      "change_type": "modified",
+      "old_range": [
+        74,
+        79
+      ],
+      "new_range": [
+        74,
+        79
+      ],
+      "changed_lines": [
+        76
+      ],
+      "removed_lines": [
+        76
+      ],
+      "old_signature": "def late_fee_rate(due_date: date, paid_on: date) -> Decimal",
+      "new_signature": "def late_fee_rate(due_date: date, paid_on: date) -> Decimal"
+    }
+  ],
+  "impact_mode": "rules",
+  "impact_retried": false,
+  "llm_risk": null,
+  "claims": [
+    {
+      "claim_id": "imp-001",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_api.py::test_fees_and_late_fee",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_api.py::test_fees_and_late_fee"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-002",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_fees.py::test_late_fee_is_capped",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_fees.py::test_late_fee_is_capped"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-003",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_fees.py::test_late_fee_per_started_week",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_fees.py::test_late_fee_per_started_week"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-004",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_fees.py::test_late_fee_result_is_rounded_down",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_fees.py::test_late_fee_result_is_rounded_down"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-005",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_fees.py::test_no_late_fee_within_grace_period",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_fees.py::test_no_late_fee_within_grace_period"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-006",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_invoices.py::test_balance_accrues_late_fee",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_invoices.py::test_balance_accrues_late_fee"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-007",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_invoices.py::test_full_payment_on_time",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_invoices.py::test_full_payment_on_time"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-008",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_invoices.py::test_partial_payment",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_invoices.py::test_partial_payment"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-009",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_invoices.py::test_unpaid_balance_before_due",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of late_fee_rate",
+      "evidence_ids": [
+        "cov:tests/test_invoices.py::test_unpaid_balance_before_due"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-010",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_fees.py::test_negative_amount_rejected",
+      "assertion": "affected",
+      "reason": "reaches the change through test_negative_amount_rejected -> apply_late_fee -> late_fee_rate",
+      "evidence_ids": [
+        "graph:calls:test_negative_amount_rejected->apply_late_fee",
+        "graph:calls:apply_late_fee->late_fee_rate"
+      ],
+      "status": "REFUTED"
+    },
+    {
+      "claim_id": "imp-011",
+      "agent": "impact",
+      "type": "module_impact",
+      "target": "unierp/api/app.py",
+      "assertion": "affected",
+      "reason": "calls into changed code",
+      "evidence_ids": [
+        "graph:calls:create_app.late_fee->apply_late_fee",
+        "graph:calls:apply_late_fee->late_fee_rate"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-012",
+      "agent": "impact",
+      "type": "module_impact",
+      "target": "unierp/fees/invoices.py",
+      "assertion": "affected",
+      "reason": "calls into changed code",
+      "evidence_ids": [
+        "graph:calls:outstanding_balance->apply_late_fee",
+        "graph:calls:apply_late_fee->late_fee_rate"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "his-001",
+      "agent": "historian",
+      "type": "history_link",
+      "target": "unierp/fees/calculator.py::late_fee_rate",
+      "assertion": "late_fee_rate was involved in bug fix 9b5d34a (issue #29: Late fee charged on the last day of the grace period)",
+      "reason": "fixed by \"Do not charge late fees inside the grace period (#30)\"; the buggy lines came from commit 21c1c4e",
+      "evidence_ids": [
+        "issue:29",
+        "commit:9b5d34a355",
+        "commit:21c1c4ee98",
+        "issue:40",
+        "commit:18c2984ce3"
+      ],
+      "status": "VERIFIED"
+    }
+  ],
+  "verdicts": [
+    {
+      "claim_id": "imp-001",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_api.py::test_fees_and_late_fee->unierp/fees/calculator.py#L76",
+        "kill:m:unierp/fees/calculator.py:76:cond:0"
+      ],
+      "detail": "executes 1 changed line(s); kills 1 mutant(s) of changed lines"
+    },
+    {
+      "claim_id": "imp-002",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_fees.py::test_late_fee_is_capped->unierp/fees/calculator.py#L76"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-003",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_fees.py::test_late_fee_per_started_week->unierp/fees/calculator.py#L76"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-004",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_fees.py::test_late_fee_result_is_rounded_down->unierp/fees/calculator.py#L76"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-005",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_fees.py::test_no_late_fee_within_grace_period->unierp/fees/calculator.py#L76",
+        "fail:tests/test_fees.py::test_no_late_fee_within_grace_period"
+      ],
+      "detail": "executes 1 changed line(s); fails on the head revision"
+    },
+    {
+      "claim_id": "imp-006",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_invoices.py::test_balance_accrues_late_fee->unierp/fees/calculator.py#L76"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-007",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_invoices.py::test_full_payment_on_time->unierp/fees/calculator.py#L76"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-008",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_invoices.py::test_partial_payment->unierp/fees/calculator.py#L76"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-009",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_invoices.py::test_unpaid_balance_before_due->unierp/fees/calculator.py#L76"
+      ],
+      "detail": "executes 1 changed line(s)"
+    },
+    {
+      "claim_id": "imp-010",
+      "status": "REFUTED",
+      "method": "execution",
+      "evidence": [
+        "run:tests/test_fees.py::test_negative_amount_rejected"
+      ],
+      "detail": "ran the test on the head: it never executes a changed line, passes, and kills no mutant"
+    },
+    {
+      "claim_id": "imp-011",
+      "status": "VERIFIED",
+      "method": "call-graph+execution",
+      "evidence": [
+        "graph:calls:create_app.late_fee->apply_late_fee",
+        "graph:calls:apply_late_fee->late_fee_rate",
+        "exec:tests/test_api.py::test_fees_and_late_fee"
+      ],
+      "detail": "reachable, and 1 test(s) execute both the module and changed lines"
+    },
+    {
+      "claim_id": "imp-012",
+      "status": "VERIFIED",
+      "method": "call-graph+execution",
+      "evidence": [
+        "graph:calls:outstanding_balance->apply_late_fee",
+        "graph:calls:apply_late_fee->late_fee_rate",
+        "exec:tests/test_invoices.py::test_balance_accrues_late_fee"
+      ],
+      "detail": "reachable, and 4 test(s) execute both the module and changed lines"
+    },
+    {
+      "claim_id": "his-001",
+      "status": "VERIFIED",
+      "method": "repository",
+      "evidence": [
+        "issue:29",
+        "commit:9b5d34a355",
+        "commit:21c1c4ee98",
+        "issue:40",
+        "commit:18c2984ce3"
+      ],
+      "detail": "cited history exists and touches the symbol"
+    }
+  ],
+  "verdict_counts": {
+    "VERIFIED": 12,
+    "REFUTED": 1,
+    "UNVERIFIABLE": 0
+  },
+  "selection": {
+    "tests": [
+      "tests/test_api.py::test_fees_and_late_fee",
+      "tests/test_fees.py::test_late_fee_is_capped",
+      "tests/test_fees.py::test_late_fee_per_started_week",
+      "tests/test_fees.py::test_late_fee_result_is_rounded_down",
+      "tests/test_fees.py::test_no_late_fee_within_grace_period",
+      "tests/test_invoices.py::test_balance_accrues_late_fee",
+      "tests/test_invoices.py::test_full_payment_on_time",
+      "tests/test_invoices.py::test_partial_payment",
+      "tests/test_invoices.py::test_unpaid_balance_before_due",
+      "tests/test_fees.py::test_negative_amount_rejected"
+    ],
+    "reasons": {
+      "tests/test_api.py::test_fees_and_late_fee": "coverage",
+      "tests/test_fees.py::test_late_fee_is_capped": "coverage",
+      "tests/test_fees.py::test_late_fee_per_started_week": "coverage",
+      "tests/test_fees.py::test_late_fee_result_is_rounded_down": "coverage",
+      "tests/test_fees.py::test_no_late_fee_within_grace_period": "coverage",
+      "tests/test_invoices.py::test_balance_accrues_late_fee": "coverage",
+      "tests/test_invoices.py::test_full_payment_on_time": "coverage",
+      "tests/test_invoices.py::test_partial_payment": "coverage",
+      "tests/test_invoices.py::test_unpaid_balance_before_due": "coverage",
+      "tests/test_fees.py::test_negative_amount_rejected": "claim"
+    },
+    "total_available": 107,
+    "estimated_s": 0.084,
+    "full_suite_s": 0.961,
+    "time_saved_ratio": 0.9126
+  },
+  "verification": {
+    "tests": {
+      "selected": 10,
+      "passed": 9,
+      "failed": [
+        {
+          "nodeid": "tests/test_fees.py::test_no_late_fee_within_grace_period",
+          "outcome": "failed",
+          "duration_s": 0.0035643999990497832,
+          "message": "def test_no_late_fee_within_grace_period():\n>       assert apply_late_fee(Decimal(\"10000\"), DUE, date(2026, 9, 4)) == Decimal(\"10000\")\nE       AssertionError: assert Decimal('10200') == Decimal('10000')\nE        +  where Decimal('10200') = apply_late_fee(Decimal('10000'), datetime.date(2026, 9, 1), datetime.date(2026, 9, 4))\nE        +    where Decimal('10000') = Decimal('10000')\nE        +    and   datetime.date(2026, 9, 4) = date(2026, 9, 4)\nE        +  and   Decimal('10000') = Decimal('10000')\n\ntests\\test_fees.py:31: AssertionError"
+        }
+      ],
+      "duration_s": 1.862,
+      "collection_error": null
+    },
+    "changed_lines": {
+      "total": 1,
+      "covered": 1,
+      "coverage": 1.0,
+      "uncovered": []
+    },
+    "mutation": {
+      "score": 0.3333333333333333,
+      "mutants": [
+        {
+          "id": "m:unierp/fees/calculator.py:76:cmp:1",
+          "file": "unierp/fees/calculator.py",
+          "line": 76,
+          "operator": "cmp",
+          "original": "days_late <= 0",
+          "mutated": "(days_late < 0)",
+          "symbol": "late_fee_rate",
+          "status": "survived",
+          "killed_by": []
+        },
+        {
+          "id": "m:unierp/fees/calculator.py:76:cond:0",
+          "file": "unierp/fees/calculator.py",
+          "line": 76,
+          "operator": "cond",
+          "original": "days_late <= 0",
+          "mutated": "not (days_late <= 0)",
+          "symbol": "late_fee_rate",
+          "status": "killed",
+          "killed_by": [
+            "tests/test_api.py::test_fees_and_late_fee"
+          ]
+        },
+        {
+          "id": "m:unierp/fees/calculator.py:76:const:2",
+          "file": "unierp/fees/calculator.py",
+          "line": 76,
+          "operator": "const",
+          "original": "0",
+          "mutated": "1",
+          "symbol": "late_fee_rate",
+          "status": "survived",
+          "killed_by": []
+        }
+      ],
+      "duration_s": 4.25
+    },
+    "behaviour_preserving_units": []
+  },
+  "signals": {
+    "lines_added": 1.0,
+    "lines_deleted": 1.0,
+    "log_churn": 1.0986,
+    "files_touched": 1.0,
+    "source_files_touched": 1.0,
+    "change_units": 1.0,
+    "entropy": 0.0,
+    "author_prior_commits": 0.0,
+    "author_is_new": 1.0,
+    "distinct_file_authors": 1.0,
+    "code_age_days": 66.8,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 2.0,
+    "szz_defects": 2.0,
+    "units_with_tests_ratio": 1.0,
+    "touches_dependencies": 0.0,
+    "touches_ci": 0.0,
+    "touches_config": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "intent_refactor": 0.0,
+    "intent_feature": 1.0,
+    "intent_bugfix": 0.0,
+    "intent_config": 0.0,
+    "intent_test": 0.0,
+    "intent_docs": 0.0
+  },
+  "intent": {
+    "label": "feature",
+    "source": "heuristic"
+  },
+  "history": {
+    "memories": [
+      "late_fee_rate has been changed by 2 bug-fix commit(s): 9b5d34a, 18c2984"
+    ],
+    "features": {
+      "szz_bug_fixes": 2.0,
+      "szz_introducers": 1.0,
+      "bug_issues": 2.0,
+      "history_commits": 3.0,
+      "history_authors": 1.0
+    },
+    "documents": [
+      "commit:9b5d34a355",
+      "commit:18c2984ce3",
+      "commit:21c1c4ee98",
+      "issue:29",
+      "issue:40",
+      "pr:30",
+      "pr:26",
+      "pr:41",
+      "issue:66",
+      "issue:81",
+      "commit:aef9a0cf5b",
+      "commit:c68bdb0d0d"
+    ]
+  },
+  "guard_events": [],
+  "trace": [
+    {
+      "node": "guard_in",
+      "start": 1790611177.8753226,
+      "end": 1790611177.8753226,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    },
+    {
+      "node": "parse_diff",
+      "start": 1790611177.877323,
+      "end": 1790611177.877323,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "1 change unit(s)"
+    },
+    {
+      "node": "historian",
+      "start": 1790611177.8783264,
+      "end": 1790611181.3642213,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "1 claims"
+    },
+    {
+      "node": "impact",
+      "start": 1790611177.8793216,
+      "end": 1790611181.3671181,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "rules: 12 claims"
+    },
+    {
+      "node": "signals",
+      "start": 1790611177.8793216,
+      "end": 1790611181.3330054,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "intent=feature"
+    },
+    {
+      "node": "select_tests",
+      "start": 1790611181.36812,
+      "end": 1790611181.3691208,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "10/107 tests"
+    },
+    {
+      "node": "verify",
+      "start": 1790611181.3701215,
+      "end": 1790611187.6073804,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "9 passed, 1 failed, mutation 0.3333333333333333"
+    },
+    {
+      "node": "reconcile",
+      "start": 1790611187.608383,
+      "end": 1790611187.608383,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "{'VERIFIED': 12, 'REFUTED': 1, 'UNVERIFIABLE': 0}; impact refuted 8%"
+    },
+    {
+      "node": "score",
+      "start": 1790611187.6093833,
+      "end": 1790611187.6093833,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "risk 1.00 (logistic:uni-erp-benchmark)"
+    },
+    {
+      "node": "decide",
+      "start": 1790611187.6093833,
+      "end": 1790611187.6093833,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "1 test(s) fail on the head revision"
+    },
+    {
+      "node": "guard_out",
+      "start": 1790611187.6103833,
+      "end": 1790611187.6103833,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    }
+  ],
+  "llm": {
+    "calls": 0,
+    "cache_hits": 0,
+    "tokens": 0,
+    "by_provider": {},
+    "by_tier": {
+      "easy": 0,
+      "medium": 0,
+      "hard": 0
+    },
+    "calls_detail": [],
+    "available": false
+  },
+  "prompts": {},
+  "retrieval": {
+    "mode": "hybrid",
+    "top_k": 10,
+    "queries": [
+      "late_fee_rate"
+    ]
+  },
+  "elapsed_s": 9.75,
+  "tokens": 0
+}

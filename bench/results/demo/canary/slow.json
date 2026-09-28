@@ -1,0 +1,65 @@
+{
+  "outcome": "rolled_back",
+  "steps": [
+    {
+      "weight": 0.1,
+      "started": 1790611341.3562067,
+      "ended": 1790611350.2763617,
+      "healthy": false,
+      "inconclusive": false,
+      "breaches": [
+        "canary p95 404ms > 57ms (stable 5ms)"
+      ],
+      "stable": {
+        "requests": 496,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 4.55
+      },
+      "canary": {
+        "requests": 54,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 403.9
+      },
+      "requests_sent": 550
+    }
+  ],
+  "events": [
+    {
+      "t": 1790611341.0090303,
+      "type": "shift",
+      "weight": 0.1
+    },
+    {
+      "t": 1790611350.5120416,
+      "type": "rollback",
+      "weight": 0.0,
+      "reason": [
+        "canary p95 404ms > 57ms (stable 5ms)"
+      ]
+    }
+  ],
+  "started": 1790611340.8308969,
+  "ended": 1790611350.5120416,
+  "time_to_detection_s": 9.68,
+  "canary_requests": 54,
+  "total_requests": 550,
+  "slo": {
+    "max_error_rate": 0.01,
+    "max_error_rate_delta": 0.005,
+    "p95_ratio": 1.5,
+    "p95_slack_ms": 50.0,
+    "min_requests": 20
+  },
+  "labels": {
+    "stable": "working tree",
+    "canary": "working tree",
+    "canary_env": {
+      "UNIERP_FAULT": "slow",
+      "UNIERP_FAULT_RATE": "0.3"
+    },
+    "scenario": "slow"
+  },
+  "exposed_share": 0.0982
+}

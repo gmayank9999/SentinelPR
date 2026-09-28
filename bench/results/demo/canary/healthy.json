@@ -1,0 +1,135 @@
+{
+  "outcome": "promoted",
+  "steps": [
+    {
+      "weight": 0.1,
+      "started": 1790611301.0287244,
+      "ended": 1790611309.848652,
+      "healthy": true,
+      "inconclusive": false,
+      "breaches": [],
+      "stable": {
+        "requests": 534,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 4.96
+      },
+      "canary": {
+        "requests": 59,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 2.85
+      },
+      "requests_sent": 593
+    },
+    {
+      "weight": 0.25,
+      "started": 1790611310.754162,
+      "ended": 1790611319.4652011,
+      "healthy": true,
+      "inconclusive": false,
+      "breaches": [],
+      "stable": {
+        "requests": 495,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 4.29
+      },
+      "canary": {
+        "requests": 165,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 2.33
+      },
+      "requests_sent": 660
+    },
+    {
+      "weight": 0.5,
+      "started": 1790611319.9940422,
+      "ended": 1790611328.8302388,
+      "healthy": true,
+      "inconclusive": false,
+      "breaches": [],
+      "stable": {
+        "requests": 334,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 4.0
+      },
+      "canary": {
+        "requests": 334,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 2.2
+      },
+      "requests_sent": 668
+    },
+    {
+      "weight": 1.0,
+      "started": 1790611329.6007876,
+      "ended": 1790611338.2990994,
+      "healthy": true,
+      "inconclusive": false,
+      "breaches": [],
+      "stable": {
+        "requests": 0,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 4.0
+      },
+      "canary": {
+        "requests": 593,
+        "errors": 0,
+        "error_rate": 0.0,
+        "p95_ms": 3.97
+      },
+      "requests_sent": 593
+    }
+  ],
+  "events": [
+    {
+      "t": 1790611300.6456497,
+      "type": "shift",
+      "weight": 0.1
+    },
+    {
+      "t": 1790611310.1301217,
+      "type": "shift",
+      "weight": 0.25
+    },
+    {
+      "t": 1790611319.6369157,
+      "type": "shift",
+      "weight": 0.5
+    },
+    {
+      "t": 1790611329.121616,
+      "type": "shift",
+      "weight": 1.0
+    },
+    {
+      "t": 1790611338.2990994,
+      "type": "promote",
+      "weight": 1.0
+    }
+  ],
+  "started": 1790611300.4722953,
+  "ended": 1790611338.2990994,
+  "time_to_detection_s": null,
+  "canary_requests": 1151,
+  "total_requests": 2514,
+  "slo": {
+    "max_error_rate": 0.01,
+    "max_error_rate_delta": 0.005,
+    "p95_ratio": 1.5,
+    "p95_slack_ms": 50.0,
+    "min_requests": 20
+  },
+  "labels": {
+    "stable": "working tree",
+    "canary": "working tree",
+    "canary_env": {},
+    "scenario": "healthy"
+  },
+  "exposed_share": 0.4578
+}

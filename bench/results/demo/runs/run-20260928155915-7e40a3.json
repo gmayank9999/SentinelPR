@@ -1,0 +1,566 @@
+{
+  "schema": "sentinelpr.run/1",
+  "run_id": "run-20260928155915-7e40a3",
+  "created_at": "2026-09-28T15:59:15.950922+00:00",
+  "sentinel_version": "0.1.0",
+  "repository": "",
+  "project_root": ".",
+  "pr": {
+    "number": 101,
+    "title": "Tidy up attendance percentage helpers",
+    "author": "Demo Author",
+    "base_sha": "fcc6a7fa4a6e570dbaa1ef762f389869175473fd",
+    "head_sha": "5427c65d37961f6481370d7b3bfac899ab44b386",
+    "is_fork": false
+  },
+  "rejected": false,
+  "decision": "PASS",
+  "decision_reason": "risk 0.31 below canary threshold 0.50",
+  "thresholds": {
+    "canary": 0.4982,
+    "block": 0.8672
+  },
+  "risk": 0.3091,
+  "risk_model": "logistic:uni-erp-benchmark",
+  "calibrated": true,
+  "contributions": [
+    {
+      "feature": "changed_line_coverage",
+      "value": 1.0,
+      "contribution": -1.4,
+      "label": "share of changed lines executed by tests"
+    },
+    {
+      "feature": "mutation_score",
+      "value": 1.0,
+      "contribution": -1.2,
+      "label": "share of mutants on changed lines the tests kill"
+    },
+    {
+      "feature": "log_churn",
+      "value": 1.6094,
+      "contribution": 0.5633,
+      "label": "size of the change"
+    },
+    {
+      "feature": "szz_defects",
+      "value": 1.0,
+      "contribution": 0.55,
+      "label": "past bug fixes in the touched functions"
+    },
+    {
+      "feature": "llm_risk",
+      "value": 0.5,
+      "contribution": 0.4,
+      "label": "LLM risk rating"
+    },
+    {
+      "feature": "verified_bug_links",
+      "value": 1.0,
+      "contribution": 0.35,
+      "label": "verified links to past bugs"
+    },
+    {
+      "feature": "author_is_new",
+      "value": 1.0,
+      "contribution": 0.25,
+      "label": "author has not touched these files before"
+    },
+    {
+      "feature": "files_touched",
+      "value": 1.0,
+      "contribution": 0.0,
+      "label": "number of files touched"
+    }
+  ],
+  "features": {
+    "log_churn": 1.6094,
+    "files_touched": 1.0,
+    "change_units": 1.0,
+    "entropy": 0.0,
+    "author_is_new": 1.0,
+    "log_author_prior_commits": 0.0,
+    "log_code_age_days": 3.8044,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 4.0,
+    "szz_defects": 1.0,
+    "touches_dependencies": 0.0,
+    "touches_config": 0.0,
+    "touches_ci": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "verified_test_failures": 0.0,
+    "changed_line_coverage": 1.0,
+    "uncovered_changed_lines": 0.0,
+    "mutation_score": 1.0,
+    "surviving_mutants": 0.0,
+    "verified_impacted_tests": 5.0,
+    "verified_impacted_modules": 1.0,
+    "verified_api_breaks": 0.0,
+    "verified_bug_links": 1.0,
+    "refuted_claim_ratio": 0.0,
+    "llm_risk": 0.5,
+    "injection_attempts": 0.0
+  },
+  "explanation": "share of changed lines executed by tests (100%) lowers the risk (-1.40) [feat:changed_line_coverage]. share of mutants on changed lines the tests kill (100%) lowers the risk (-1.20) [feat:mutation_score]. size of the change (1.61) raises the risk (+0.56) [feat:log_churn].",
+  "explanation_source": "template",
+  "changes": [
+    {
+      "path": "unierp/attendance/tracker.py",
+      "old_path": "unierp/attendance/tracker.py",
+      "status": "modified",
+      "added_lines": [
+        25,
+        26
+      ],
+      "removed_lines": [
+        25,
+        26
+      ],
+      "insertion_points": [],
+      "is_binary": false
+    }
+  ],
+  "change_units": [
+    {
+      "id": "unierp/attendance/tracker.py::attendance_percentage",
+      "file": "unierp/attendance/tracker.py",
+      "symbol": "attendance_percentage",
+      "qualname": "attendance_percentage",
+      "kind": "function",
+      "change_type": "modified",
+      "old_range": [
+        21,
+        26
+      ],
+      "new_range": [
+        21,
+        26
+      ],
+      "changed_lines": [
+        25,
+        26
+      ],
+      "removed_lines": [
+        25,
+        26
+      ],
+      "old_signature": "def attendance_percentage(records: Iterable[AttendanceRecord]) -> float",
+      "new_signature": "def attendance_percentage(records: Iterable[AttendanceRecord]) -> float"
+    }
+  ],
+  "impact_mode": "rules",
+  "impact_retried": false,
+  "llm_risk": null,
+  "claims": [
+    {
+      "claim_id": "imp-001",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_api.py::test_attendance_endpoints",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of attendance_percentage",
+      "evidence_ids": [
+        "cov:tests/test_api.py::test_attendance_endpoints"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-002",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_attendance.py::test_condonation_is_capped",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of attendance_percentage",
+      "evidence_ids": [
+        "cov:tests/test_attendance.py::test_condonation_is_capped"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-003",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_attendance.py::test_eligibility_threshold",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of attendance_percentage",
+      "evidence_ids": [
+        "cov:tests/test_attendance.py::test_eligibility_threshold"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-004",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_attendance.py::test_percentage",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of attendance_percentage",
+      "evidence_ids": [
+        "cov:tests/test_attendance.py::test_percentage"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-005",
+      "agent": "impact",
+      "type": "test_impact",
+      "target": "tests/test_attendance.py::test_shortage_report",
+      "assertion": "affected",
+      "reason": "recorded coverage shows it executes the changed lines of attendance_percentage",
+      "evidence_ids": [
+        "cov:tests/test_attendance.py::test_shortage_report"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "imp-006",
+      "agent": "impact",
+      "type": "module_impact",
+      "target": "unierp/api/app.py",
+      "assertion": "affected",
+      "reason": "calls into changed code",
+      "evidence_ids": [
+        "graph:calls:create_app.attendance->condoned_percentage",
+        "graph:calls:condoned_percentage->attendance_percentage",
+        "graph:calls:create_app.shortage->shortage_report",
+        "graph:calls:shortage_report->attendance_percentage"
+      ],
+      "status": "VERIFIED"
+    },
+    {
+      "claim_id": "his-001",
+      "agent": "historian",
+      "type": "history_link",
+      "target": "unierp/attendance/tracker.py::attendance_percentage",
+      "assertion": "attendance_percentage was involved in bug fix d65670f (issue #53: Students with no attendance sessions yet shown as ineligible)",
+      "reason": "fixed by \"Treat terms with no recorded sessions as full attendance (#54)\"; the buggy lines came from commit a8b23c3",
+      "evidence_ids": [
+        "issue:53",
+        "commit:d65670f8ed",
+        "commit:a8b23c38f9"
+      ],
+      "status": "VERIFIED"
+    }
+  ],
+  "verdicts": [
+    {
+      "claim_id": "imp-001",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_api.py::test_attendance_endpoints->unierp/attendance/tracker.py#L25"
+      ],
+      "detail": "executes 2 changed line(s)"
+    },
+    {
+      "claim_id": "imp-002",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_attendance.py::test_condonation_is_capped->unierp/attendance/tracker.py#L25"
+      ],
+      "detail": "executes 2 changed line(s)"
+    },
+    {
+      "claim_id": "imp-003",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_attendance.py::test_eligibility_threshold->unierp/attendance/tracker.py#L25"
+      ],
+      "detail": "executes 2 changed line(s)"
+    },
+    {
+      "claim_id": "imp-004",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_attendance.py::test_percentage->unierp/attendance/tracker.py#L25"
+      ],
+      "detail": "executes 2 changed line(s)"
+    },
+    {
+      "claim_id": "imp-005",
+      "status": "VERIFIED",
+      "method": "execution",
+      "evidence": [
+        "exec:tests/test_attendance.py::test_shortage_report->unierp/attendance/tracker.py#L25"
+      ],
+      "detail": "executes 2 changed line(s)"
+    },
+    {
+      "claim_id": "imp-006",
+      "status": "VERIFIED",
+      "method": "call-graph+execution",
+      "evidence": [
+        "graph:calls:create_app.attendance->condoned_percentage",
+        "graph:calls:condoned_percentage->attendance_percentage",
+        "exec:tests/test_api.py::test_attendance_endpoints"
+      ],
+      "detail": "reachable, and 1 test(s) execute both the module and changed lines"
+    },
+    {
+      "claim_id": "his-001",
+      "status": "VERIFIED",
+      "method": "repository",
+      "evidence": [
+        "issue:53",
+        "commit:d65670f8ed",
+        "commit:a8b23c38f9"
+      ],
+      "detail": "cited history exists and touches the symbol"
+    }
+  ],
+  "verdict_counts": {
+    "VERIFIED": 7,
+    "REFUTED": 0,
+    "UNVERIFIABLE": 0
+  },
+  "selection": {
+    "tests": [
+      "tests/test_api.py::test_attendance_endpoints",
+      "tests/test_attendance.py::test_condonation_is_capped",
+      "tests/test_attendance.py::test_eligibility_threshold",
+      "tests/test_attendance.py::test_no_sessions_counts_as_full_attendance",
+      "tests/test_attendance.py::test_percentage",
+      "tests/test_attendance.py::test_shortage_report"
+    ],
+    "reasons": {
+      "tests/test_api.py::test_attendance_endpoints": "coverage",
+      "tests/test_attendance.py::test_condonation_is_capped": "coverage",
+      "tests/test_attendance.py::test_eligibility_threshold": "coverage",
+      "tests/test_attendance.py::test_no_sessions_counts_as_full_attendance": "coverage",
+      "tests/test_attendance.py::test_percentage": "coverage",
+      "tests/test_attendance.py::test_shortage_report": "coverage"
+    },
+    "total_available": 107,
+    "estimated_s": 0.063,
+    "full_suite_s": 0.961,
+    "time_saved_ratio": 0.9344
+  },
+  "verification": {
+    "tests": {
+      "selected": 6,
+      "passed": 6,
+      "failed": [],
+      "duration_s": 1.799,
+      "collection_error": null
+    },
+    "changed_lines": {
+      "total": 2,
+      "covered": 2,
+      "coverage": 1.0,
+      "uncovered": []
+    },
+    "mutation": {
+      "score": null,
+      "mutants": [],
+      "duration_s": 0.0
+    },
+    "behaviour_preserving_units": [
+      "unierp/attendance/tracker.py::attendance_percentage"
+    ]
+  },
+  "signals": {
+    "lines_added": 2.0,
+    "lines_deleted": 2.0,
+    "log_churn": 1.6094,
+    "files_touched": 1.0,
+    "source_files_touched": 1.0,
+    "change_units": 1.0,
+    "entropy": 0.0,
+    "author_prior_commits": 0.0,
+    "author_is_new": 1.0,
+    "distinct_file_authors": 1.0,
+    "code_age_days": 43.9,
+    "recent_churn": 1.0,
+    "complexity_delta": 0.0,
+    "max_complexity": 4.0,
+    "szz_defects": 1.0,
+    "units_with_tests_ratio": 1.0,
+    "touches_dependencies": 0.0,
+    "touches_ci": 0.0,
+    "touches_config": 0.0,
+    "signature_changes": 0.0,
+    "test_only": 0.0,
+    "docs_only": 0.0,
+    "tests_changed": 0.0,
+    "intent_refactor": 1.0,
+    "intent_feature": 0.0,
+    "intent_bugfix": 0.0,
+    "intent_config": 0.0,
+    "intent_test": 0.0,
+    "intent_docs": 0.0
+  },
+  "intent": {
+    "label": "refactor",
+    "source": "heuristic"
+  },
+  "history": {
+    "memories": [
+      "attendance_percentage has been changed by 1 bug-fix commit(s): d65670f"
+    ],
+    "features": {
+      "szz_bug_fixes": 1.0,
+      "szz_introducers": 1.0,
+      "bug_issues": 1.0,
+      "history_commits": 2.0,
+      "history_authors": 1.0
+    },
+    "documents": [
+      "commit:a8b23c38f9",
+      "commit:d65670f8ed",
+      "commit:1b7a96aff0",
+      "issue:53",
+      "pr:20",
+      "pr:54",
+      "issue:56",
+      "commit:06b7d3803d",
+      "issue:35",
+      "pr:57",
+      "commit:711953dd4b",
+      "issue:92"
+    ]
+  },
+  "guard_events": [],
+  "trace": [
+    {
+      "node": "guard_in",
+      "start": 1790611150.5031216,
+      "end": 1790611150.5031216,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    },
+    {
+      "node": "parse_diff",
+      "start": 1790611150.5041234,
+      "end": 1790611150.5041234,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "1 change unit(s)"
+    },
+    {
+      "node": "historian",
+      "start": 1790611150.5050313,
+      "end": 1790611154.0664587,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "1 claims"
+    },
+    {
+      "node": "impact",
+      "start": 1790611150.506033,
+      "end": 1790611154.0654187,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "rules: 6 claims"
+    },
+    {
+      "node": "signals",
+      "start": 1790611150.5070312,
+      "end": 1790611154.050338,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "intent=refactor"
+    },
+    {
+      "node": "select_tests",
+      "start": 1790611154.067459,
+      "end": 1790611154.067459,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "6/107 tests"
+    },
+    {
+      "node": "verify",
+      "start": 1790611154.0683718,
+      "end": 1790611155.9479156,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "6 passed, 0 failed, mutation None"
+    },
+    {
+      "node": "reconcile",
+      "start": 1790611155.9479156,
+      "end": 1790611155.9479156,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "{'VERIFIED': 7, 'REFUTED': 0, 'UNVERIFIABLE': 0}; impact refuted 0%"
+    },
+    {
+      "node": "score",
+      "start": 1790611155.9489257,
+      "end": 1790611155.9489257,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "risk 0.31 (logistic:uni-erp-benchmark)"
+    },
+    {
+      "node": "decide",
+      "start": 1790611155.9499261,
+      "end": 1790611155.9499261,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": "risk 0.31 below canary threshold 0.50"
+    },
+    {
+      "node": "guard_out",
+      "start": 1790611155.9499261,
+      "end": 1790611155.9499261,
+      "status": "ok",
+      "tokens": 0,
+      "model": null,
+      "retries": 0,
+      "note": ""
+    }
+  ],
+  "llm": {
+    "calls": 0,
+    "cache_hits": 0,
+    "tokens": 0,
+    "by_provider": {},
+    "by_tier": {
+      "easy": 0,
+      "medium": 0,
+      "hard": 0
+    },
+    "calls_detail": [],
+    "available": false
+  },
+  "prompts": {},
+  "retrieval": {
+    "mode": "hybrid",
+    "top_k": 10,
+    "queries": [
+      "attendance_percentage",
+      "attendance"
+    ]
+  },
+  "elapsed_s": 5.46,
+  "tokens": 0
+}

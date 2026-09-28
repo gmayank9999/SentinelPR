@@ -1,0 +1,1328 @@
+{
+ "engine": "extractive",
+ "questions": 41,
+ "conditions": {
+  "code": {
+   "overall": {
+    "n": 41,
+    "accuracy": 0.4878,
+    "citation_precision": 0.1935,
+    "hallucination_rate": 0.0,
+    "latency_s": 0.008
+   },
+   "by_category": {
+    "adversarial": {
+     "n": 5,
+     "accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.0
+    },
+    "bug_history": {
+     "n": 7,
+     "accuracy": 0.0,
+     "citation_precision": 0.0,
+     "hallucination_rate": null,
+     "latency_s": 0.008
+    },
+    "code_location": {
+     "n": 6,
+     "accuracy": 1.0,
+     "citation_precision": 0.6111,
+     "hallucination_rate": null,
+     "latency_s": 0.007
+    },
+    "cross_module": {
+     "n": 5,
+     "accuracy": 0.8,
+     "citation_precision": 0.4667,
+     "hallucination_rate": null,
+     "latency_s": 0.007
+    },
+    "provenance": {
+     "n": 6,
+     "accuracy": 0.0,
+     "citation_precision": 0.0,
+     "hallucination_rate": null,
+     "latency_s": 0.009
+    },
+    "rationale": {
+     "n": 7,
+     "accuracy": 0.0,
+     "citation_precision": 0.0,
+     "hallucination_rate": null,
+     "latency_s": 0.012
+    },
+    "unanswerable": {
+     "n": 5,
+     "accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.008
+    }
+   },
+   "answers": [
+    {
+     "id": "r01",
+     "category": "rationale",
+     "answer": "The relevant code is unierp/fees/calculator.py | function round_fee [chunk:unierp/fees/calculator.py#L30-31].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L30-31"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.032,
+     "tokens": 0
+    },
+    {
+     "id": "r02",
+     "category": "rationale",
+     "answer": "The relevant code is unierp/attendance/tracker.py [chunk:unierp/attendance/tracker.py#L1-18].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L1-18"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "r03",
+     "category": "rationale",
+     "answer": "The relevant code is unierp/reports/standing.py | function deans_list [chunk:unierp/reports/standing.py#L49-56].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L49-56"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "r04",
+     "category": "rationale",
+     "answer": "The relevant code is unierp/exam/assessment.py | function apply_grace_marks [chunk:unierp/exam/assessment.py#L32-36].",
+     "citations": [
+      "chunk:unierp/exam/assessment.py#L32-36"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "r05",
+     "category": "rationale",
+     "answer": "The relevant code is unierp/attendance/tracker.py [chunk:unierp/attendance/tracker.py#L1-18].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L1-18"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "r06",
+     "category": "rationale",
+     "answer": "The relevant code is unierp/exam/grades.py [chunk:unierp/exam/grades.py#L1-18].",
+     "citations": [
+      "chunk:unierp/exam/grades.py#L1-18"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.007,
+     "tokens": 0
+    },
+    {
+     "id": "r07",
+     "category": "rationale",
+     "answer": "The relevant code is unierp/reports/standing.py | function standing_for_student [chunk:unierp/reports/standing.py#L38-46].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L38-46"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "p01",
+     "category": "provenance",
+     "answer": "The relevant code is unierp/fees/calculator.py | function late_fee_rate [chunk:unierp/fees/calculator.py#L74-79].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L74-79"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.007,
+     "tokens": 0
+    },
+    {
+     "id": "p02",
+     "category": "provenance",
+     "answer": "The relevant code is unierp/fees/invoices.py | function outstanding_balance [chunk:unierp/fees/invoices.py#L62-70].",
+     "citations": [
+      "chunk:unierp/fees/invoices.py#L62-70"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 0
+    },
+    {
+     "id": "p03",
+     "category": "provenance",
+     "answer": "The relevant code is unierp/attendance/tracker.py | function shortage_report [chunk:unierp/attendance/tracker.py#L73-83].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L73-83"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "p04",
+     "category": "provenance",
+     "answer": "The relevant code is unierp/students/service.py | function create_student [chunk:unierp/students/service.py#L32-67].",
+     "citations": [
+      "chunk:unierp/students/service.py#L32-67"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.007,
+     "tokens": 0
+    },
+    {
+     "id": "p05",
+     "category": "provenance",
+     "answer": "The relevant code is unierp/fees/calculator.py | function tuition_for_term [chunk:unierp/fees/calculator.py#L34-44].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L34-44"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.01,
+     "tokens": 0
+    },
+    {
+     "id": "p06",
+     "category": "provenance",
+     "answer": "The relevant code is unierp/exam/grades.py | function effective_attempts [chunk:unierp/exam/grades.py#L21-32].",
+     "citations": [
+      "chunk:unierp/exam/grades.py#L21-32"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.007,
+     "tokens": 0
+    },
+    {
+     "id": "b01",
+     "category": "bug_history",
+     "answer": "The relevant code is unierp/reports/transcript.py | function build_transcript [chunk:unierp/reports/transcript.py#L13-44].",
+     "citations": [
+      "chunk:unierp/reports/transcript.py#L13-44"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.009,
+     "tokens": 0
+    },
+    {
+     "id": "b02",
+     "category": "bug_history",
+     "answer": "The relevant code is unierp/exam/grading_scale.py | function letter_for_score [chunk:unierp/exam/grading_scale.py#L41-47].",
+     "citations": [
+      "chunk:unierp/exam/grading_scale.py#L41-47"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.007,
+     "tokens": 0
+    },
+    {
+     "id": "b03",
+     "category": "bug_history",
+     "answer": "The relevant code is unierp/registration/prerequisites.py | function check_prerequisites [chunk:unierp/registration/prerequisites.py#L32-35].",
+     "citations": [
+      "chunk:unierp/registration/prerequisites.py#L32-35"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "b04",
+     "category": "bug_history",
+     "answer": "The relevant code is unierp/api/app.py | function create_app [chunk:unierp/api/app.py#L157-202].",
+     "citations": [
+      "chunk:unierp/api/app.py#L157-202"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "b05",
+     "category": "bug_history",
+     "answer": "The relevant code is unierp/attendance/tracker.py | function attendance_percentage [chunk:unierp/attendance/tracker.py#L21-26].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L21-26"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.009,
+     "tokens": 0
+    },
+    {
+     "id": "b06",
+     "category": "bug_history",
+     "answer": "The relevant code is unierp/registration/enrollment.py | function register [chunk:unierp/registration/enrollment.py#L19-60].",
+     "citations": [
+      "chunk:unierp/registration/enrollment.py#L19-60"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 0
+    },
+    {
+     "id": "b07",
+     "category": "bug_history",
+     "answer": "The relevant code is unierp/fees/calculator.py | function apply_late_fee [chunk:unierp/fees/calculator.py#L82-90].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L82-90"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.007,
+     "tokens": 0
+    },
+    {
+     "id": "l01",
+     "category": "code_location",
+     "answer": "See unierp/fees/calculator.py | function late_fee_rate [chunk:unierp/fees/calculator.py#L74-79]; unierp/fees/calculator.py | function apply_late_fee [chunk:unierp/fees/calculator.py#L82-90]; tests/test_fees.py | function test_late_fee_per_started_week [chunk:tests/test_fees.py#L34-36].",
+     "citations": [
+      "chunk:tests/test_fees.py#L34-36",
+      "chunk:unierp/fees/calculator.py#L74-79",
+      "chunk:unierp/fees/calculator.py#L82-90"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "l02",
+     "category": "code_location",
+     "answer": "See unierp/core/errors.py | method PrerequisiteCycleError.__init__ [chunk:unierp/core/errors.py#L37-39]; unierp/core/errors.py | class PrerequisiteCycleError [chunk:unierp/core/errors.py#L36-36]; unierp/registration/prerequisites.py | function find_cycles [chunk:unierp/registration/prerequisites.py#L64-72].",
+     "citations": [
+      "chunk:unierp/core/errors.py#L36-36",
+      "chunk:unierp/core/errors.py#L37-39",
+      "chunk:unierp/registration/prerequisites.py#L64-72"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.005,
+     "tokens": 0
+    },
+    {
+     "id": "l03",
+     "category": "code_location",
+     "answer": "See unierp/reports/standing.py | function on_deans_list [chunk:unierp/reports/standing.py#L34-35]; unierp/reports/standing.py | function deans_list [chunk:unierp/reports/standing.py#L49-56]; unierp/reports/standing.py [chunk:unierp/reports/standing.py#L1-15].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L1-15",
+      "chunk:unierp/reports/standing.py#L34-35",
+      "chunk:unierp/reports/standing.py#L49-56"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "l04",
+     "category": "code_location",
+     "answer": "See unierp/ops/faults.py [chunk:unierp/ops/faults.py#L1-16].",
+     "citations": [
+      "chunk:unierp/ops/faults.py#L1-16"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "l05",
+     "category": "code_location",
+     "answer": "See unierp/api/app.py | function _student [chunk:unierp/api/app.py#L205-213]; unierp/students/service.py | function create_student [chunk:unierp/students/service.py#L32-67]; tests/test_students.py | function test_duplicate_email_rejected [chunk:tests/test_students.py#L37-40].",
+     "citations": [
+      "chunk:tests/test_students.py#L37-40",
+      "chunk:unierp/api/app.py#L205-213",
+      "chunk:unierp/students/service.py#L32-67"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "l06",
+     "category": "code_location",
+     "answer": "See unierp/registration/credits.py | function credit_load_limits [chunk:unierp/registration/credits.py#L65-71]; unierp/registration/enrollment.py | function register [chunk:unierp/registration/enrollment.py#L19-60]; unierp/registration/enrollment.py [chunk:unierp/registration/enrollment.py#L1-16].",
+     "citations": [
+      "chunk:unierp/registration/credits.py#L65-71",
+      "chunk:unierp/registration/enrollment.py#L1-16",
+      "chunk:unierp/registration/enrollment.py#L19-60"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "x01",
+     "category": "cross_module",
+     "answer": "See unierp/exam/grades.py [chunk:unierp/exam/grades.py#L1-18]; unierp/reports/transcript.py | function build_transcript [chunk:unierp/reports/transcript.py#L13-44]; unierp/reports/transcript.py [chunk:unierp/reports/transcript.py#L1-10].",
+     "citations": [
+      "chunk:unierp/exam/grades.py#L1-18",
+      "chunk:unierp/reports/transcript.py#L1-10",
+      "chunk:unierp/reports/transcript.py#L13-44"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "x02",
+     "category": "cross_module",
+     "answer": "See unierp/reports/transcript.py [chunk:unierp/reports/transcript.py#L1-10]; tests/test_grades.py | function test_gpa_of_empty_record_is_zero [chunk:tests/test_grades.py#L54-55]; tests/test_grades.py | function test_gpa_ignores_withdrawals [chunk:tests/test_grades.py#L49-51].",
+     "citations": [
+      "chunk:tests/test_grades.py#L49-51",
+      "chunk:tests/test_grades.py#L54-55",
+      "chunk:unierp/reports/transcript.py#L1-10"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "x03",
+     "category": "cross_module",
+     "answer": "See unierp/fees/calculator.py | function apply_late_fee [chunk:unierp/fees/calculator.py#L82-90]; tests/test_fees.py | function test_late_fee_is_capped [chunk:tests/test_fees.py#L39-40]; tests/test_fees.py | function test_late_fee_per_started_week [chunk:tests/test_fees.py#L34-36].",
+     "citations": [
+      "chunk:tests/test_fees.py#L34-36",
+      "chunk:tests/test_fees.py#L39-40",
+      "chunk:unierp/fees/calculator.py#L82-90"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.009,
+     "tokens": 0
+    },
+    {
+     "id": "x04",
+     "category": "cross_module",
+     "answer": "See unierp/registration/prerequisites.py | function check_prerequisites [chunk:unierp/registration/prerequisites.py#L32-35]; tests/test_prerequisites.py | function test_prerequisites_satisfied [chunk:tests/test_prerequisites.py#L15-17]; tests/test_prerequisites.py [chunk:tests/test_prerequisites.py#L1-12].",
+     "citations": [
+      "chunk:tests/test_prerequisites.py#L1-12",
+      "chunk:tests/test_prerequisites.py#L15-17",
+      "chunk:unierp/registration/prerequisites.py#L32-35"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.005,
+     "tokens": 0
+    },
+    {
+     "id": "x05",
+     "category": "cross_module",
+     "answer": "See unierp/attendance/tracker.py | function is_exam_eligible [chunk:unierp/attendance/tracker.py#L39-40]; unierp/api/app.py | function create_app [chunk:unierp/api/app.py#L157-202]; unierp/api/app.py [chunk:unierp/api/app.py#L1-120].",
+     "citations": [
+      "chunk:unierp/api/app.py#L1-120",
+      "chunk:unierp/api/app.py#L157-202",
+      "chunk:unierp/attendance/tracker.py#L39-40"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "u01",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.008,
+     "tokens": 0
+    },
+    {
+     "id": "u02",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "u03",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.009,
+     "tokens": 0
+    },
+    {
+     "id": "u04",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.01,
+     "tokens": 0
+    },
+    {
+     "id": "u05",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.006,
+     "tokens": 0
+    },
+    {
+     "id": "a01",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a02",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a03",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a04",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a05",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    }
+   ]
+  },
+  "code_history": {
+   "overall": {
+    "n": 41,
+    "accuracy": 0.9756,
+    "citation_precision": 0.4866,
+    "hallucination_rate": 0.0,
+    "latency_s": 0.011
+   },
+   "by_category": {
+    "adversarial": {
+     "n": 5,
+     "accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.0
+    },
+    "bug_history": {
+     "n": 7,
+     "accuracy": 1.0,
+     "citation_precision": 0.3929,
+     "hallucination_rate": null,
+     "latency_s": 0.014
+    },
+    "code_location": {
+     "n": 6,
+     "accuracy": 1.0,
+     "citation_precision": 0.6111,
+     "hallucination_rate": null,
+     "latency_s": 0.011
+    },
+    "cross_module": {
+     "n": 5,
+     "accuracy": 0.8,
+     "citation_precision": 0.4667,
+     "hallucination_rate": null,
+     "latency_s": 0.011
+    },
+    "provenance": {
+     "n": 6,
+     "accuracy": 1.0,
+     "citation_precision": 0.4167,
+     "hallucination_rate": null,
+     "latency_s": 0.014
+    },
+    "rationale": {
+     "n": 7,
+     "accuracy": 1.0,
+     "citation_precision": 0.5476,
+     "hallucination_rate": null,
+     "latency_s": 0.012
+    },
+    "unanswerable": {
+     "n": 5,
+     "accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.012
+    }
+   },
+   "answers": [
+    {
+     "id": "r01",
+     "category": "rationale",
+     "answer": "Round fee totals down to the whole rupee (#43) [commit:aef9a0cf5b] Vikram Joshi: Will switch round_fee() to ROUND_DOWN. [issue:42] Finance policy FIN-7: amounts are rounded in the student's favour. [pr:43] The relevant code is unierp/fees/calculator.py | function round_fee [chunk:unierp/fees/calculator.py#L30-31].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L30-31",
+      "commit:aef9a0cf5b",
+      "issue:42",
+      "pr:43"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.75,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "r02",
+     "category": "rationale",
+     "answer": "Neha Kulkarni: Both numbers come from the Academic Council rulebook (section 7.3): 75% minimum attendance for exam eligibility, and medically excused absences may be condoned up to 10 percentage points. [issue:35] 75% attendance required to sit the final; medical absences can be condoned. [pr:20] Add attendance tests [commit:06b7d3803d] The relevant code is unierp/attendance/tracker.py [chunk:unierp/attendance/tracker.py#L1-18].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L1-18",
+      "commit:06b7d3803d",
+      "issue:35",
+      "pr:20"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.25,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "r03",
+     "category": "rationale",
+     "answer": "Students with CGPA >= 3.5 may take up to 24 (honours overload); students on probation or below 2.0 are limited to 16 so they can focus on recovering. [issue:47] Checks student status, duplicates, capacity, prerequisites, timetable clashes and credit load. [commit:ecdec9a6ff] The relevant code is unierp/reports/standing.py | function deans_list [chunk:unierp/reports/standing.py#L49-56].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L49-56",
+      "commit:ecdec9a6ff",
+      "issue:47"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.015,
+     "tokens": 0
+    },
+    {
+     "id": "r04",
+     "category": "rationale",
+     "answer": "Implements EC-2025-04: up to 2 grace marks, only to reach the pass mark. [pr:13] Implements EC-2025-04: up to 2 grace marks, only to reach the pass mark. [commit:acd6510c1a] The Examination Committee resolution EC-2025-04 allows up to 2 grace marks, but only to lift a student to the pass mark (60). [issue:12] The relevant code is unierp/exam/assessment.py | function apply_grace_marks [chunk:unierp/exam/assessment.py#L32-36].",
+     "citations": [
+      "chunk:unierp/exam/assessment.py#L32-36",
+      "commit:acd6510c1a",
+      "issue:12",
+      "pr:13"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.75,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "r05",
+     "category": "rationale",
+     "answer": "Cap medical condonation at 10 percentage points (#57) [commit:1b7a96aff0] Condonation is limited to 10 percentage points. [issue:56] The relevant code is unierp/attendance/tracker.py [chunk:unierp/attendance/tracker.py#L1-18].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L1-18",
+      "commit:1b7a96aff0",
+      "issue:56"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.01,
+     "tokens": 0
+    },
+    {
+     "id": "r06",
+     "category": "rationale",
+     "answer": "Round GPA half-up with Decimal instead of truncating (#32) [commit:9f9f760475] The registrar rounds half-up to two decimal places; the ERP truncates. [issue:31] Priya Sharma: Please double check against the registrar's sample transcripts. [pr:32] The relevant code is unierp/exam/grades.py [chunk:unierp/exam/grades.py#L1-18].",
+     "citations": [
+      "chunk:unierp/exam/grades.py#L1-18",
+      "commit:9f9f760475",
+      "issue:31",
+      "pr:32"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.75,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "r07",
+     "category": "rationale",
+     "answer": "Only assess standing after 8 attempted credits (#71) [commit:7e2d4e7c99] Standing should only be assessed once a student has attempted at least 8 credits. [issue:70] The relevant code is unierp/reports/standing.py | function standing_for_student [chunk:unierp/reports/standing.py#L38-46].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L38-46",
+      "commit:7e2d4e7c99",
+      "issue:70"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.015,
+     "tokens": 0
+    },
+    {
+     "id": "p01",
+     "category": "provenance",
+     "answer": "Cap late fees at 10% of the invoice (#41) [commit:18c2984ce3] Vikram Joshi: outstanding_balance() computes the late fee as of today even when the invoice was settled before the due date. [issue:81] The relevant code is unierp/fees/calculator.py | function late_fee_rate [chunk:unierp/fees/calculator.py#L74-79].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L74-79",
+      "commit:18c2984ce3",
+      "issue:81"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "p02",
+     "category": "provenance",
+     "answer": "Include late fees in outstanding invoice balances (#67) [commit:c68bdb0d0d] Add invoices, payments and balances (#38) [commit:c7227361f4] The relevant code is unierp/fees/invoices.py | function outstanding_balance [chunk:unierp/fees/invoices.py#L62-70].",
+     "citations": [
+      "chunk:unierp/fees/invoices.py#L62-70",
+      "commit:c68bdb0d0d",
+      "commit:c7227361f4"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.017,
+     "tokens": 0
+    },
+    {
+     "id": "p03",
+     "category": "provenance",
+     "answer": "Add attendance shortage report [commit:711953dd4b] Department heads want a CSV export of the shortage report. [issue:92] The relevant code is unierp/attendance/tracker.py | function shortage_report [chunk:unierp/attendance/tracker.py#L73-83].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L73-83",
+      "commit:711953dd4b",
+      "issue:92"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.017,
+     "tokens": 0
+    },
+    {
+     "id": "p04",
+     "category": "provenance",
+     "answer": "Compare student emails case-insensitively (#79) [commit:6e4b43eb76] Checks student status, duplicates, capacity, prerequisites, timetable clashes and credit load. [pr:8] The relevant code is unierp/students/service.py | function create_student [chunk:unierp/students/service.py#L32-67].",
+     "citations": [
+      "chunk:unierp/students/service.py#L32-67",
+      "commit:6e4b43eb76",
+      "pr:8"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "p05",
+     "category": "provenance",
+     "answer": "Add international student tuition surcharge [commit:49d55a1ef1] Add calculateStudentCredits with earned, attempted and in-progress modes [commit:daa65dca17] Neha Kulkarni: calculateStudentCredits' in_progress mode counts every non-completed enrollment, which includes DROPPED (and FAILED). [issue:87] The relevant code is unierp/fees/calculator.py | function tuition_for_term [chunk:unierp/fees/calculator.py#L34-44].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L34-44",
+      "commit:49d55a1ef1",
+      "commit:daa65dca17",
+      "issue:87"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 0.014,
+     "tokens": 0
+    },
+    {
+     "id": "p06",
+     "category": "provenance",
+     "answer": "Use real term ordering when applying the repeat policy (#46) [commit:5e50ae2e7b] Arjun Menon: effective_attempts() compares term strings: '2025-SPRING' > '2025-FALL' lexicographically, so spring wins. [issue:45] The relevant code is unierp/exam/grades.py | function effective_attempts [chunk:unierp/exam/grades.py#L21-32].",
+     "citations": [
+      "chunk:unierp/exam/grades.py#L21-32",
+      "commit:5e50ae2e7b",
+      "issue:45"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "b01",
+     "category": "bug_history",
+     "answer": "Add calculateStudentCredits with earned, attempted and in-progress modes [commit:daa65dca17] Neha Kulkarni: calculateStudentCredits' in_progress mode counts every non-completed enrollment, which includes DROPPED (and FAILED). [issue:87] Exclude dropped enrollments from every credit mode (#88) [commit:80a028b8c3] The relevant code is unierp/reports/transcript.py | function build_transcript [chunk:unierp/reports/transcript.py#L13-44].",
+     "citations": [
+      "chunk:unierp/reports/transcript.py#L13-44",
+      "commit:80a028b8c3",
+      "commit:daa65dca17",
+      "issue:87"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 0.015,
+     "tokens": 0
+    },
+    {
+     "id": "b02",
+     "category": "bug_history",
+     "answer": "Fix letter grade for scores exactly on a cutoff (#18) [commit:5c3670301b] Arjun Menon: The comparison in letter_for_score uses `>`; it should be `>=`. [issue:17] Add letter grade scale [commit:b47d607f7a] The relevant code is unierp/exam/grading_scale.py | function letter_for_score [chunk:unierp/exam/grading_scale.py#L41-47].",
+     "citations": [
+      "chunk:unierp/exam/grading_scale.py#L41-47",
+      "commit:5c3670301b",
+      "commit:b47d607f7a",
+      "issue:17"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "b03",
+     "category": "bug_history",
+     "answer": "Add prerequisite checks and study-order resolution (#3) [commit:c35f163ada] The prerequisite check treated the ongoing CS101 enrollment as passed. [issue:23] The relevant code is unierp/registration/prerequisites.py | function check_prerequisites [chunk:unierp/registration/prerequisites.py#L32-35].",
+     "citations": [
+      "chunk:unierp/registration/prerequisites.py#L32-35",
+      "commit:c35f163ada",
+      "issue:23"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "b04",
+     "category": "bug_history",
+     "answer": "Add invoices, payments and balances (#38) [commit:c7227361f4] Include late fees in outstanding invoice balances (#67) [commit:c68bdb0d0d] Vikram Joshi: outstanding_balance() computes the late fee as of today even when the invoice was settled before the due date. [issue:81] The relevant code is unierp/api/app.py | function create_app [chunk:unierp/api/app.py#L157-202].",
+     "citations": [
+      "chunk:unierp/api/app.py#L157-202",
+      "commit:c68bdb0d0d",
+      "commit:c7227361f4",
+      "issue:81"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.25,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 0
+    },
+    {
+     "id": "b05",
+     "category": "bug_history",
+     "answer": "Add attendance tracking and exam eligibility (#20) [commit:a8b23c38f9] Cap medical condonation at 10 percentage points (#57) [commit:1b7a96aff0] Treat terms with no recorded sessions as full attendance (#54) [commit:d65670f8ed] The relevant code is unierp/attendance/tracker.py | function attendance_percentage [chunk:unierp/attendance/tracker.py#L21-26].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L21-26",
+      "commit:1b7a96aff0",
+      "commit:a8b23c38f9",
+      "commit:d65670f8ed"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.25,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 0
+    },
+    {
+     "id": "b06",
+     "category": "bug_history",
+     "answer": "Add course registration with add/drop window (#8) [commit:ecdec9a6ff] HS101 has capacity 100 and ended up with 101 students registered. [issue:60] Priya Sharma: Looks good. [pr:8] The relevant code is unierp/registration/enrollment.py | function register [chunk:unierp/registration/enrollment.py#L19-60].",
+     "citations": [
+      "chunk:unierp/registration/enrollment.py#L19-60",
+      "commit:ecdec9a6ff",
+      "issue:60",
+      "pr:8"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.25,
+     "hallucinated": false,
+     "latency_s": 0.019,
+     "tokens": 0
+    },
+    {
+     "id": "b07",
+     "category": "bug_history",
+     "answer": "Do not charge late fees inside the grace period (#30) [commit:9b5d34a355] Payment made exactly 3 days after the due date was charged a 2% late fee. [issue:29] The relevant code is unierp/fees/calculator.py | function apply_late_fee [chunk:unierp/fees/calculator.py#L82-90].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L82-90",
+      "commit:9b5d34a355",
+      "issue:29"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 0
+    },
+    {
+     "id": "l01",
+     "category": "code_location",
+     "answer": "See unierp/fees/calculator.py | function late_fee_rate [chunk:unierp/fees/calculator.py#L74-79]; unierp/fees/calculator.py | function apply_late_fee [chunk:unierp/fees/calculator.py#L82-90]; tests/test_fees.py | function test_late_fee_per_started_week [chunk:tests/test_fees.py#L34-36].",
+     "citations": [
+      "chunk:tests/test_fees.py#L34-36",
+      "chunk:unierp/fees/calculator.py#L74-79",
+      "chunk:unierp/fees/calculator.py#L82-90"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.009,
+     "tokens": 0
+    },
+    {
+     "id": "l02",
+     "category": "code_location",
+     "answer": "See unierp/core/errors.py | method PrerequisiteCycleError.__init__ [chunk:unierp/core/errors.py#L37-39]; unierp/core/errors.py | class PrerequisiteCycleError [chunk:unierp/core/errors.py#L36-36]; unierp/registration/prerequisites.py | function find_cycles [chunk:unierp/registration/prerequisites.py#L64-72].",
+     "citations": [
+      "chunk:unierp/core/errors.py#L36-36",
+      "chunk:unierp/core/errors.py#L37-39",
+      "chunk:unierp/registration/prerequisites.py#L64-72"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.009,
+     "tokens": 0
+    },
+    {
+     "id": "l03",
+     "category": "code_location",
+     "answer": "See unierp/reports/standing.py | function on_deans_list [chunk:unierp/reports/standing.py#L34-35]; unierp/reports/standing.py | function deans_list [chunk:unierp/reports/standing.py#L49-56]; unierp/reports/standing.py [chunk:unierp/reports/standing.py#L1-15].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L1-15",
+      "chunk:unierp/reports/standing.py#L34-35",
+      "chunk:unierp/reports/standing.py#L49-56"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.01,
+     "tokens": 0
+    },
+    {
+     "id": "l04",
+     "category": "code_location",
+     "answer": "See unierp/ops/faults.py [chunk:unierp/ops/faults.py#L1-16].",
+     "citations": [
+      "chunk:unierp/ops/faults.py#L1-16"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "l05",
+     "category": "code_location",
+     "answer": "See unierp/api/app.py | function _student [chunk:unierp/api/app.py#L205-213]; unierp/students/service.py | function create_student [chunk:unierp/students/service.py#L32-67]; tests/test_students.py | function test_duplicate_email_rejected [chunk:tests/test_students.py#L37-40].",
+     "citations": [
+      "chunk:tests/test_students.py#L37-40",
+      "chunk:unierp/api/app.py#L205-213",
+      "chunk:unierp/students/service.py#L32-67"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 0
+    },
+    {
+     "id": "l06",
+     "category": "code_location",
+     "answer": "See unierp/registration/credits.py | function credit_load_limits [chunk:unierp/registration/credits.py#L65-71]; unierp/registration/enrollment.py | function register [chunk:unierp/registration/enrollment.py#L19-60]; unierp/registration/enrollment.py [chunk:unierp/registration/enrollment.py#L1-16].",
+     "citations": [
+      "chunk:unierp/registration/credits.py#L65-71",
+      "chunk:unierp/registration/enrollment.py#L1-16",
+      "chunk:unierp/registration/enrollment.py#L19-60"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "x01",
+     "category": "cross_module",
+     "answer": "See unierp/exam/grades.py [chunk:unierp/exam/grades.py#L1-18]; unierp/reports/transcript.py | function build_transcript [chunk:unierp/reports/transcript.py#L13-44]; unierp/reports/transcript.py [chunk:unierp/reports/transcript.py#L1-10].",
+     "citations": [
+      "chunk:unierp/exam/grades.py#L1-18",
+      "chunk:unierp/reports/transcript.py#L1-10",
+      "chunk:unierp/reports/transcript.py#L13-44"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "x02",
+     "category": "cross_module",
+     "answer": "See unierp/reports/transcript.py [chunk:unierp/reports/transcript.py#L1-10]; tests/test_grades.py | function test_gpa_of_empty_record_is_zero [chunk:tests/test_grades.py#L54-55]; tests/test_grades.py | function test_gpa_ignores_withdrawals [chunk:tests/test_grades.py#L49-51].",
+     "citations": [
+      "chunk:tests/test_grades.py#L49-51",
+      "chunk:tests/test_grades.py#L54-55",
+      "chunk:unierp/reports/transcript.py#L1-10"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "x03",
+     "category": "cross_module",
+     "answer": "See unierp/fees/calculator.py | function apply_late_fee [chunk:unierp/fees/calculator.py#L82-90]; tests/test_fees.py | function test_late_fee_is_capped [chunk:tests/test_fees.py#L39-40]; tests/test_fees.py | function test_late_fee_per_started_week [chunk:tests/test_fees.py#L34-36].",
+     "citations": [
+      "chunk:tests/test_fees.py#L34-36",
+      "chunk:tests/test_fees.py#L39-40",
+      "chunk:unierp/fees/calculator.py#L82-90"
+     ],
+     "refused": false,
+     "correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "x04",
+     "category": "cross_module",
+     "answer": "See unierp/registration/prerequisites.py | function check_prerequisites [chunk:unierp/registration/prerequisites.py#L32-35]; tests/test_prerequisites.py | function test_prerequisites_satisfied [chunk:tests/test_prerequisites.py#L15-17]; tests/test_prerequisites.py [chunk:tests/test_prerequisites.py#L1-12].",
+     "citations": [
+      "chunk:tests/test_prerequisites.py#L1-12",
+      "chunk:tests/test_prerequisites.py#L15-17",
+      "chunk:unierp/registration/prerequisites.py#L32-35"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.01,
+     "tokens": 0
+    },
+    {
+     "id": "x05",
+     "category": "cross_module",
+     "answer": "See unierp/attendance/tracker.py | function is_exam_eligible [chunk:unierp/attendance/tracker.py#L39-40]; unierp/api/app.py | function create_app [chunk:unierp/api/app.py#L157-202]; unierp/api/app.py [chunk:unierp/api/app.py#L1-120].",
+     "citations": [
+      "chunk:unierp/api/app.py#L1-120",
+      "chunk:unierp/api/app.py#L157-202",
+      "chunk:unierp/attendance/tracker.py#L39-40"
+     ],
+     "refused": false,
+     "correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "u01",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 0
+    },
+    {
+     "id": "u02",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 0
+    },
+    {
+     "id": "u03",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 0
+    },
+    {
+     "id": "u04",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.015,
+     "tokens": 0
+    },
+    {
+     "id": "u05",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.01,
+     "tokens": 0
+    },
+    {
+     "id": "a01",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a02",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a03",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a04",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a05",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    }
+   ]
+  }
+ }
+}

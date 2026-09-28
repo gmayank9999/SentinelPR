@@ -29,8 +29,12 @@ def collect(cfg: Config, out: Path, max_runs: int = 50) -> dict:
             shutil.rmtree(target)
         target.mkdir(parents=True)
 
+    # Runs and canary reports produced here win; otherwise fall back to the demo snapshot
+    # committed under bench/results/demo so a fresh deployment is not empty.
+    snapshot = root / "bench" / "results" / "demo"
+    run_files = list((cfg.workdir / "runs").glob("*.json")) or list((snapshot / "runs").glob("*.json"))
     reports = []
-    for path in sorted((cfg.workdir / "runs").glob("*.json"), key=lambda p: p.stat().st_mtime, reverse=True)[:max_runs]:
+    for path in sorted(run_files, key=lambda p: p.name, reverse=True)[:max_runs]:
         try:
             report = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
@@ -52,11 +56,13 @@ def collect(cfg: Config, out: Path, max_runs: int = 50) -> dict:
             shutil.copy(results, out / "bench" / f"{name}.json")
 
     qa_file = root / "bench" / "out" / "qa" / "results.json"
+    if not qa_file.exists():
+        qa_file = root / "bench" / "results" / "qa" / "results.json"
     if qa_file.exists():
         shutil.copy(qa_file, out / "qa.json")
 
     canary = []
-    for report in sorted((cfg.workdir / "canary").glob("*.json")):
+    for report in sorted((cfg.workdir / "canary").glob("*.json")) or sorted((snapshot / "canary").glob("*.json")):
         canary.append(report.name)
         shutil.copy(report, out / "canary" / report.name)
 
