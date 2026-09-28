@@ -1,0 +1,65 @@
+name: SentinelPR commands
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write        # push the branch for /sentinel fix
+  pull-requests: write
+  issues: write
+  checks: write
+
+jobs:
+  command:
+    # Only react to "/sentinel ..." comments from people with write access, or the sentinel-fix label.
+    if: >-
+      (github.event_name == 'issue_comment' && startsWith(github.event.comment.body, '/sentinel') &&
+       contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'issues' && github.event.label.name == 'sentinel-fix')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out the pull request head
+        if: github.event.issue.pull_request
+        run: gh pr checkout ${{ github.event.issue.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: .sentinel
+          key: sentinel-${{ github.sha }}
+          restore-keys: sentinel-
+
+      - run: pip install -r sentinel/requirements.txt
+
+      - name: Handle command
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            # The sentinel-fix label is treated like a "/sentinel fix" comment by the maintainer who added it.
+            python - <<'PY'
+          import json, os
+          event = json.load(open(os.environ["GITHUB_EVENT_PATH"]))
+          event["comment"] = {"body": "/sentinel fix", "author_association": "MEMBER"}
+          json.dump(event, open("/tmp/event.json", "w"))
+          PY
+            python -m sentinel.commands --event /tmp/event.json
+          else
+            python -m sentinel.commands --event "$GITHUB_EVENT_PATH"
+          fi
