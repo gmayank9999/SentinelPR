@@ -119,3 +119,15 @@ def test_expand_parametrised_ids():
     known = {"t.py::test_a[1]": {}, "t.py::test_a[2]": {}, "t.py::test_ab": {}}
     assert expand("t.py::test_a", known) == ["t.py::test_a[1]", "t.py::test_a[2]"]
     assert expand("t.py::test_ab", known) == ["t.py::test_ab"]
+
+
+def test_facts_keep_an_explicitly_empty_change_set():
+    from sentinel.models import ChangeUnit
+    from sentinel.retrieval.graph import CodeGraph
+    from sentinel.verify.checkers import Facts
+
+    unit = ChangeUnit(id="a.py::f", file="a.py", symbol="f", qualname="f", kind="function", change_type="modified", changed_lines=[3])
+    changed: dict = {}  # e.g. only a docstring changed: nothing executable
+    facts = Facts([unit], TestRun(), {}, MutationReport(), CodeGraph(), None, changed_lines=changed)
+    assert facts.changed_lines == {} and changed == {}
+    assert Facts([unit], TestRun(), {}, MutationReport(), CodeGraph(), None).changed_lines == {"a.py": {3}}

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import ast
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from pydantic import BaseModel
 
@@ -49,10 +49,11 @@ class Facts:
     store: object
     llm: object = None
     llm_allowed: bool = False
-    changed_lines: dict[str, set[int]] = field(default_factory=dict)
+    changed_lines: dict[str, set[int]] | None = None  # None: derive from the units
 
     def __post_init__(self) -> None:
-        if not self.changed_lines:
+        if self.changed_lines is None:
+            self.changed_lines = {}
             for unit in self.units:
                 if not is_test_path(unit.file):
                     self.changed_lines.setdefault(unit.file, set()).update(unit.changed_lines)
