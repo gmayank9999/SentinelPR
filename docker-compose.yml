@@ -1,0 +1,51 @@
+# Local services for demos.
+#
+#   docker compose up unierp-stable unierp-canary proxy     # canary pair behind nginx
+#   CANARY_FAULT=slow CANARY_PERCENT=25 docker compose up   # rehearse a bad release
+#   docker compose --profile search up zoekt                # local code search backend
+#   docker compose --profile api up sentinel-api            # backend for the dashboard's Q&A
+
+services:
+  unierp-stable:
+    build: ./demo/uni-erp
+    environment:
+      UNIERP_VERSION: stable
+    ports: ["8001:8000"]
+
+  unierp-canary:
+    build: ./demo/uni-erp
+    environment:
+      UNIERP_VERSION: canary
+      UNIERP_FAULT: ${CANARY_FAULT:-none}
+      UNIERP_FAULT_RATE: ${CANARY_FAULT_RATE:-0.3}
+    ports: ["8002:8000"]
+
+  proxy:
+    image: nginx:1.27-alpine
+    depends_on: [unierp-stable, unierp-canary]
+    environment:
+      CANARY_PERCENT: ${CANARY_PERCENT:-10}
+      NGINX_ENVSUBST_FILTER: CANARY_PERCENT
+    volumes:
+      - ./deploy/nginx-canary.conf:/etc/nginx/templates/default.conf.template:ro
+    ports: ["8080:8080"]
+
+  zoekt:
+    profiles: [search]
+    image: sourcegraph/zoekt-webserver:latest
+    command: ["-index", "/data/index", "-listen", ":6070", "-rpc"]
+    volumes:
+      - ./.sentinel/zoekt:/data/index
+    ports: ["6070:6070"]
+
+  sentinel-api:
+    profiles: [api]
+    image: python:3.11-slim
+    working_dir: /repo
+    command: sh -c "pip install -q -r sentinel/requirements.txt && python -m sentinel.api --host 0.0.0.0 --port 8765"
+    volumes:
+      - ./:/repo
+    environment:
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    ports: ["8765:8765"]

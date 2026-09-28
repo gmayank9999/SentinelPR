@@ -1,0 +1,67 @@
+name: SentinelPR canary
+
+# After a merge, roll the new UniERP out as a canary against the previous commit:
+# 10% -> 25% -> 50% -> 100% of synthetic traffic, rolling back on the first SLO breach.
+on:
+  push:
+    branches: [main]
+    paths: ["demo/uni-erp/**"]
+  workflow_dispatch:
+    inputs:
+      fault:
+        description: Runtime fault to inject into the canary (rehearsal)
+        type: choice
+        options: [none, slow, errors, memory, wrong]
+        default: none
+      fault_rate:
+        description: Share of canary requests affected
+        default: "0.3"
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r sentinel/requirements.txt
+
+      - name: Roll out
+        run: |
+          fault="${{ github.event.inputs.fault || 'none' }}"
+          python -m sentinel.canary.run \
+            --stable-ref HEAD~1 --canary-ref HEAD \
+            --canary-env "UNIERP_FAULT=$fault" --canary-env "UNIERP_FAULT_RATE=${{ github.event.inputs.fault_rate || '0.3' }}" \
+            --label "scenario=$fault" --label "commit=${{ github.sha }}" \
+            --step-seconds 20 --out .sentinel/canary/latest.json --fail-on-rollback
+
+      - name: Summary
+        if: always()
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          r = json.load(open(".sentinel/canary/latest.json"))
+          print(f"## Canary: {r['outcome'].replace('_', ' ')}\n")
+          print("| weight | canary requests | canary errors | canary p95 | stable p95 | verdict |")
+          print("|---|---|---|---|---|---|")
+          for s in r["steps"]:
+              verdict = "healthy" if s["healthy"] else "; ".join(s["breaches"])
+              print(f"| {s['weight']:.0%} | {s['canary']['requests']} | {s['canary']['errors']} | {s['canary']['p95_ms']:.0f} ms | {s['stable']['p95_ms']:.0f} ms | {verdict} |")
+          print(f"\nCanary served {r['exposed_share']:.1%} of traffic before the decision.")
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: canary-report
+          path: .sentinel/canary/latest.json
