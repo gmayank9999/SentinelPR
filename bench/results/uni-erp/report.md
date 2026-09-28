@@ -1,6 +1,6 @@
 # SentinelPR benchmark — uni-erp
 
-_Generated 2026-09-28T15:04:37+00:00._
+_Generated 2026-09-28T15:10:33+00:00._
 
 ## Dataset
 
@@ -23,27 +23,28 @@ _Generated 2026-09-28T15:04:37+00:00._
 
 | method | ROC-AUC | 95% CI | PR-AUC | 95% CI | recall@5%FPR | Brier | ECE | false-block | block recall | McNemar p |
 |---|---|---|---|---|---|---|---|---|---|---|
-| SentinelPR | 0.935 | [0.87, 0.98] | 0.961 | [0.92, 0.99] | 0.787 | 0.099 | 0.085 | 0.000 | 0.872 | — |
-| B-JIT | 0.760 | [0.64, 0.87] | 0.845 | [0.74, 0.93] | 0.234 | 0.199 | 0.133 | 0.107 | 0.383 | 0.000 |
-| ablation: no verification | 0.783 | [0.68, 0.88] | 0.869 | [0.78, 0.94] | 0.340 | 0.191 | 0.133 | 0.036 | 0.830 | 0.375 |
-| ablation: no mutation | 0.864 | [0.77, 0.95] | 0.890 | [0.78, 0.97] | 0.383 | 0.134 | 0.124 | 0.143 | 0.830 | 0.031 |
-| ablation: no history | 0.931 | [0.86, 0.98] | 0.949 | [0.88, 0.99] | 0.787 | 0.096 | 0.094 | 0.036 | 0.830 | 0.250 |
-| ablation: no LLM feature | 0.935 | [0.88, 0.98] | 0.961 | [0.92, 0.99] | 0.787 | 0.099 | 0.085 | 0.000 | 0.872 | 1.000 |
-| B-tests | 0.862 | [0.80, 0.92] | 0.897 | [0.82, 0.95] | 0.723 | 0.173 | 0.173 | 0.000 | 0.723 | 0.016 |
-| SentinelPR (prior, untrained) | 0.966 | [0.93, 0.99] | 0.981 | [0.96, 1.00] | 0.830 | 0.081 | 0.058 | 0.000 | 0.787 | 0.125 |
+| SentinelPR | 0.981 | [0.95, 1.00] | 0.989 | [0.97, 1.00] | 0.894 | 0.055 | 0.053 | 0.036 | 0.894 | — |
+| SentinelPR (unconstrained LR) | 0.935 | [0.88, 0.98] | 0.961 | [0.92, 0.99] | 0.787 | 0.099 | 0.085 | 0.000 | 0.872 | 1.000 |
+| B-JIT | 0.815 | [0.71, 0.90] | 0.884 | [0.79, 0.95] | 0.319 | 0.160 | 0.066 | 0.036 | 0.319 | 0.000 |
+| ablation: no verification | 0.832 | [0.73, 0.91] | 0.904 | [0.83, 0.96] | 0.447 | 0.154 | 0.098 | 0.036 | 0.808 | 0.219 |
+| ablation: no mutation | 0.973 | [0.94, 0.99] | 0.983 | [0.96, 1.00] | 0.872 | 0.066 | 0.049 | 0.036 | 0.872 | 1.000 |
+| ablation: no history | 0.985 | [0.96, 1.00] | 0.991 | [0.98, 1.00] | 0.894 | 0.051 | 0.061 | 0.036 | 0.894 | 1.000 |
+| ablation: no LLM feature | 0.981 | [0.95, 1.00] | 0.989 | [0.97, 1.00] | 0.894 | 0.055 | 0.053 | 0.036 | 0.894 | 1.000 |
+| B-tests | 0.862 | [0.79, 0.92] | 0.897 | [0.83, 0.95] | 0.723 | 0.173 | 0.173 | 0.000 | 0.723 | 0.039 |
+| SentinelPR (prior, untrained) | 0.966 | [0.93, 0.99] | 0.981 | [0.96, 1.00] | 0.830 | 0.081 | 0.058 | 0.000 | 0.787 | 0.219 |
 
 Decisions by category (SentinelPR):
 
 | category | n | defective | PASS | CANARY | BLOCK |
 |---|---|---|---|---|---|
-| C1 | 12 | 0 | 9 | 3 | 0 |
+| C1 | 12 | 0 | 10 | 1 | 1 |
 | C2 | 14 | 14 | 0 | 0 | 14 |
-| C3 | 8 | 4 | 4 | 0 | 4 |
+| C3 | 8 | 4 | 3 | 1 | 4 |
 | C4 | 4 | 4 | 0 | 0 | 4 |
-| C5 | 10 | 8 | 4 | 1 | 5 |
-| C6 | 10 | 0 | 8 | 2 | 0 |
-| C7 | 10 | 10 | 0 | 1 | 9 |
-| HF | 7 | 7 | 1 | 1 | 5 |
+| C5 | 10 | 8 | 3 | 2 | 5 |
+| C6 | 10 | 0 | 10 | 0 | 0 |
+| C7 | 10 | 10 | 0 | 0 | 10 |
+| HF | 7 | 7 | 0 | 2 | 5 |
 
 ## RQ1 — change impact (tests)
 
@@ -78,6 +79,6 @@ Latency per PR: p50 4.54s, p95 14.56s. LLM tokens per PR: mean 0.0. Slowest stag
 
 ## Deployed model
 
-Trained on Release 1.1.0, Release 1.2.0, Release 1.3.0; calibrated and thresholded on Release 1.4.0: canary ≥ 0.6334, block ≥ 0.8914.
+Trained on Release 1.1.0, Release 1.2.0, Release 1.3.0; calibrated and thresholded on Release 1.4.0: canary ≥ 0.7419, block ≥ 0.96.
 
-Largest standardised coefficients: `verified_test_failures` +1.46, `refuted_claim_ratio` -0.95, `log_code_age_days` +0.81, `surviving_mutants` +0.64, `signature_changes` -0.62, `changed_line_coverage` -0.55, `uncovered_changed_lines` +0.53, `mutation_score` -0.53, `log_churn` -0.46, `injection_attempts` +0.45.
+Largest standardised coefficients: `verified_test_failures` +1.62, `refuted_claim_ratio` -0.96, `surviving_mutants` +0.64, `changed_line_coverage` -0.63, `uncovered_changed_lines` +0.61, `injection_attempts` +0.55, `test_only` -0.49, `docs_only` -0.46, `mutation_score` -0.36, `tests_changed` -0.36.
