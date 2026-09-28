@@ -104,3 +104,16 @@ def test_template_explanation_cites_features():
     text = template_explanation(assessment)
     assert "[feat:surviving_mutants]" in text and "raises" in text
     assert isinstance(assessment, RiskAssessment)
+
+
+def test_monotone_logistic_respects_signs():
+    from sentinel.risk.model import fit_monotone_logistic
+
+    rng = np.random.default_rng(0)
+    X = rng.normal(size=(300, 3))
+    # feature 0 truly raises risk, feature 1 truly lowers it; we force feature 1 to be >= 0
+    y = (X[:, 0] - X[:, 1] + rng.normal(scale=0.5, size=300) > 0).astype(int)
+    _, coef = fit_monotone_logistic(X, y, [1, 1, 0])
+    assert coef[0] > 0.5 and coef[1] == pytest.approx(0.0, abs=1e-6)
+    _, free = fit_monotone_logistic(X, y, [0, 0, 0])
+    assert free[1] < -0.5

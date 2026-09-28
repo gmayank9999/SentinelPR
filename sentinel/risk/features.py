@@ -59,6 +59,21 @@ FEATURES: tuple[Feature, ...] = (
 )
 FEATURE_NAMES = tuple(f.name for f in FEATURES)
 BY_NAME = {f.name: f for f in FEATURES}
+
+# Which way a feature is allowed to push risk in the constrained model (+1 up, -1 down).
+# Features left out are free: the evidence on their direction is mixed (e.g. the age of the
+# touched code) or they only describe the change rather than its risk.
+DIRECTIONS: dict[str, int] = {
+    "log_churn": 1, "files_touched": 1, "entropy": 1, "author_is_new": 1, "recent_churn": 1,
+    "complexity_delta": 1, "max_complexity": 1, "szz_defects": 1, "touches_dependencies": 1,
+    "touches_config": 1, "touches_ci": 1, "verified_test_failures": 1, "uncovered_changed_lines": 1,
+    "surviving_mutants": 1, "verified_api_breaks": 1, "verified_bug_links": 1, "llm_risk": 1,
+    "injection_attempts": 1, "verified_impacted_modules": 1, "signature_changes": 1, "change_units": 1,
+    # mature, long-unchanged code is less defect-prone (Graves et al., 2000)
+    "log_code_age_days": -1,
+    "log_author_prior_commits": -1, "test_only": -1, "docs_only": -1, "tests_changed": -1,
+    "changed_line_coverage": -1, "mutation_score": -1,
+}
 GROUPS = {
     "jit": tuple(f.name for f in FEATURES if f.group == "jit"),
     "full": FEATURE_NAMES,

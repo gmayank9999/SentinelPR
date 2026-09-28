@@ -102,7 +102,7 @@ def _eligible(rows: list[dict]) -> list[dict]:
     return [r for r in rows if not r["sentinel"]["rejected"] and r["sentinel"]["risk"] is not None]
 
 
-def forward_chain(rows: list[dict], group: str = "full", kind: str = "logistic") -> list[dict]:
+def forward_chain(rows: list[dict], group: str = "full", kind: str = "logistic", monotone: bool = True) -> list[dict]:
     """Out-of-fold predictions: one entry per scored PR on every testable base."""
     rows = _eligible(rows)
     bases = sorted({r["base_order"] for r in rows})
@@ -113,7 +113,7 @@ def forward_chain(rows: list[dict], group: str = "full", kind: str = "logistic")
         test_rows = [r for r in rows if r["base_order"] == k]
         if len({r["label"] for r in train_rows}) < 2:
             continue
-        model = train([r["features"] for r in train_rows], [r["label"] for r in train_rows], kind=kind,
+        model = train([r["features"] for r in train_rows], [r["label"] for r in train_rows], kind=kind, monotone=monotone,
                       feature_names=GROUPS[group], validation=([r["features"] for r in val_rows], [r["label"] for r in val_rows]))
         thresholds = choose_thresholds([model.predict(r["features"]) for r in val_rows], [r["label"] for r in val_rows])
         for r in test_rows:
@@ -129,7 +129,8 @@ def _decision(p: dict) -> str:
 
 
 def gate_evaluation(rows: list[dict]) -> dict:
-    methods: dict[str, list[dict]] = {"SentinelPR": forward_chain(rows, "full")}
+    methods: dict[str, list[dict]] = {"SentinelPR": forward_chain(rows, "full"),
+                                      "SentinelPR (unconstrained LR)": forward_chain(rows, "full", monotone=False)}
     for name, group in (("B-JIT", "jit"), ("ablation: no verification", "no_verification"), ("ablation: no mutation", "no_mutation"),
                         ("ablation: no history", "no_history"), ("ablation: no LLM feature", "no_llm")):
         methods[name] = forward_chain(rows, group)

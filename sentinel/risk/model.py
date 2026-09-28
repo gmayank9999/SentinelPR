@@ -25,7 +25,7 @@ import numpy as np
 
 from sentinel.models import Contribution, RiskAssessment
 from sentinel.risk.calibration import calibrator_from_dict, fit_calibrator
-from sentinel.risk.features import BY_NAME, FEATURE_NAMES, vectorise
+from sentinel.risk.features import BY_NAME, DIRECTIONS, FEATURE_NAMES, vectorise
 
 
 def _sigmoid(z: float) -> float:
@@ -164,6 +164,35 @@ PRIOR = RiskModel(
 # ---------------------------------------------------------------------------
 
 
+def fit_monotone_logistic(X: np.ndarray, y: np.ndarray, directions: list[int], l2: float = 2.0) -> tuple[float, list[float]]:
+    """Class-balanced, L2-regularised logistic regression whose coefficients respect a sign.
+
+    ``directions[i]`` is +1 (coefficient >= 0), -1 (<= 0) or 0 (free). With a few hundred
+    training PRs an unconstrained model happily learns that, say, more uncovered lines make a
+    change *safer*; the constraint rules such small-sample artefacts out while leaving the
+    magnitudes to the data. Solved with L-BFGS-B, where the signs are simple bounds.
+    """
+    from scipy.optimize import minimize
+
+    n, d = X.shape
+    pos = max(int(y.sum()), 1)
+    weights = np.where(y == 1, n / (2 * pos), n / (2 * max(n - pos, 1)))
+
+    def loss(params: np.ndarray) -> tuple[float, np.ndarray]:
+        b, w = params[0], params[1:]
+        z = b + X @ w
+        p = 1 / (1 + np.exp(-np.clip(z, -35, 35)))
+        eps = 1e-12
+        nll = -np.sum(weights * (y * np.log(p + eps) + (1 - y) * np.log(1 - p + eps))) / n
+        grad_z = weights * (p - y) / n
+        grad = np.concatenate([[grad_z.sum()], X.T @ grad_z + l2 * w / n])
+        return nll + 0.5 * l2 * float(w @ w) / n, grad
+
+    bounds = [(None, None)] + [(0, None) if s > 0 else (None, 0) if s < 0 else (None, None) for s in directions]
+    result = minimize(loss, np.zeros(d + 1), jac=True, method="L-BFGS-B", bounds=bounds)
+    return float(result.x[0]), [float(c) for c in result.x[1:]]
+
+
 def train(
     rows: list[dict[str, float]],
     labels: list[int],
@@ -174,6 +203,8 @@ def train(
     calibration: str = "auto",
     name: str = "trained",
     seed: int = 7,
+    monotone: bool = True,
+    l2: float = 2.0,
 ) -> RiskModel:
     """Fit on ``rows`` and calibrate on ``validation`` (a separate split, never the training data)."""
     X = np.asarray([vectorise(r, feature_names) for r in rows], float)
@@ -189,16 +220,21 @@ def train(
         )
         model = RiskModel(kind="lightgbm", feature_names=feature_names, booster=booster.model_to_string())
     else:
-        from sklearn.linear_model import LogisticRegression
-
         mean = X.mean(axis=0)
         scale = X.std(axis=0)
         scale[scale == 0] = 1.0
-        clf = LogisticRegression(C=0.5, class_weight="balanced", max_iter=2000, random_state=seed)
-        clf.fit((X - mean) / scale, y)
-        model = RiskModel(kind="logistic", feature_names=feature_names, intercept=float(clf.intercept_[0]),
-                          coef=[float(c) for c in clf.coef_[0]], mean=mean.tolist(), scale=scale.tolist())
-    model.metadata = {"name": name, "train_size": int(len(y)), "positives": int(y.sum())}
+        Xs = (X - mean) / scale
+        if monotone:
+            intercept, coef = fit_monotone_logistic(Xs, y, [DIRECTIONS.get(n, 0) for n in feature_names], l2=l2)
+        else:
+            from sklearn.linear_model import LogisticRegression
+
+            clf = LogisticRegression(C=1.0 / l2, class_weight="balanced", max_iter=2000, random_state=seed)
+            clf.fit(Xs, y)
+            intercept, coef = float(clf.intercept_[0]), [float(c) for c in clf.coef_[0]]
+        model = RiskModel(kind="logistic", feature_names=feature_names, intercept=intercept, coef=coef,
+                          mean=mean.tolist(), scale=scale.tolist())
+    model.metadata = {"name": name, "train_size": int(len(y)), "positives": int(y.sum()), "monotone": monotone and kind == "logistic"}
     if validation is not None and validation[0]:
         scores = [model.raw_score(r) for r in validation[0]]
         calibrator = fit_calibrator(scores, validation[1], calibration)
