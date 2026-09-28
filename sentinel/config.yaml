@@ -13,7 +13,7 @@ workdir: .sentinel            # index, caches and run outputs
 retrieval:
   mode: hybrid                # lexical | dense | graph | hybrid
   top_k: 10
-  reranker: true
+  reranker: true              # true (TF-IDF) | false | cross-encoder[:model]
   embedder: hashing           # hashing | st:<sentence-transformers model> | ollama:<model>
   vector_store: auto          # auto | chroma | numpy
   graph_hops: 2

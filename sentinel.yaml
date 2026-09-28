@@ -6,3 +6,4 @@ project:
   tests: tests
   history_repo: .sentinel/uni-erp-repo
   tracker_dir: .sentinel/uni-erp-repo-meta
+  exclude: [history]      # the demo's history seeder is tooling, not application code
