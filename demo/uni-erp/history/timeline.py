@@ -400,7 +400,6 @@ STEPS: list[Step] = [
             ),
             line(T_ASSESS, "import final_grade, weighted_score", "import apply_grace_marks, final_grade, weighted_score"),
             added(T_ASSESS, "def test_grace_marks_only_near_pass_mark("),
-            line(T_ASSESS, "", '\n    assert final_grade({"internal": 60, "final": 58}) == "D"'),
         ],
     ),
     Step(
@@ -415,6 +414,7 @@ STEPS: list[Step] = [
                 '    [(100, "A"), (92.99, "A-"), (85, "B"), (72, "C-"), (59.9, "F"), (0, "F")],',
                 '    [(100, "A"), (93, "A"), (92.99, "A-"), (90, "A-"), (85, "B"), (72, "C-"), (60, "D"), (59.9, "F"), (0, "F")],',
             ),
+            line(T_ASSESS, "", '\n    assert final_grade({"internal": 60, "final": 58}) == "D"'),
         ],
     ),
     Step(
@@ -863,6 +863,7 @@ STEPS: list[Step] = [
                 "import pytest\n\nfrom unierp.core.domain import Enrollment, EnrollmentStatus\nfrom unierp.core.errors",
             ),
             added("tests/test_credits.py", "def test_dropped_courses_never_count("),
+            line(T_FEES, "", '        Enrollment("S1", "MA101", "2026-FALL", EnrollmentStatus.DROPPED),\n'),
         ],
         reviews=((PRIYA[0], "Thanks for the regression test - this function is used everywhere."),),
     ),

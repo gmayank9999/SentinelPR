@@ -209,12 +209,43 @@ def tracker_data(shas: list[str], dates: list[datetime]) -> tuple[list[dict], li
     return issues, pulls
 
 
+def check_history(repo: Path) -> list[tuple[str, str]]:
+    """Run the test suite at every commit that has tests; return (sha, subject) of red ones.
+
+    A plausible history has green CI throughout: a test that fails on an old commit would have
+    been noticed then, and would make old revisions useless as benchmark bases.
+    """
+    red = []
+    shas = git(repo, "rev-list", "--reverse", "HEAD").split()
+    tree = repo.parent / f"{repo.name}-check"
+    if tree.exists():
+        git(repo, "worktree", "remove", "--force", str(tree))
+    git(repo, "worktree", "add", "--detach", str(tree), shas[0])
+    try:
+        for sha in shas:
+            git(tree, "checkout", "-q", "--force", sha)
+            if not (tree / "tests").exists() or not any((tree / "tests").glob("test_*.py")):
+                continue
+            result = subprocess.run([sys.executable, "-m", "pytest", "-q", "-x", "-p", "no:cacheprovider"], cwd=tree,
+                                    capture_output=True, text=True, env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+            if result.returncode not in (0, 5):
+                red.append((sha[:10], git(tree, "log", "-1", "--format=%s")))
+    finally:
+        git(repo, "worktree", "remove", "--force", str(tree))
+    return red
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--out", type=Path, default=Path(".sentinel/uni-erp-repo"))
+    parser.add_argument("--check", action="store_true", help="also run the tests at every commit")
     args = parser.parse_args()
     summary = seed(args.out.resolve())
+    if args.check:
+        summary["red_commits"] = check_history(args.out.resolve())
     print(json.dumps(summary, indent=2))
+    if summary.get("red_commits"):
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":
