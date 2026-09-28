@@ -42,11 +42,14 @@ def collect(cfg: Config, out: Path, max_runs: int = 50) -> dict:
             for r in reports]
 
     bench = []
-    for results in sorted((root / "bench" / "out").glob("*/results.json")):
-        if results.parent.name == "qa":
-            continue
-        bench.append(results.parent.name)
-        shutil.copy(results, out / "bench" / f"{results.parent.name}.json")
+    # fresh results from bench/out win over the snapshot committed under bench/results
+    for folder in ("out", "results"):
+        for results in sorted((root / "bench" / folder).glob("*/results.json")):
+            name = results.parent.name
+            if name == "qa" or name in bench:
+                continue
+            bench.append(name)
+            shutil.copy(results, out / "bench" / f"{name}.json")
 
     qa_file = root / "bench" / "out" / "qa" / "results.json"
     if qa_file.exists():
