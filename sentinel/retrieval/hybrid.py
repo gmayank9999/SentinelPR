@@ -84,8 +84,9 @@ class RetrievalIndex:
             docs = json.loads(docs_file.read_text(encoding="utf-8"))
         else:
             docs = history_documents(store) if store is not None else []
-        if graph_file.exists() and store is None:
-            graph = CodeGraph.load(graph_file)
+        if graph_file.exists():
+            graph = CodeGraph.build(sources)
+            graph.absorb(CodeGraph.load(graph_file))
         else:
             tests = [t["test_id"] for t in store.all_tests()] if store is not None else []
             graph = CodeGraph.build(sources, store, tests)

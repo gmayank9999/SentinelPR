@@ -125,3 +125,18 @@ def test_hybrid_retriever_modes(graph, tmp_path):
 
     lexical = retriever.search_code("tuition", mode="lexical", top_k=2)
     assert lexical[0].symbol == "Invoice.tuition"
+
+
+def test_absorb_keeps_evidence_edges_across_line_shifts(graph):
+    graph.g.add_node("commit:abc", kind="commit")
+    graph.g.add_edge("sym:app/credits.py::total_credits", "commit:abc", type="modified_in")
+    graph.g.add_edge("sym:tests/test_gpa.py::test_gpa", "sym:app/credits.py::total_credits", type="tests")
+    shifted = dict(SOURCES)
+    shifted["app/credits.py"] = "# new header\n\n" + SOURCES["app/credits.py"]
+    head = CodeGraph.build(shifted)
+    head.absorb(graph)
+    target = "sym:app/credits.py::total_credits"
+    assert head.node(target)["start"] == 3  # structure from the new code
+    assert head.commits_for(target) == ["commit:abc"]
+    assert head.covering_tests(target) == ["sym:tests/test_gpa.py::test_gpa"]
+    assert head.test_ids_for("sym:tests/test_gpa.py::test_gpa") == ["tests/test_gpa.py::test_gpa"]

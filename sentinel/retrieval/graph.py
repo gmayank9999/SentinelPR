@@ -228,6 +228,22 @@ class CodeGraph:
         node = sym_id(path, qualname)
         return node if node in self.g else None
 
+    def absorb(self, other: "CodeGraph", types: tuple[str, ...] = ("tests", "modified_in", "fixes", "introduced_bug", "discussed_in")) -> None:
+        """Copy evidence edges (coverage, history) from a graph built at index time.
+
+        Structure (calls, imports) always comes from the code being reviewed; coverage and
+        history were computed on the indexed revision. Symbols are matched by qualified name,
+        which survives the line shifts a pull request introduces.
+        """
+        for node, data in other.g.nodes(data=True):
+            if data.get("kind") in ("commit", "issue", "pr") and node not in self.g:
+                self.g.add_node(node, **data)
+            elif node in self.g and data.get("test_ids"):
+                self.g.nodes[node]["test_ids"] = list(data["test_ids"])
+        for u, v, data in other.g.edges(data=True):
+            if data.get("type") in types and u in self.g and v in self.g:
+                self.g.add_edge(u, v, **data)
+
     # queries ----------------------------------------------------------------
     def edges_of_type(self, node: str, edge_type: str, reverse: bool = False) -> list[tuple[str, dict]]:
         if node not in self.g:
