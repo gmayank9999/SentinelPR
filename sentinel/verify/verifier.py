@@ -16,6 +16,7 @@ from pathlib import Path
 from sentinel.models import ChangeUnit, Claim, MutationReport, TestRun, Verdict
 from sentinel.retrieval.graph import is_test_path
 from sentinel.verify.checkers import Facts, check
+from sentinel.verify.equivalence import behaviour_preserving
 from sentinel.verify.mutation import generate_mutants, run_mutation
 from sentinel.verify.runner import make_workspace, run_tests
 
@@ -76,10 +77,12 @@ def changed_source_lines(units: list[ChangeUnit], sources: dict[str, str]) -> di
 
 
 class Verifier:
-    def __init__(self, cfg, project_root: Path, sources: dict[str, str]):
+    def __init__(self, cfg, project_root: Path, sources: dict[str, str], old_sources: dict[str, str | None] | None = None):
         self.cfg = cfg
         self.project_root = project_root
         self.sources = sources
+        self.old_sources = old_sources or {}
+        self.preserved_units: list[str] = []
         configured = cfg.get("verify.scratch")
         self.scratch = Path(configured) if configured else cfg.workdir / "verify"
 
@@ -90,10 +93,17 @@ class Verifier:
             timeout_s=float(self.cfg.get("verify.test_timeout_s", 600)), scratch=self.scratch / "run",
         )
         changed = changed_source_lines(units, self.sources)
+        # Functions whose edit is alpha-equivalent (renamed locals, docstrings) are not mutated:
+        # their surviving mutants would describe the old tests, not this change.
+        self.preserved_units = [u.id for u in units if u.kind in ("function", "method") and u.change_type == "modified"
+                                and behaviour_preserving(u.qualname, self.old_sources.get(u.file), self.sources.get(u.file))]
+        preserved_lines = {(u.file, n) for u in units if u.id in self.preserved_units for n in u.changed_lines}
+        mutable = {f: {n for n in lines if (f, n) not in preserved_lines} for f, lines in changed.items()}
+        mutable = {f: lines for f, lines in mutable.items() if lines}
         mutation = MutationReport()
-        if self.cfg.get("verify.mutation.enabled", True) and changed and not execution.run.collection_error:
+        if self.cfg.get("verify.mutation.enabled", True) and mutable and not execution.run.collection_error:
             symbols = {(u.file, n): u.qualname for u in units for n in u.changed_lines}
-            mutants = generate_mutants(self.sources, changed, symbols, limit=int(self.cfg.get("verify.mutation.max_mutants", 24)))
+            mutants = generate_mutants(self.sources, mutable, symbols, limit=int(self.cfg.get("verify.mutation.max_mutants", 24)))
             if mutants:
                 workspace = make_workspace(self.project_root, self.scratch / "workspace")
                 broken = {o.nodeid for o in execution.run.failed}

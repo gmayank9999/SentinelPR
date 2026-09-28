@@ -79,7 +79,8 @@ class Pipeline:
         self.model = model or RiskModel.load(model_path(cfg))
         self.use_verification = use_verification
         self.use_history = use_history
-        self.verifier = Verifier(cfg, cfg.project_root, ctx.index.sources)
+        old_sources = {c.path: ctx.read_old(c.old_path or c.path) for c in ctx.changes if c.status in ("modified", "renamed") and c.path.endswith(".py")}
+        self.verifier = Verifier(cfg, cfg.project_root, ctx.index.sources, old_sources)
 
     # tracing ----------------------------------------------------------------------
     def _traced(self, name, fn):
@@ -309,7 +310,8 @@ def build_report(pipeline: Pipeline, state: dict, elapsed: float) -> dict:
             "estimated_s": rt.selection.estimated_s, "full_suite_s": rt.selection.full_suite_s,
             "time_saved_ratio": round(rt.selection.time_saved_ratio, 4),
         } if rt.selection else None,
-        "verification": rt.verification.to_dict() if rt.verification else None,
+        "verification": ({**rt.verification.to_dict(), "behaviour_preserving_units": pipeline.verifier.preserved_units}
+                         if rt.verification else None),
         "signals": rt.signals.features if rt.signals else {},
         "intent": {"label": rt.signals.intent, "source": rt.signals.intent_source} if rt.signals else None,
         "history": {"memories": rt.history.memories, "features": rt.history.features, "documents": rt.history.documents} if rt.history else None,
