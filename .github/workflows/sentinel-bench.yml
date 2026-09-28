@@ -1,0 +1,52 @@
+name: SentinelPR benchmark
+
+# Generate the PR benchmark, label it by execution and evaluate SentinelPR against the
+# baselines. The LLM condition runs only when API keys are configured.
+on:
+  workflow_dispatch:
+    inputs:
+      llm:
+        description: Use the configured LLM providers
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r sentinel/requirements.txt scipy
+
+      - name: Run benchmark
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          git config --global user.email "bench@example.com"
+          git config --global user.name "bench"
+          python -m bench.run_matrix --repo uni-erp --workers 4 ${{ inputs.llm && '--llm' || '' }}
+          python -m bench.analysis.report --results bench/out/uni-erp/results.jsonl
+          python -m sentinel.data.index --seed-demo --no-coverage
+          python -m bench.qa.evaluate ${{ inputs.llm && '--llm' || '' }}
+          cat bench/out/uni-erp/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bench-results
+          path: |
+            bench/out/uni-erp/results.json
+            bench/out/uni-erp/report.md
+            bench/out/qa/results.json
+            sentinel/risk/artifacts/model.json

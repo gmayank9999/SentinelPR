@@ -1,0 +1,74 @@
+name: Publish dashboard
+
+on:
+  workflow_run:
+    workflows: ["SentinelPR benchmark", "SentinelPR canary", "SentinelPR"]
+    types: [completed]
+  schedule:
+    - cron: "40 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: dashboard/package-lock.json
+
+      - run: pip install -r sentinel/requirements.txt
+
+      - name: Gather published results
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p .sentinel/runs .sentinel/canary bench/out
+          # latest PR run reports, canary reports and benchmark results uploaded as workflow artifacts
+          for name in $(gh api "repos/${{ github.repository }}/actions/artifacts?per_page=100" \
+                        --jq '.artifacts[] | select(.expired == false) | .name' | sort -u | head -60); do
+            case "$name" in
+              sentinel-run-*) gh run download -n "$name" -D ".sentinel/dl/$name" || true
+                              cp .sentinel/dl/"$name"/run.json ".sentinel/runs/$name.json" 2>/dev/null || true ;;
+              canary-report) gh run download -n "$name" -D .sentinel/dl/canary || true
+                             cp .sentinel/dl/canary/latest.json .sentinel/canary/latest.json 2>/dev/null || true ;;
+              bench-results) gh run download -n "$name" -D . || true ;;  # keeps bench/out/... paths
+            esac
+          done
+          python -m sentinel.publish.dashboard_data
+
+      - name: Build
+        working-directory: dashboard
+        run: npm ci && npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
