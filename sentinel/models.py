@@ -24,6 +24,8 @@ class FileChange(BaseModel):
     status: Literal["added", "removed", "modified", "renamed"] = "modified"
     added_lines: list[int] = Field(default_factory=list)
     removed_lines: list[int] = Field(default_factory=list)
+    # Old line numbers after which lines were inserted by hunks that removed nothing.
+    insertion_points: list[int] = Field(default_factory=list)
     is_binary: bool = False
 
     @property

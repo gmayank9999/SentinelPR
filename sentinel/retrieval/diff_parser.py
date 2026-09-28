@@ -47,6 +47,8 @@ def parse_unified_diff(text: str) -> list[FileChange]:
             match = HUNK.match(raw)
             if match:
                 old_line, new_line = int(match.group(1)), int(match.group(3))
+                if match.group(2) == "0":
+                    current.insertion_points.append(old_line)
         elif raw.startswith("+"):
             current.added_lines.append(new_line)
             new_line += 1
