@@ -26,7 +26,7 @@ from bench.analysis.stats import (
     robustness_evaluation,
 )
 from sentinel.risk.features import GROUPS
-from sentinel.risk.model import train
+from sentinel.risk.model import calibrated_prior, train
 from sentinel.risk.policy import choose_thresholds
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,13 +36,19 @@ def load(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
-def train_production_model(rows: list[dict], out: Path) -> dict:
+def train_production_model(rows: list[dict], out: Path, family: str = "learned") -> dict:
+    """Fit the family chosen by the forward-chained evaluation on all releases but the latest,
+    then calibrate/threshold on the latest (the expert family calibrates on everything)."""
     scored = [r for r in rows if not r["sentinel"]["rejected"] and r["sentinel"]["risk"] is not None]
     latest = max(r["base_order"] for r in scored)
     fit_rows = [r for r in scored if r["base_order"] < latest]
     cal_rows = [r for r in scored if r["base_order"] == latest]
-    model = train([r["features"] for r in fit_rows], [r["label"] for r in fit_rows], feature_names=GROUPS["full"],
-                  validation=([r["features"] for r in cal_rows], [r["label"] for r in cal_rows]), name="uni-erp-benchmark")
+    if family == "expert":
+        model = calibrated_prior(([r["features"] for r in scored], [r["label"] for r in scored]), name="uni-erp-benchmark")
+    else:
+        model = train([r["features"] for r in fit_rows], [r["label"] for r in fit_rows], feature_names=GROUPS["full"],
+                      validation=([r["features"] for r in cal_rows], [r["label"] for r in cal_rows]), name="uni-erp-benchmark")
+    model.metadata["family"] = family
     model.thresholds = choose_thresholds([model.predict(r["features"]) for r in cal_rows], [r["label"] for r in cal_rows])
     model.metadata.update({
         "trained_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -53,7 +59,8 @@ def train_production_model(rows: list[dict], out: Path) -> dict:
     model.save(out)
     top = sorted(zip(model.feature_names, model.coef), key=lambda kv: -abs(kv[1]))[:10]
     return {"path": str(out.relative_to(ROOT)) if out.is_relative_to(ROOT) else str(out), "thresholds": model.thresholds,
-            "top_coefficients": [[n, round(c, 3)] for n, c in top], **{k: model.metadata[k] for k in ("fit_bases", "calibration_base")}}
+            "top_coefficients": [[n, round(c, 3)] for n, c in top], "family": family,
+            **{k: model.metadata[k] for k in ("fit_bases", "calibration_base")}}
 
 
 def _fmt(v) -> str:
@@ -119,9 +126,15 @@ def markdown(results: dict) -> str:
               f"Slowest stages: " + ", ".join(f"{k} {v}s" for k, v in list(eff["node_mean_s"].items())[:4]) + "."]
     model = results.get("model")
     if model:
-        lines += ["", "## Deployed model", "", f"Trained on {', '.join(model['fit_bases'])}; calibrated and thresholded on {model['calibration_base']}: "
-                  f"canary ≥ {model['thresholds']['canary']}, block ≥ {model['thresholds']['block']}.", "",
-                  "Largest standardised coefficients: " + ", ".join(f"`{n}` {c:+.2f}" for n, c in model["top_coefficients"]) + "."]
+        families = ", ".join(f"{f} {v}" for f, v in gate.get("family_pr_auc", {}).items())
+        if model.get("family") == "expert":
+            how = "Expert weights, Platt-calibrated on all releases"
+        else:
+            how = f"Coefficients fitted on {', '.join(model['fit_bases'])}, calibrated on {model['calibration_base']}"
+        lines += ["", "## Deployed model", "",
+                  f"Family `{model.get('family')}`, selected by out-of-fold PR-AUC ({families}). {how}; thresholds from "
+                  f"{model['calibration_base']}: canary ≥ {model['thresholds']['canary']}, block ≥ {model['thresholds']['block']}.", "",
+                  "Largest coefficients: " + ", ".join(f"`{n}` {c:+.2f}" for n, c in model["top_coefficients"]) + "."]
     return "\n".join(lines) + "\n"
 
 
@@ -143,7 +156,7 @@ def main(argv: list[str] | None = None) -> None:
         "efficiency": efficiency_evaluation(rows),
     }
     if not args.no_model:
-        results["model"] = train_production_model(rows, args.model_out)
+        results["model"] = train_production_model(rows, args.model_out, results["gate"]["selected_family"])
     out_dir = args.results.parent
     (out_dir / "results.json").write_text(json.dumps(results, indent=1), encoding="utf-8")
     (out_dir / "report.md").write_text(markdown(results), encoding="utf-8")

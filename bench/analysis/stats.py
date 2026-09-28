@@ -16,7 +16,7 @@ from sklearn.metrics import average_precision_score, precision_recall_curve, roc
 
 from sentinel.risk.calibration import brier, ece, reliability
 from sentinel.risk.features import GROUPS
-from sentinel.risk.model import PRIOR, train
+from sentinel.risk.model import PRIOR, calibrated_prior, train
 from sentinel.risk.policy import choose_thresholds
 from sentinel.risk.train import recall_at_fpr
 
@@ -102,7 +102,36 @@ def _eligible(rows: list[dict]) -> list[dict]:
     return [r for r in rows if not r["sentinel"]["rejected"] and r["sentinel"]["risk"] is not None]
 
 
-def forward_chain(rows: list[dict], group: str = "full", kind: str = "logistic", monotone: bool = True) -> list[dict]:
+FAMILIES = {
+    "learned": "SentinelPR (learned weights, sign-constrained)",
+    "expert": "SentinelPR (expert weights, calibrated)",
+}
+
+
+def fit_family(family: str, train_rows: list[dict], val_rows: list[dict], group: str = "full", kind: str = "logistic", monotone: bool = True):
+    """``learned``: fit coefficients on train_rows, calibrate on val_rows.
+    ``expert``: keep the expert weights (zeroed outside ``group``), calibrate on train+val rows."""
+    if family == "expert":
+        model = calibrated_prior(([r["features"] for r in train_rows + val_rows], [r["label"] for r in train_rows + val_rows]))
+        keep = set(GROUPS[group])
+        model.coef = [c if n in keep else 0.0 for n, c in zip(model.feature_names, model.coef)]
+        if group != "full":  # refit the calibrator for the reduced weights
+            model = _recalibrate(model, train_rows + val_rows)
+        return model
+    return train([r["features"] for r in train_rows], [r["label"] for r in train_rows], kind=kind, monotone=monotone,
+                 feature_names=GROUPS[group], validation=([r["features"] for r in val_rows], [r["label"] for r in val_rows]))
+
+
+def _recalibrate(model, rows: list[dict]):
+    from sentinel.risk.calibration import fit_calibrator
+
+    model.calibrator = None
+    calibrator = fit_calibrator([model.raw_score(r["features"]) for r in rows], [r["label"] for r in rows], "platt")
+    model.calibrator = calibrator.to_dict() if calibrator else None
+    return model
+
+
+def forward_chain(rows: list[dict], group: str = "full", kind: str = "logistic", monotone: bool = True, family: str = "learned") -> list[dict]:
     """Out-of-fold predictions: one entry per scored PR on every testable base."""
     rows = _eligible(rows)
     bases = sorted({r["base_order"] for r in rows})
@@ -113,8 +142,7 @@ def forward_chain(rows: list[dict], group: str = "full", kind: str = "logistic",
         test_rows = [r for r in rows if r["base_order"] == k]
         if len({r["label"] for r in train_rows}) < 2:
             continue
-        model = train([r["features"] for r in train_rows], [r["label"] for r in train_rows], kind=kind, monotone=monotone,
-                      feature_names=GROUPS[group], validation=([r["features"] for r in val_rows], [r["label"] for r in val_rows]))
+        model = fit_family(family, train_rows, val_rows, group, kind, monotone)
         thresholds = choose_thresholds([model.predict(r["features"]) for r in val_rows], [r["label"] for r in val_rows])
         for r in test_rows:
             out.append({"id": r["id"], "label": r["label"], "score": model.predict(r["features"]), "block": thresholds["block"],
@@ -129,11 +157,23 @@ def _decision(p: dict) -> str:
 
 
 def gate_evaluation(rows: list[dict]) -> dict:
-    methods: dict[str, list[dict]] = {"SentinelPR": forward_chain(rows, "full"),
-                                      "SentinelPR (unconstrained LR)": forward_chain(rows, "full", monotone=False)}
-    for name, group in (("B-JIT", "jit"), ("ablation: no verification", "no_verification"), ("ablation: no mutation", "no_mutation"),
+    # Model family selection: the family with the best out-of-fold PR-AUC is "SentinelPR".
+    candidates = {family: forward_chain(rows, "full", family=family) for family in FAMILIES}
+
+    def pr_auc(preds: list[dict]) -> float:
+        labels = [p["label"] for p in preds]
+        return average_precision_score(labels, [p["score"] for p in preds]) if len(set(labels)) == 2 else 0.0
+
+    selected = max(candidates, key=lambda f: pr_auc(candidates[f]))
+    methods: dict[str, list[dict]] = {"SentinelPR": candidates[selected]}
+    for family, preds in candidates.items():
+        if family != selected:
+            methods[FAMILIES[family]] = preds
+    methods["SentinelPR (unconstrained LR)"] = forward_chain(rows, "full", monotone=False)
+    methods["B-JIT"] = forward_chain(rows, "jit")
+    for name, group in (("ablation: no verification", "no_verification"), ("ablation: no mutation", "no_mutation"),
                         ("ablation: no history", "no_history"), ("ablation: no LLM feature", "no_llm")):
-        methods[name] = forward_chain(rows, group)
+        methods[name] = forward_chain(rows, group, family=selected)
     try:
         import lightgbm  # noqa: F401
 
@@ -190,7 +230,8 @@ def gate_evaluation(rows: list[dict]) -> dict:
         if r["label"] == 1 and r["tests_pass"]:
             per_category[r["category"]]["tests_pass_merged_defects"] += 1
     return {"table": table, "curves": curve_data, "mcnemar_vs_sentinel": significance, "per_category": dict(per_category),
-            "n_scored": len(methods["SentinelPR"])}
+            "n_scored": len(methods["SentinelPR"]), "selected_family": selected,
+            "family_pr_auc": {f: round(pr_auc(p), 4) for f, p in candidates.items()}}
 
 
 # --- RQ1: change impact -----------------------------------------------------------------

@@ -154,8 +154,23 @@ PRIOR = RiskModel(
     coef=[_PRIOR_WEIGHTS.get(n, 0.0) for n in FEATURE_NAMES],
     mean=[0.0] * len(FEATURE_NAMES),
     scale=[1.0] * len(FEATURE_NAMES),
-    metadata={"name": "prior", "note": "hand-weighted prior; replace by training on benchmark data"},
+    metadata={"name": "prior", "note": "expert-weighted and uncalibrated; see calibrated_prior()"},
 )
+
+
+def calibrated_prior(validation: tuple[list[dict[str, float]], list[int]], name: str = "expert-calibrated") -> RiskModel:
+    """The expert weights with a Platt calibrator fitted on labelled PRs.
+
+    Only two parameters are learned, so this needs far less data than fitting ~30 coefficients;
+    on a small benchmark it is the lower-variance choice.
+    """
+    model = RiskModel.from_dict(PRIOR.to_dict())
+    scores = [model.raw_score(r) for r in validation[0]]
+    calibrator = fit_calibrator(scores, validation[1], "platt")
+    model.calibrator = calibrator.to_dict() if calibrator else None
+    model.metadata = {"name": name, "family": "expert", "calibration_size": len(validation[1]),
+                      "positives": int(sum(validation[1]))}
+    return model
 
 
 # ---------------------------------------------------------------------------
