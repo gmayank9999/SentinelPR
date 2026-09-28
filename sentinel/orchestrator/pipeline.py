@@ -17,6 +17,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 
 from langgraph.graph import END, START, StateGraph
 
@@ -26,7 +27,7 @@ from sentinel.agents.historian import HistorianAgent, HistoryResult
 from sentinel.agents.impact import ImpactAgent, ImpactResult
 from sentinel.agents.signals import SignalsAgent, SignalsResult
 from sentinel.agents.test_selector import Selection, select_tests
-from sentinel.config import Config
+from sentinel.config import PACKAGE_DIR, Config
 from sentinel.guards.input import InputGuardResult, scan_inputs
 from sentinel.guards.output import check_decision_integrity
 from sentinel.models import Claim, GuardEvent, RiskAssessment, TraceEvent, Verdict
@@ -75,7 +76,7 @@ class Pipeline:
         self.impact_agent = ImpactAgent(impact_mode or cfg.get("agents.impact.mode", "auto"))
         self.historian = HistorianAgent()
         self.signals_agent = SignalsAgent()
-        self.model = model or RiskModel.load(cfg.repo_root / cfg.get("risk.model_path", "sentinel/risk/artifacts/model.json"))
+        self.model = model or RiskModel.load(model_path(cfg))
         self.use_verification = use_verification
         self.use_history = use_history
         self.verifier = Verifier(cfg, cfg.project_root, ctx.index.sources)
@@ -259,6 +260,15 @@ class Pipeline:
         started = time.time()
         final = self.build().invoke({"guard_flags": [], "trace": [], "budget_tokens_left": self.rt.ctx.llm.budget_left})
         return build_report(self, final, time.time() - started)
+
+
+def model_path(cfg: Config) -> Path:
+    """The analysed repository may ship its own model; otherwise use the one bundled with SentinelPR."""
+    configured = Path(cfg.get("risk.model_path", "sentinel/risk/artifacts/model.json"))
+    if configured.is_absolute():
+        return configured
+    in_repo = cfg.repo_root / configured
+    return in_repo if in_repo.exists() else PACKAGE_DIR.parent / configured
 
 
 def build_report(pipeline: Pipeline, state: dict, elapsed: float) -> dict:
