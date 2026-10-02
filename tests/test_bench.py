@@ -85,3 +85,12 @@ def test_weaponise_variants():
     assert "SERVICE_TOKEN" in weaponise(spec, "fake-secret", random.Random(0)).edits["a.py"]
     big = weaponise(spec, "oversized", random.Random(0))
     assert big.edits["unierp/lookup_table.py"].count("\n") > 15000 and big.category == "C7"
+
+
+def test_rename_skips_names_interpolated_in_fstrings():
+    import ast
+
+    from bench.generate.refactor import _local_names
+
+    fn = ast.parse("def f(rows):\n    values = 1\n    total = 2\n    return f'{values}' + str(total)\n").body[0]
+    assert _local_names(fn) == {"total"}

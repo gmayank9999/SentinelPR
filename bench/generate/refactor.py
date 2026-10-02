@@ -31,7 +31,9 @@ def _local_names(fn: ast.FunctionDef) -> set[str]:
             assigned.add(node.id)
         elif isinstance(node, ast.keyword) and node.arg:
             keywords.add(node.arg)  # renaming these would also rename keyword arguments
-    return assigned - params - keywords
+    # names interpolated in f-strings: the rename below leaves string literals alone
+    in_fstrings = {n.id for js in ast.walk(fn) if isinstance(js, ast.JoinedStr) for n in ast.walk(js) if isinstance(n, ast.Name)}
+    return assigned - params - keywords - in_fstrings
 
 
 def rename_local(snapshot: Snapshot, path: str, rng) -> PRSpec | None:
