@@ -41,15 +41,18 @@ repos:
     tests: tests
     hidden: bench/hidden/humanize
     bases: ["4.7.0", "4.8.0", "4.9.0", "4.10.0"]
-    per_base: {C1: 6, FAULT: 36, C2: 7, HF: 7, C3: 4, C4: 4, C5: 5, C6: 5, C7: 6}
+    # few mutants slip past humanize's own suite, so sample more to find hidden faults
+    per_base: {C1: 6, FAULT: 120, C2: 7, HF: 7, C3: 4, C4: 4, C5: 5, C6: 5, C7: 6}
 
+  # tablib: needs its format libraries (odfpy openpyxl pandas pyyaml tabulate xlrd xlwt).
+  # Earlier releases lack behaviour the hidden tests pin (ODS import, headerless transpose).
   tablib:
-    enabled: false
+    enabled: true
     url: https://github.com/jazzband/tablib
     path: .sentinel/repos/tablib
     project_root: .
-    package: src/tablib
+    package: tablib
     tests: tests
     hidden: bench/hidden/tablib
-    bases: ["v3.4.0", "v3.5.0", "v3.6.0", "v3.7.0"]
-    per_base: {C1: 6, FAULT: 36, C2: 7, HF: 7, C3: 4, C4: 4, C5: 5, C6: 5, C7: 6}
+    bases: ["v3.6.0", "v3.7.0", "v3.8.0", "v3.9.0"]
+    per_base: {C1: 6, FAULT: 72, C2: 7, HF: 7, C3: 4, C4: 4, C5: 5, C6: 5, C7: 6}

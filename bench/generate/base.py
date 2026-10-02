@@ -86,9 +86,9 @@ def human_name(symbol: str) -> str:
     return re.sub(r"([a-z])([A-Z])", r"\1 \2", symbol).replace("_", " ").strip().lower()
 
 
-EXCLUDED_MODULES = ("/api/", "/ops/", "seed.py")
+EXCLUDED_MODULES = ("/api/", "/ops/", "seed.py", "/_vendor/")
 
 
 def interesting_sources(snapshot: Snapshot) -> list[str]:
-    """Domain modules: the API wiring, ops plumbing and demo data are not mutation targets."""
+    """Domain modules: API wiring, ops plumbing, demo data and vendored code are not mutation targets."""
     return [f for f in snapshot.source_files if not any(x in f for x in EXCLUDED_MODULES)]
