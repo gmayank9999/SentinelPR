@@ -16,6 +16,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from sentinel.data.coverage_map import package_dir
 from sentinel.verify.runner import run_tests
 
 ORACLE_DIR = ".oracle"
@@ -94,8 +95,9 @@ class Oracle:
                 executed_by.setdefault(t, set()).add(path)
             if line in changed.get(path, ()):
                 impacted |= tests
+        root = package_dir(tree, self.package) + "/"
         for test in impacted:
-            modules |= {p for p in executed_by.get(test, ()) if p.startswith(self.package.replace(".", "/") + "/")}
+            modules |= {p for p in executed_by.get(test, ()) if p.startswith(root)}
         modules -= set(changed)
         notes = []
         if collection_error:

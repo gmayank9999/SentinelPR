@@ -26,17 +26,21 @@ repos:
       C6: 5
       C7: 6
 
-  # Two real open-source repositories complete the evaluation. Clone them, install their
-  # test dependencies, write hidden oracle tests under bench/hidden/<name>/, then enable.
+  # Real open-source repositories. Clone them, install their test dependencies, write
+  # hidden oracle tests under bench/hidden/<name>/, then enable.
+  #
+  # humanize: src layout. Releases up to 4.10 read __version__ from installed metadata
+  # (later ones need a build-generated _version.py), so `pip install humanize freezegun`
+  # in the environment first; tests still import the checked-out src/ tree.
   humanize:
-    enabled: false
+    enabled: true
     url: https://github.com/python-humanize/humanize
     path: .sentinel/repos/humanize
     project_root: .
-    package: src/humanize
+    package: humanize
     tests: tests
     hidden: bench/hidden/humanize
-    bases: ["4.8.0", "4.9.0", "4.10.0", "4.11.0"]
+    bases: ["4.7.0", "4.8.0", "4.9.0", "4.10.0"]
     per_base: {C1: 6, FAULT: 36, C2: 7, HF: 7, C3: 4, C4: 4, C5: 5, C6: 5, C7: 6}
 
   tablib:

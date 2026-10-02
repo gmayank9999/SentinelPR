@@ -47,8 +47,13 @@ class Snapshot:
         return self._cache[path]
 
     @property
+    def package_dir(self) -> str:
+        rel = self.package.replace(".", "/")
+        return "src/" + rel if not any(f.startswith(rel + "/") for f in self.files) and any(f.startswith(f"src/{rel}/") for f in self.files) else rel
+
+    @property
     def source_files(self) -> list[str]:
-        root = self.package.replace(".", "/") + "/"
+        root = self.package_dir + "/"
         return sorted(f for f in self.files if f.startswith(root) and f.endswith(".py") and not f.endswith("__init__.py"))
 
     @property
