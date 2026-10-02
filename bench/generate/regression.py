@@ -20,7 +20,15 @@ from sentinel.retrieval.graph import is_test_path
 
 def _reverse_apply(snapshot: Snapshot, fix_sha: str, paths: list[str]) -> dict[str, str] | None:
     """Apply the inverse of ``fix_sha``'s diff (restricted to ``paths``) onto the base files."""
-    diff = gitutil.git(snapshot.repo, "diff", "--no-color", f"{fix_sha}^", fix_sha, "--", *[snapshot.prefix + p for p in paths])
+    # Plain text diffs only: no external diff drivers or textconv filters from the user's git
+    # config, and binary files (test fixtures such as .ods/.xlsx) are left as they are.
+    plain = ("--no-color", "--no-ext-diff", "--no-textconv")
+    numstat = gitutil.git(snapshot.repo, "diff", *plain, "--numstat", f"{fix_sha}^", fix_sha, "--", *[snapshot.prefix + p for p in paths])
+    binary = {line.split("\t", 2)[2] for line in numstat.splitlines() if line.startswith("-\t-\t")}
+    paths = [p for p in paths if snapshot.prefix + p not in binary]
+    if not paths:
+        return None
+    diff = gitutil.git(snapshot.repo, "diff", *plain, f"{fix_sha}^", fix_sha, "--", *[snapshot.prefix + p for p in paths])
     if not diff.strip():
         return None
     with tempfile.TemporaryDirectory() as tmp:
