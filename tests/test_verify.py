@@ -131,3 +131,31 @@ def test_facts_keep_an_explicitly_empty_change_set():
     facts = Facts([unit], TestRun(), {}, MutationReport(), CodeGraph(), None, changed_lines=changed)
     assert facts.changed_lines == {} and changed == {}
     assert Facts([unit], TestRun(), {}, MutationReport(), CodeGraph(), None).changed_lines == {"a.py": {3}}
+
+
+def test_history_link_without_tracker_data_is_not_refuted():
+    from sentinel.retrieval.graph import CodeGraph
+    from sentinel.verify.checkers import Facts, check_history_link
+
+    class FakeStore:
+        def __init__(self, tracker):
+            self.tracker = tracker
+
+        def commit(self, sha):
+            return {"sha": sha, "functions": ["a.py::f"], "files": [{"path": "a.py"}]} if sha == "abc" else None
+
+        def issue(self, number):
+            return None
+
+        def pr(self, number):
+            return None
+
+        def has_tracker(self):
+            return self.tracker
+
+    claim = Claim(claim_id="h1", agent="historian", type="history_link", target="a.py::f", evidence_ids=["commit:abc", "issue:7"])
+    def facts(store):
+        return Facts([], TestRun(), {}, MutationReport(), CodeGraph(), store, changed_lines={})
+
+    assert check_history_link(claim, facts(FakeStore(tracker=False))).status == VerdictStatus.VERIFIED
+    assert check_history_link(claim, facts(FakeStore(tracker=True))).status == VerdictStatus.REFUTED

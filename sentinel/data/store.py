@@ -307,6 +307,10 @@ class Store:
     def prs(self) -> list[dict]:
         return [self._pr_row(r) for r in self.conn.execute("SELECT * FROM prs ORDER BY number")]
 
+    def has_tracker(self) -> bool:
+        """Whether any issue or PR data was loaded (without it, references cannot be checked)."""
+        return any(self.conn.execute(f"SELECT 1 FROM {t} LIMIT 1").fetchone() for t in ("issues", "prs"))
+
     def pr_for_commit(self, sha: str) -> dict | None:
         row = self.conn.execute("SELECT * FROM prs WHERE merge_sha = ?", (sha,)).fetchone()
         return self._pr_row(row) if row else None

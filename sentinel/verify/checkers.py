@@ -190,7 +190,7 @@ def _commit_for(store, ref: str) -> dict | None:
 def check_history_link(claim: Claim, facts: Facts) -> Verdict:
     store = facts.store
     file, _, qualname = claim.target.partition("::")
-    problems, confirmed = [], []
+    problems, confirmed, unchecked = [], [], []
     for ref in claim.evidence_ids:
         if ref.startswith("commit:"):
             commit = _commit_for(store, ref)
@@ -205,13 +205,18 @@ def check_history_link(claim: Claim, facts: Facts) -> Verdict:
             record = store.issue(int(number)) if kind == "issue" else store.pr(int(number))
             if record:
                 confirmed.append(ref)
+            elif not store.has_tracker():
+                unchecked.append(ref)  # no issue/PR data loaded: absence proves nothing
             else:
                 problems.append(f"{ref} does not exist")
     if problems:
         return Verdict(claim_id=claim.claim_id, status=R, method="repository", evidence=confirmed, detail="; ".join(problems))
     if not any(r.startswith("commit:") for r in confirmed):
         return Verdict(claim_id=claim.claim_id, status=U, method="repository", evidence=confirmed, detail="no commit cited to tie the link to the code")
-    return Verdict(claim_id=claim.claim_id, status=V, method="repository", evidence=confirmed, detail="cited history exists and touches the symbol")
+    detail = "cited history exists and touches the symbol"
+    if unchecked:
+        detail += f" ({', '.join(unchecked)} not checked: no tracker data)"
+    return Verdict(claim_id=claim.claim_id, status=V, method="repository", evidence=confirmed, detail=detail)
 
 
 def _cited_text(store, ref: str) -> str | None:
