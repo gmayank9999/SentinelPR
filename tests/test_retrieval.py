@@ -55,6 +55,13 @@ def test_module_resolution():
     assert module_to_path("os", files) is None
 
 
+def test_module_resolution_in_src_layout():
+    files = {"src/pkg/__init__.py", "src/pkg/size.py", "tests/test_size.py"}
+    assert module_to_path("pkg.size", files) == "src/pkg/size.py"
+    assert module_to_path("pkg", files) == "src/pkg/__init__.py"
+    assert module_to_path(".size", files, "src/pkg/__init__.py") == "src/pkg/size.py"
+
+
 def test_graph_calls_imports_and_inheritance(graph):
     target = "sym:app/credits.py::total_credits"
     callers = graph.callers(target, depth=3)

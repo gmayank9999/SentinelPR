@@ -66,7 +66,7 @@ def run_tests(
         stale.unlink(missing_ok=True)
     cmd = pytest_command(test_ids, (scratch / "tests.args").resolve(), package=package, coverage=coverage, stop_first=stop_first, python=python)
     cmd += pytest_isolation(project_root, scratch) + list(extra_args or [])
-    env = pytest_env({"SENTINEL_TEST_REPORT": str(report), "COVERAGE_FILE": str(data_file)})
+    env = pytest_env({"SENTINEL_TEST_REPORT": str(report), "COVERAGE_FILE": str(data_file)}, project_root)
 
     started = time.time()
     try:

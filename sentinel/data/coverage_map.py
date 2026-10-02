@@ -18,10 +18,27 @@ from pathlib import Path
 from sentinel.config import PACKAGE_DIR
 
 
+def package_dir(project_root: Path, package: str) -> str:
+    """Project-relative directory of the import package: ``pkg``, or ``src/pkg`` in a src layout."""
+    rel = package.replace(".", "/")
+    if not (project_root / rel).is_dir() and (project_root / "src" / rel).is_dir():
+        return "src/" + rel
+    return rel
+
+
+def source_roots(project_root: Path) -> list[Path]:
+    """Directories to put on the import path so tests exercise the checked-out code (src layout)
+    rather than a copy installed in the environment."""
+    src = project_root / "src"
+    if src.is_dir() and not (src / "__init__.py").exists():
+        return [src.resolve()]
+    return []
+
+
 def project_fingerprint(project_root: Path, package: str, tests_dir: str) -> str:
     """Hash of every Python file in the package and tests: the coverage map's cache key."""
     digest = hashlib.sha256()
-    for base in (project_root / package.replace(".", "/"), project_root / tests_dir):
+    for base in (project_root / package_dir(project_root, package), project_root / tests_dir):
         for path in sorted(base.rglob("*.py")):
             if "__pycache__" in path.parts:
                 continue
@@ -45,10 +62,11 @@ def pytest_isolation(project_root: Path, scratch: Path) -> list[str]:
     return args
 
 
-def pytest_env(extra: dict | None = None) -> dict:
+def pytest_env(extra: dict | None = None, project_root: Path | None = None) -> dict:
     env = dict(os.environ)
     sentinel_root = str(PACKAGE_DIR.parent)
-    env["PYTHONPATH"] = os.pathsep.join(filter(None, [sentinel_root, env.get("PYTHONPATH")]))
+    sources = [str(p) for p in source_roots(project_root)] if project_root else []
+    env["PYTHONPATH"] = os.pathsep.join(filter(None, [*sources, sentinel_root, env.get("PYTHONPATH")]))
     env.setdefault("PYTHONDONTWRITEBYTECODE", "1")
     env.update(extra or {})
     return env
@@ -80,7 +98,7 @@ def build_coverage_map(
     proc = subprocess.run(
         cmd,
         cwd=project_root,
-        env=pytest_env({"COVERAGE_FILE": str(data_file), "SENTINEL_TEST_REPORT": str(report_file)}),
+        env=pytest_env({"COVERAGE_FILE": str(data_file), "SENTINEL_TEST_REPORT": str(report_file)}, project_root),
         capture_output=True,
         text=True,
         timeout=timeout_s,

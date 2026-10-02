@@ -61,9 +61,11 @@ def module_to_path(module: str, files: set[str], current: str | None = None) -> 
         parts = base + (rest.split(".") if rest else [])
     else:
         parts = module.split(".")
-    for candidate in ("/".join(parts) + ".py", "/".join(parts) + "/__init__.py"):
-        if candidate in files:
-            return candidate
+    roots = ("",) if module.startswith(".") else ("", "src/")  # src layout: src/pkg/mod.py
+    for root in roots:
+        for candidate in (root + "/".join(parts) + ".py", root + "/".join(parts) + "/__init__.py"):
+            if candidate in files:
+                return candidate
     return None
 
 

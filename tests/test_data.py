@@ -115,3 +115,17 @@ def test_link_issues_to_prs():
     issues = [{"number": 1}, {"number": 2, "linked_prs": [5]}]
     link_issues_to_prs(issues, [{"number": 5, "linked_issues": [1, 2]}])
     assert issues[0]["linked_prs"] == [5] and issues[1]["linked_prs"] == [5]
+
+
+def test_src_layout_package_dir_and_import_path(tmp_path):
+    from sentinel.data.coverage_map import package_dir, pytest_env, source_roots
+
+    (tmp_path / "flat" / "pkg").mkdir(parents=True)
+    assert package_dir(tmp_path / "flat", "pkg") == "pkg"
+    assert source_roots(tmp_path / "flat") == []
+
+    (tmp_path / "layered" / "src" / "pkg").mkdir(parents=True)
+    root = tmp_path / "layered"
+    assert package_dir(root, "pkg") == "src/pkg"
+    assert source_roots(root) == [(root / "src").resolve()]
+    assert pytest_env(project_root=root)["PYTHONPATH"].startswith(str((root / "src").resolve()))
