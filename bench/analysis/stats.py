@@ -14,9 +14,10 @@ from collections import defaultdict
 import numpy as np
 from sklearn.metrics import average_precision_score, precision_recall_curve, roc_auc_score, roc_curve
 
+from sentinel.config import PACKAGE_DIR
 from sentinel.risk.calibration import brier, ece, reliability
 from sentinel.risk.features import GROUPS
-from sentinel.risk.model import PRIOR, calibrated_prior, train
+from sentinel.risk.model import PRIOR, RiskModel, calibrated_prior, train
 from sentinel.risk.policy import choose_thresholds
 from sentinel.risk.train import recall_at_fpr
 
@@ -101,6 +102,8 @@ def _eligible(rows: list[dict]) -> list[dict]:
     """PRs the risk model scores: rejected-by-guard PRs never reach the model."""
     return [r for r in rows if not r["sentinel"]["rejected"] and r["sentinel"]["risk"] is not None]
 
+
+SHIPPED_MODEL = PACKAGE_DIR / "risk" / "artifacts" / "model.json"
 
 FAMILIES = {
     "learned": "SentinelPR (learned weights, sign-constrained)",
@@ -188,6 +191,15 @@ def gate_evaluation(rows: list[dict]) -> dict:
     methods["SentinelPR (prior, untrained)"] = [{"id": i, "label": by_id[i]["label"], "score": PRIOR.predict(by_id[i]["features"]),
                                                  "block": 0.65, "canary": 0.35, "category": by_id[i]["category"], "tests_fail": 1 - by_id[i]["tests_pass"]}
                                                 for i in sorted(reference)]
+    # Out of the box on another project: the bundled model, as shipped, with no retraining.
+    shipped = RiskModel.load(SHIPPED_MODEL) if SHIPPED_MODEL.exists() else None
+    trained_on = (shipped.metadata.get("name") or "").removesuffix("-benchmark") if shipped else ""
+    if shipped and trained_on and trained_on not in {r.get("repo") for r in rows}:
+        methods[f"SentinelPR (shipped {trained_on} model, no retraining)"] = [
+            {"id": i, "label": by_id[i]["label"], "score": shipped.predict(by_id[i]["features"]),
+             "block": shipped.thresholds["block"], "canary": shipped.thresholds["canary"],
+             "category": by_id[i]["category"], "tests_fail": 1 - by_id[i]["tests_pass"]}
+            for i in sorted(reference)]
     if any("llm_reviewer" in by_id[i] and "probability" in by_id[i]["llm_reviewer"] for i in reference):
         methods["B-LLM"] = [{"id": i, "label": by_id[i]["label"], "score": by_id[i]["llm_reviewer"]["probability"],
                              "block": 0.5, "canary": 0.5, "category": by_id[i]["category"], "tests_fail": 0}
@@ -339,5 +351,5 @@ def dataset_summary(rows: list[dict]) -> dict:
         entry["n"] += 1
         entry["defective"] += r["label"]
         entry["tests_pass"] += r["tests_pass"]
-    return {"prs": len(rows), "defective": sum(r["label"] for r in rows), "bases": sorted({r["base"] for r in rows}, key=str),
+    return {"prs": len(rows), "defective": sum(r["label"] for r in rows), "bases": sorted({r["base"] for r in rows}, key=lambda b: min(r.get("base_order", 0) for r in rows if r["base"] == b)),
             "by_category": dict(sorted(by_category.items()))}
