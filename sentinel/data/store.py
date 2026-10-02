@@ -179,6 +179,7 @@ class Store:
         raw.row_factory = sqlite3.Row
         self.conn = _LockedConnection(raw)
         self.conn.executescript(SCHEMA)
+        self._renamed_from: dict[str, set[str]] | None = None  # built on first path_aliases()
 
     def close(self) -> None:
         self.conn.close()
@@ -195,6 +196,7 @@ class Store:
     # commits --------------------------------------------------------------
     def replace_commits(self, commits: Iterable[dict]) -> int:
         cur = self.conn.cursor()
+        self._renamed_from = None
         cur.execute("DELETE FROM commits")
         cur.execute("DELETE FROM commit_files")
         cur.execute("DELETE FROM commit_functions")
@@ -249,6 +251,22 @@ class Store:
             (path,),
         )
         return [self._commit_row(r) for r in rows]
+
+    def path_aliases(self, path: str) -> set[str]:
+        """``path`` and every earlier name it had, following renames recorded in the history."""
+        if self._renamed_from is None:
+            self._renamed_from = defaultdict(set)
+            for (files,) in self.conn.execute("SELECT files FROM commits"):
+                for f in json.loads(files or "[]"):
+                    if f.get("renamed_from"):
+                        self._renamed_from[f["path"]].add(f["renamed_from"])
+        seen, todo = {path}, [path]
+        while todo:
+            for old in self._renamed_from.get(todo.pop(), ()):
+                if old not in seen:
+                    seen.add(old)
+                    todo.append(old)
+        return seen
 
     def file_history(self, path: str) -> list[sqlite3.Row]:
         return list(self.conn.execute("SELECT * FROM commit_files WHERE file = ? ORDER BY timestamp", (path,)))

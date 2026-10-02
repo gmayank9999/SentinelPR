@@ -60,15 +60,11 @@ def _parse_log(raw: str) -> list[dict]:
             if len(parts) != 3:
                 continue
             adds, dels, path = parts
+            entry = {"additions": int(adds) if adds.isdigit() else 0, "deletions": int(dels) if dels.isdigit() else 0}
             if " => " in path:  # rename: "dir/{old => new}.py" or "old => new"
-                path = _rename_target(path)
-            files.append(
-                {
-                    "path": path,
-                    "additions": int(adds) if adds.isdigit() else 0,
-                    "deletions": int(dels) if dels.isdigit() else 0,
-                }
-            )
+                entry["renamed_from"] = _rename_side(path, 0)
+                path = _rename_side(path, 1)
+            files.append({"path": path, **entry})
         commits.append(
             {
                 "sha": sha,
@@ -83,12 +79,13 @@ def _parse_log(raw: str) -> list[dict]:
     return commits
 
 
-def _rename_target(path: str) -> str:
+def _rename_side(path: str, side: int) -> str:
+    """One side of a numstat rename: 0 for the old path, 1 for the new one."""
     match = re.match(r"(.*)\{(.*) => (.*)\}(.*)", path)
     if match:
-        prefix, _, new, suffix = match.groups()
-        return (prefix + new + suffix).replace("//", "/")
-    return path.split(" => ")[-1]
+        prefix, old, new, suffix = match.groups()
+        return (prefix + (old, new)[side] + suffix).replace("//", "/")
+    return path.split(" => ")[side]
 
 
 def mine_commits(
@@ -108,8 +105,9 @@ def mine_commits(
 
     for commit in commits:
         for f in commit["files"]:
-            if prefix and f["path"].startswith(prefix):
-                f["path"] = f["path"][len(prefix) :]
+            for key in ("path", "renamed_from"):
+                if prefix and f.get(key, "").startswith(prefix):
+                    f[key] = f[key][len(prefix) :]
         commit["files"] = [f for f in commit["files"] if not (prefix and f["path"].startswith("../"))]
         commit["additions"] = sum(f["additions"] for f in commit["files"])
         commit["deletions"] = sum(f["deletions"] for f in commit["files"])

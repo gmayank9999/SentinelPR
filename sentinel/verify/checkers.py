@@ -191,12 +191,13 @@ def check_history_link(claim: Claim, facts: Facts) -> Verdict:
     store = facts.store
     file, _, qualname = claim.target.partition("::")
     problems, confirmed, unchecked = [], [], []
+    aliases = store.path_aliases(file) if hasattr(store, "path_aliases") else {file}  # the file may have moved since
     for ref in claim.evidence_ids:
         if ref.startswith("commit:"):
             commit = _commit_for(store, ref)
             if commit is None:
                 problems.append(f"{ref} does not exist")
-            elif claim.target in commit["functions"] or any(f["path"] == file for f in commit["files"]):
+            elif any(f"{a}::{qualname}" in commit["functions"] for a in aliases) or any(f["path"] in aliases for f in commit["files"]):
                 confirmed.append(ref)
             else:
                 problems.append(f"{ref} does not touch {file}")

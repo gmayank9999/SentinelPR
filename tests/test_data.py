@@ -129,3 +129,17 @@ def test_src_layout_package_dir_and_import_path(tmp_path):
     assert package_dir(root, "pkg") == "src/pkg"
     assert source_roots(root) == [(root / "src").resolve()]
     assert pytest_env(project_root=root)["PYTHONPATH"].startswith(str((root / "src").resolve()))
+
+
+def test_renames_are_followed_back_to_earlier_paths(git_repo, tmp_path):
+    first = git_repo.commit("Add pricing", {"pkg/shop.py": V1}, date="2026-01-01T10:00:00")
+    git_repo.commit("Move to src layout", {"pkg/shop.py": None, "src/pkg/shop.py": V1}, date="2026-01-02T10:00:00")
+    commits = mine_commits(git_repo.path)
+    moved = next(f for f in commits[1]["files"] if f["path"] == "src/pkg/shop.py")
+    assert moved["renamed_from"] == "pkg/shop.py"
+
+    store = Store(tmp_path / "s.db")
+    store.replace_commits(commits)
+    assert store.path_aliases("src/pkg/shop.py") == {"src/pkg/shop.py", "pkg/shop.py"}
+    assert store.path_aliases("other.py") == {"other.py"}
+    assert store.commit(first)["files"][0]["path"] in store.path_aliases("src/pkg/shop.py")
