@@ -196,7 +196,7 @@ class Pipeline:
     def decide_node(self, state: SentinelState) -> dict:
         rt = self.rt
         thresholds = self.model.thresholds if self.model.metadata.get("evaluation") else self.cfg.get("risk.thresholds", self.model.thresholds)
-        failures = len(rt.verification.test_run.failed) if rt.verification else 0
+        failures = len(rt.verification.new_failures) if rt.verification else 0
         rt.policy = decide(rt.assessment.probability, failures, thresholds)
         rt.explanation = template_explanation(rt.assessment)
         ctx = rt.ctx
@@ -211,7 +211,7 @@ class Pipeline:
 
     def guard_out(self, state: SentinelState) -> dict:
         rt = self.rt
-        failures = len(rt.verification.test_run.failed) if rt.verification else 0
+        failures = len(rt.verification.new_failures) if rt.verification else 0
         expected = decide(rt.assessment.probability, failures, rt.policy.thresholds).decision
         events = check_decision_integrity(state.get("decision"), expected, rt.explanation if rt.explanation_source == "llm" else "")
         rt.ctx.guard_events.extend(events)

@@ -97,7 +97,7 @@ def build_features(signals: dict[str, float], verification=None, claims=None, ve
     f["log_code_age_days"] = math.log1p(max(signals.get("code_age_days", 0.0), 0.0))
 
     if verification is not None:
-        f["verified_test_failures"] = float(len(verification.test_run.failed))
+        f["verified_test_failures"] = float(len(verification.new_failures))
         f["changed_line_coverage"] = round(verification.changed_coverage, 4)
         f["uncovered_changed_lines"] = float(len(verification.uncovered))
         score = verification.mutation.score

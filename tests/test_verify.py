@@ -159,3 +159,16 @@ def test_history_link_without_tracker_data_is_not_refuted():
 
     assert check_history_link(claim, facts(FakeStore(tracker=False))).status == VerdictStatus.VERIFIED
     assert check_history_link(claim, facts(FakeStore(tracker=True))).status == VerdictStatus.REFUTED
+
+
+def test_failures_already_present_on_the_base_do_not_count():
+    from sentinel.risk.features import build_features
+    from sentinel.verify.verifier import VerificationResult
+
+    run = TestRun(outcomes=[TestOutcome(nodeid="t::flaky", outcome="failed"), TestOutcome(nodeid="t::ok", outcome="passed")])
+    result = VerificationResult(run, {}, MutationReport(), [], preexisting={"t::flaky"})
+    assert result.new_failures == []
+    assert build_features({}, result)["verified_test_failures"] == 0.0
+    assert result.to_dict()["tests"]["preexisting_failures"] == ["t::flaky"]
+    result.preexisting = set()
+    assert [o.nodeid for o in result.new_failures] == ["t::flaky"]

@@ -47,8 +47,11 @@ def summary_lines(report: dict) -> list[str]:
     impacted = ", ".join(f"`{_short(c['target'])}`" for c in verified_impact[:5]) or "no other modules"
     lines.append(f"**Impacted (verified):** {impacted} · refuted: {refuted} claim(s)")
 
-    failed = tests.get("failed", [])
+    preexisting = set(tests.get("preexisting_failures", []))
+    failed = [t for t in tests.get("failed", []) if t["nodeid"] not in preexisting]
     test_status = "all pass" if not failed and not tests.get("collection_error") else f"**{len(failed)} failing**"
+    if preexisting:
+        test_status += f" ({len(preexisting)} already failing on the base, ignored)"
     saved = selection.get("time_saved_ratio")
     saved_text = f" ({saved:.0%} of suite time saved)" if saved else ""
     score = mutation.get("score")

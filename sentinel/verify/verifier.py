@@ -33,6 +33,12 @@ class VerificationResult:
     changed_lines_total: int = 0
     changed_lines_covered: int = 0
     uncovered: list[tuple[str, int]] = field(default_factory=list)
+    preexisting: set[str] = field(default_factory=set)  # failing tests that already failed on the base
+
+    @property
+    def new_failures(self) -> list:
+        """Failing tests the change is responsible for (pre-existing failures excluded)."""
+        return [o for o in self.test_run.failed if o.nodeid not in self.preexisting]
 
     @property
     def changed_coverage(self) -> float:
@@ -44,6 +50,7 @@ class VerificationResult:
                 "selected": len(self.test_run.selected),
                 "passed": len(self.test_run.passed),
                 "failed": [o.model_dump() for o in self.test_run.failed],
+                "preexisting_failures": sorted(self.preexisting),
                 "duration_s": self.test_run.duration_s,
                 "collection_error": self.test_run.collection_error,
             },
@@ -119,7 +126,10 @@ class Verifier:
         run, line_tests, mutation, changed, import_lines = self.execute(units, test_ids)
         facts = Facts(units, run, line_tests, mutation, graph, store, llm, llm_allowed, changed)
         verdicts = [check(c, facts) for c in claims]
-        return self._result(run, line_tests, mutation, verdicts, changed, import_lines)
+        result = self._result(run, line_tests, mutation, verdicts, changed, import_lines)
+        base_failing = {t["test_id"] for t in store.all_tests() if t.get("outcome") in ("failed", "error")} if store else set()
+        result.preexisting = {o.nodeid for o in run.failed} & base_failing
+        return result
 
     def recheck(self, previous: VerificationResult, units: list[ChangeUnit], claims: list[Claim], *, graph, store, llm=None, llm_allowed=False) -> list[Verdict]:
         """Check new claims against observations already made (used after the impact retry)."""
