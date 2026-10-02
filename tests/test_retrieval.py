@@ -147,3 +147,11 @@ def test_absorb_keeps_evidence_edges_across_line_shifts(graph):
     assert head.commits_for(target) == ["commit:abc"]
     assert head.covering_tests(target) == ["sym:tests/test_gpa.py::test_gpa"]
     assert head.test_ids_for("sym:tests/test_gpa.py::test_gpa") == ["tests/test_gpa.py::test_gpa"]
+
+
+def test_nested_functions_resolve_to_the_enclosing_symbol():
+    graph = CodeGraph()
+    graph.g.add_node("sym:a.py::Box.pack", qualname="Box.pack")
+    assert graph.enclosing("sym:a.py::Box.pack.fmt") == "sym:a.py::Box.pack"
+    assert graph.enclosing("sym:a.py::Box.pack") == "sym:a.py::Box.pack"
+    assert graph.enclosing("sym:a.py::gone") == "sym:a.py::gone"

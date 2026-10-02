@@ -60,7 +60,7 @@ class AgentContext:
         return self.index.sources.get(path)
 
     def node(self, unit: ChangeUnit) -> str:
-        return unit_to_node(unit.id)
+        return self.graph.enclosing(unit_to_node(unit.id))
 
     def guard(self, guard: str, stage: str, severity: str, message: str, location: str | None = None) -> None:
         self.guard_events.append(GuardEvent(guard=guard, stage=stage, severity=severity, message=message, location=location))

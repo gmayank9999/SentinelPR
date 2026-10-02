@@ -102,7 +102,7 @@ def check_test_impact(claim: Claim, facts: Facts) -> Verdict:
 
 def check_module_impact(claim: Claim, facts: Facts) -> Verdict:
     module = claim.target
-    changed_nodes = [unit_to_node(u.id) for u in facts.units if u.kind != "module" and not is_test_path(u.file)]
+    changed_nodes = [facts.graph.enclosing(unit_to_node(u.id)) for u in facts.units if u.kind != "module" and not is_test_path(u.file)]
     reachable_via = None
     for node in changed_nodes:
         for caller in facts.graph.callers(node, depth=4):
@@ -167,7 +167,7 @@ def check_api_break(claim: Claim, facts: Facts) -> Verdict:
     unit = next((u for u in facts.units if u.id == claim.target), None)
     if unit is None:
         return Verdict(claim_id=claim.claim_id, status=U, method="static", detail="target is not a changed symbol")
-    node = unit_to_node(unit.id)
+    node = facts.graph.enclosing(unit_to_node(unit.id))
     callers = [c for c in facts.graph.callers(node, 1) if not facts.graph.node(c).get("is_test")]
     failing = [o.nodeid for o in facts.test_run.failed]
     incompatibility = signature_incompatible(unit.old_signature, unit.new_signature)

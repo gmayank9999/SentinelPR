@@ -330,6 +330,12 @@ class CodeGraph:
     def node(self, node: str) -> dict:
         return dict(self.g.nodes[node]) if node in self.g else {}
 
+    def enclosing(self, node: str) -> str:
+        """The node itself, or for a nested function the closest enclosing symbol in the graph."""
+        while node not in self.g and "." in node.partition("::")[2]:
+            node = node.rsplit(".", 1)[0]
+        return node
+
     def test_ids_for(self, node: str) -> list[str]:
         return list(self.g.nodes[node].get("test_ids", [])) if node in self.g else []
 
