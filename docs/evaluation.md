@@ -53,13 +53,14 @@ releases are valid bases.
 
   | experiment | model | scope | result |
   |---|---|---|---|
-  | LLM agents + B-LLM reviewer | `openai/gpt-oss-120b` | UniERP release 1.3.0, 37 PRs out of fold | [`llm.md`](../bench/results/uni-erp/llm.md) |
+  | LLM agents + B-LLM reviewer | `openai/gpt-oss-120b` | UniERP releases 1.3.0 and 1.4.0, 75 PRs out of fold | [`llm.md`](../bench/results/uni-erp/llm.md) |
   | Impact prompt v1 / v2 / v3 | `openai/gpt-oss-20b` | 20 UniERP PRs | [`prompt_ab.json`](../bench/results/uni-erp/prompt_ab.json) |
   | Q&A: no RAG / code / code + history | `qwen/qwen3.8-27b` | 41 questions | [`results-llm.json`](../bench/results/qa/results-llm.json) |
 
-  Release 1.4.0 with the LLM needs another day's quota:
-  `python -m bench.run_matrix --repo uni-erp --llm --workers 1 --labels bench/out/uni-erp/prs.jsonl
-  --bases "Release 1.4.0" --resume --out bench/out/uni-erp-llm`, then `python -m bench.analysis.llm`.
+  Reproduce with `python -m bench.run_matrix --repo uni-erp --llm --workers 1 --labels
+  bench/out/uni-erp/prs.jsonl --bases "Release 1.3.0" "Release 1.4.0" --out bench/out/uni-erp-llm`,
+  then `python -m bench.analysis.llm`; every task got an answer for all 77 PRs, and the execution
+  evidence is identical between the two runs.
   The evidence-only results (everything else) use no LLM.
 
 ## Results (UniERP)
@@ -121,9 +122,9 @@ The full report with confidence intervals is in
 * **Oracle completeness.** A PR is defective only if a base or hidden test catches it. On humanize,
   source-only reverts of real bug fixes that no test covers, and new optional parameters no test
   exercises, are labelled benign; SentinelPR blocks several of them, which counts as a false block.
-* **What the LLM measurements can and cannot say.** 37 paired PRs from one release and one model
-  per experiment: they show the LLM adds no measurable signal *here*, with wide intervals, not that
-  no model could. B-LLM sees the unified diff truncated to 8,000 characters, so a defect late in
+* **What the LLM measurements can and cannot say.** 75 paired PRs from two releases and one model
+  per experiment: they show the LLM adds no signal to the gate *here* and that its low-risk
+  ratings let subtle defects through, not that no model could. B-LLM sees the unified diff truncated to 8,000 characters, so a defect late in
   an oversized PR is invisible to it by construction. Free-tier models change; ids are recorded in
   every result file.
 * **Q&A set.** The 41 questions were written with knowledge of the repository; `accuracy` is

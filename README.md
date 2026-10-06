@@ -13,7 +13,8 @@ rollback watches the change in (simulated) production.
 
 Everything runs on GitHub Actions and free tooling. No LLM is required: without providers the
 agents fall back to evidence-only claims, and the decision never depends on model output anyway
-(measured: switching the LLM on does not change the gate's accuracy; see Results).
+(measured: switching the LLM on does not improve the gate, and its opinion lets more subtle
+defects through; see Results).
 
 ## What a PR sees
 
@@ -109,21 +110,24 @@ p < 0.001). Test selection runs 11 of 107 tests on average — 86% of suite time
 still selecting 95% of the tests that actually fail.
 
 **RQ5 — cost**: 4.1 s per PR at the median (13.4 s p95) on a laptop without an LLM, almost all of
-it test execution and mutation. With the LLM agents on (Groq `gpt-oss-120b`): about 3,800 tokens
-and 4 calls per PR; a free-tier key's 200k tokens per day cover roughly 45 PRs.
+it test execution and mutation. With the LLM agents on (Groq `gpt-oss-120b`): about 4,400 tokens
+and 4–5 calls per PR, plus about 550 for the single-call reviewer; a free-tier key's 200k tokens
+per day cover roughly 40 PRs.
 
-**What the LLM adds** (37 PRs of release 1.3.0 scored out of fold, both runs on the same PRs;
-[report](bench/results/uni-erp/llm.md)): nothing measurable for the gate. The Impact agent's own
-risk rating is close to chance (ROC-AUC 0.57; it rated 17 of 23 defective PRs "low"), and adding
-it or the LLM's claims leaves the gate where it was (PR-AUC 0.980 → 0.976, same decisions). LLM
-impact claims are slightly better than the rule-based ones (test F1 0.77 vs 0.75). A single-call
-LLM reviewer that sees the full diff (B-LLM) ranks well (ROC-AUC 0.958) but is poorly calibrated
-(Brier 0.186 vs 0.086) and approved defective API and config changes, a hidden fault and an
-oversized PR whose defect sat past its context; where the two disagree, SentinelPR was right on 7
-PRs and B-LLM on 3 (McNemar p = 0.34). In the prompt study
-([`prompt_ab.json`](bench/results/uni-erp/prompt_ab.json), `gpt-oss-20b`, 20 PRs) the zero-shot
-prompt parsed 40% of the time, the few-shot prompt parsed always but 83% of the tests it named do
-not exist, and the evidence-constrained prompt named only real tests (precision 0.50, recall 0.54).
+**What the LLM adds** (75 PRs of releases 1.3.0 and 1.4.0 scored out of fold, both runs on the same
+PRs; [report](bench/results/uni-erp/llm.md)): nothing for the gate, and it hurts on subtle
+defects. The Impact agent's own risk rating is weak on its own (ROC-AUC 0.63; it rated 32 of 47
+defective PRs "low"), and feeding it to the model lets more defective PRs straight through:
+2 PASS without the LLM, 5 with the full LLM pipeline, 7 with its rating added to the evidence —
+hidden faults and config changes the model called low-risk. PR-AUC barely moves (0.982 → 0.980).
+LLM impact claims are better than the rule-based ones (test F1 0.81 vs 0.72). A single-call LLM
+reviewer that sees the full diff (B-LLM) ranks reasonably (ROC-AUC 0.924) but is poorly
+calibrated (Brier 0.193 vs 0.069) and approved 13 defective PRs: API and config changes, a hidden
+fault and both oversized PRs whose defect sat past its context (McNemar p = 0.115 on block
+decisions). In the prompt study ([`prompt_ab.json`](bench/results/uni-erp/prompt_ab.json),
+`gpt-oss-20b`, 20 PRs) the zero-shot prompt parsed 40% of the time, the few-shot prompt parsed
+always but 83% of the tests it named do not exist, and the evidence-constrained prompt named only
+real tests (precision 0.50, recall 0.54).
 
 **RQ2 — claim verification**: of 789 execution-checkable impact claims, 54% were true before
 verification and 100% of those kept as VERIFIED were true, at the cost of 8% of true claims
@@ -140,7 +144,7 @@ cannot know). 0% hallucinated answers on unanswerable and adversarial questions 
 **RQ6 — adversarial robustness**: 0 of 24 attacked defective PRs (injection in title, body or
 comments; planted secrets; oversized diffs) received PASS on UniERP and on humanize, 1 of 24 on
 tablib (a hidden fault that also passed without the attack); no guardrail false positives on
-benign PRs. The LLM-only reviewer approved 1 of 6 attacked PRs.
+benign PRs. The LLM-only reviewer approved 2 of 12 attacked PRs (both oversized).
 
 Limitations and threats to validity: [docs/evaluation.md](docs/evaluation.md).
 
