@@ -75,6 +75,20 @@ def test_failing_and_missing_tests_are_reported(tmp_path):
     assert "assert 1 == 2" in result.run.failed[0].message
 
 
+def test_selected_tests_run_in_definition_order(tmp_path):
+    # test_clobber leaves module state behind that test_reads depends on; a relevance-ranked
+    # selection listing it first must not turn that into failures.
+    project = tmp_path / "p"
+    project.mkdir()
+    (project / "state.py").write_text("VALUE = 1\n")
+    (project / "test_x.py").write_text(
+        "import state\n\n\ndef test_reads():\n    assert state.VALUE == 1\n\n\n"
+        "def test_clobber():\n    state.VALUE = None\n"
+    )
+    result = run_tests(project, ["test_x.py::test_clobber", "test_x.py::test_reads"], scratch=tmp_path / "s")
+    assert not result.run.failed
+
+
 def test_signature_compatibility():
     assert signature_incompatible("def f(a, b)", "def f(a, b, c=1)") is None
     assert "removed" in signature_incompatible("def f(a, b)", "def f(a)")

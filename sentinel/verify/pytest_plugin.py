@@ -18,7 +18,16 @@ def _entry(nodeid: str) -> dict:
     return _results.setdefault(nodeid, {"nodeid": nodeid, "outcome": "passed", "duration_s": 0.0, "message": ""})
 
 
+def _definition_order(item) -> tuple[str, int]:
+    path, lineno, _ = item.location
+    return path.replace("\\", "/"), lineno if lineno is not None else -1
+
+
 def pytest_collection_modifyitems(items):
+    # Selected tests arrive ranked by relevance. Run them in the order the full suite would,
+    # because some suites have order-dependent tests (one test mutates module state that a
+    # later-defined test relies on) and would fail for reasons unrelated to the change.
+    items.sort(key=_definition_order)
     _collected.extend(item.nodeid for item in items)
 
 
