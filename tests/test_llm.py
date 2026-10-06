@@ -60,6 +60,29 @@ def test_falls_back_on_rate_limit_and_caches(tmp_path):
     assert a.calls == 1  # the rate-limited provider was not retried
 
 
+class LimitedOnce(FakeProvider):
+    def complete(self, system, user, **kwargs):
+        self.calls += 1
+        if self.calls == 1:
+            raise RateLimited("slow down", retry_after=0.6)
+        return Completion("later", self.model, 10, 2, 0.01)
+
+
+def test_waits_for_rate_limit_when_every_provider_is_limited(tmp_path):
+    a = LimitedOnce("a")
+    c = client(tmp_path, {"a": a}, max_wait_s=5)
+    text, _ = c.complete("impact", "sys", "user")
+    assert text == "later" and a.calls == 2
+
+
+def test_gives_up_when_rate_limit_outlasts_max_wait(tmp_path):
+    a = FakeProvider("a", error=RateLimited("slow down", retry_after=60))
+    c = client(tmp_path, {"a": a}, max_wait_s=1)
+    with pytest.raises(ProviderError):
+        c.complete("impact", "sys", "user")
+    assert a.calls == 1
+
+
 def test_unavailable_everywhere(tmp_path):
     c = client(tmp_path, {"a": FakeProvider("a", available=False)})
     assert not c.available

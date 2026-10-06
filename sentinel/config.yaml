@@ -27,9 +27,10 @@ llm:
   low_budget_threshold: 8000
   cache: true
   timeout_s: 60
+  max_wait_s: 90               # wait this long for rate limits to clear before giving up
   providers:
     groq:
-      model: llama-3.3-70b-versatile
+      model: openai/gpt-oss-120b
     gemini:
       model: gemini-2.0-flash
     ollama:

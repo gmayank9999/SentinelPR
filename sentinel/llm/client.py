@@ -64,6 +64,7 @@ class LLMClient:
         self.temperature = float(cfg.get("llm.temperature", 0.0))
         self.budget = int(cfg.get("llm.budget_tokens", 60000))
         self.low_budget = int(cfg.get("llm.low_budget_threshold", 8000))
+        self.max_wait = float(cfg.get("llm.max_wait_s", 90))
         self.router_enabled = bool(cfg.get("llm.router", True))
         if cache is None and cfg.get("llm.cache", True):
             cache = ResponseCache(cfg.workdir / "llm-cache.sqlite")
@@ -112,27 +113,40 @@ class LLMClient:
                     return cached["text"], call
 
         errors = []
-        for name in chain:
-            provider = self.providers[name]
-            if not provider.available or self._cooling_down(name):
-                continue
-            try:
-                completion = provider.complete(system, user, json_mode=json_mode, temperature=self.temperature, max_tokens=max_tokens)
-            except RateLimited as exc:
-                errors.append(str(exc))
-                self._cooldown[name] = time.monotonic() + RATE_LIMIT_COOLDOWN_S
-                self._record(LLMCall(task=task, provider=name, model=provider.model, tier=decision.tier, error="rate_limited"), count_tokens=False)
-                continue
-            except ProviderError as exc:
-                errors.append(str(exc))
-                continue
-            call = LLMCall(task=task, provider=name, model=completion.model, prompt_tokens=completion.prompt_tokens,
-                           completion_tokens=completion.completion_tokens, latency_s=round(completion.latency_s, 3), tier=decision.tier)
-            self._record(call)
-            if self.cache:
-                self.cache.put(keys[name], {"text": completion.text, "model": completion.model,
-                                            "prompt_tokens": completion.prompt_tokens, "completion_tokens": completion.completion_tokens})
-            return completion.text, call
+        deadline = time.monotonic() + self.max_wait
+        while True:
+            limited = False
+            for name in chain:
+                provider = self.providers[name]
+                if not provider.available:
+                    continue
+                if self._cooling_down(name):
+                    limited = True
+                    continue
+                try:
+                    completion = provider.complete(system, user, json_mode=json_mode, temperature=self.temperature, max_tokens=max_tokens)
+                except RateLimited as exc:
+                    errors.append(str(exc))
+                    limited = True
+                    self._cooldown[name] = time.monotonic() + (exc.retry_after or RATE_LIMIT_COOLDOWN_S)
+                    self._record(LLMCall(task=task, provider=name, model=provider.model, tier=decision.tier, error="rate_limited"), count_tokens=False)
+                    continue
+                except ProviderError as exc:
+                    errors.append(str(exc))
+                    continue
+                call = LLMCall(task=task, provider=name, model=completion.model, prompt_tokens=completion.prompt_tokens,
+                               completion_tokens=completion.completion_tokens, latency_s=round(completion.latency_s, 3), tier=decision.tier)
+                self._record(call)
+                if self.cache:
+                    self.cache.put(keys[name], {"text": completion.text, "model": completion.model,
+                                                "prompt_tokens": completion.prompt_tokens, "completion_tokens": completion.completion_tokens})
+                return completion.text, call
+            # Every reachable provider is rate limited: wait for the earliest to recover rather
+            # than silently degrading to the evidence-only path, up to max_wait_s.
+            wake = min((self._cooldown.get(n, 0.0) for n in chain if self.providers[n].available), default=0.0)
+            if not limited or wake > deadline:
+                break
+            time.sleep(max(0.5, wake - time.monotonic()))
         raise ProviderError("no provider could serve the request: " + "; ".join(errors or ["none available"]))
 
     def structured(self, task: str, system: str, user: str, schema: type[T], **kwargs) -> tuple[T | None, list[LLMCall], list[str]]:

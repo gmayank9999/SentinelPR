@@ -19,7 +19,9 @@ class ProviderError(RuntimeError):
 
 
 class RateLimited(ProviderError):
-    pass
+    def __init__(self, message: str, retry_after: float | None = None):
+        super().__init__(message)
+        self.retry_after = retry_after
 
 
 class ProviderUnavailable(ProviderError):
@@ -41,7 +43,11 @@ def estimate_tokens(text: str) -> int:
 
 def _raise_for(response: httpx.Response, provider: str) -> None:
     if response.status_code == 429:
-        raise RateLimited(f"{provider}: rate limited")
+        try:
+            retry_after = float(response.headers.get("retry-after", ""))
+        except ValueError:
+            retry_after = None
+        raise RateLimited(f"{provider}: rate limited (retry after {retry_after}s)", retry_after)
     if response.status_code in (401, 403):
         raise ProviderUnavailable(f"{provider}: not authorised")
     if response.status_code >= 500:
@@ -74,6 +80,9 @@ class GroqProvider:
         }
         if json_mode:
             body["response_format"] = {"type": "json_object"}
+        if self.model.startswith("openai/gpt-oss"):
+            # reasoning tokens count against max_tokens; the tasks here need little of it
+            body["reasoning_effort"] = "low"
         started = time.time()
         try:
             response = httpx.post(self.url, json=body, headers={"Authorization": f"Bearer {self.api_key}"}, timeout=self.timeout)
@@ -191,7 +200,7 @@ def build_providers(cfg) -> dict:
     timeout = cfg.get("llm.timeout_s", 60)
     providers = cfg.get("llm.providers", {}) or {}
     return {
-        "groq": GroqProvider(providers.get("groq", {}).get("model", "llama-3.3-70b-versatile"), timeout=timeout),
+        "groq": GroqProvider(providers.get("groq", {}).get("model", "openai/gpt-oss-120b"), timeout=timeout),
         "gemini": GeminiProvider(providers.get("gemini", {}).get("model", "gemini-2.0-flash"), timeout=timeout),
         "ollama": OllamaProvider(
             providers.get("ollama", {}).get("model", "qwen2.5-coder:1.5b"),
