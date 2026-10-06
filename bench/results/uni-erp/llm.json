@@ -1,0 +1,482 @@
+{
+ "repo": "uni-erp",
+ "bases": [
+  "Release 1.3.0"
+ ],
+ "model": "openai/gpt-oss-120b",
+ "gate": {
+  "table": {
+   "no LLM": {
+    "n": 37,
+    "positives": 23,
+    "roc_auc": 0.9627,
+    "roc_auc_ci": [
+     0.8975,
+     1.0
+    ],
+    "pr_auc": 0.9799,
+    "pr_auc_ci": [
+     0.9422,
+     1.0
+    ],
+    "recall_at_5fpr": 0.8261,
+    "brier": 0.0862,
+    "ece": 0.1063,
+    "threshold": 0.8698,
+    "false_block_rate": 0.0,
+    "block_recall": 0.8261
+   },
+   "+ LLM rating": {
+    "n": 37,
+    "positives": 23,
+    "roc_auc": 0.9596,
+    "roc_auc_ci": [
+     0.8882,
+     1.0
+    ],
+    "pr_auc": 0.9781,
+    "pr_auc_ci": [
+     0.9369,
+     1.0
+    ],
+    "recall_at_5fpr": 0.8261,
+    "brier": 0.0916,
+    "ece": 0.1102,
+    "threshold": 0.8698,
+    "false_block_rate": 0.0,
+    "block_recall": 0.8261
+   },
+   "LLM pipeline": {
+    "n": 37,
+    "positives": 23,
+    "roc_auc": 0.9534,
+    "roc_auc_ci": [
+     0.8718,
+     1.0
+    ],
+    "pr_auc": 0.9758,
+    "pr_auc_ci": [
+     0.9286,
+     1.0
+    ],
+    "recall_at_5fpr": 0.8261,
+    "brier": 0.0866,
+    "ece": 0.0871,
+    "threshold": 0.8698,
+    "false_block_rate": 0.0,
+    "block_recall": 0.8261
+   },
+   "LLM rating alone": {
+    "n": 37,
+    "positives": 23,
+    "roc_auc": 0.5683,
+    "roc_auc_ci": [
+     0.435,
+     0.6875
+    ],
+    "pr_auc": 0.6877,
+    "pr_auc_ci": [
+     0.5331,
+     0.8199
+    ],
+    "recall_at_5fpr": 0.1304,
+    "brier": 0.3441,
+    "ece": 0.3324,
+    "threshold": 0.65,
+    "false_block_rate": 0.0,
+    "block_recall": 0.1304
+   },
+   "B-LLM": {
+    "n": 37,
+    "positives": 23,
+    "roc_auc": 0.9581,
+    "roc_auc_ci": [
+     0.8967,
+     0.9971
+    ],
+    "pr_auc": 0.9697,
+    "pr_auc_ci": [
+     0.9197,
+     0.9986
+    ],
+    "recall_at_5fpr": 0.7826,
+    "brier": 0.1863,
+    "ece": 0.2403,
+    "threshold": 0.5,
+    "false_block_rate": 0.0,
+    "block_recall": 0.6522
+   }
+  },
+  "mcnemar_vs_no_llm": {
+   "+ LLM rating": {
+    "a_only": 0,
+    "b_only": 0,
+    "p_value": 1.0
+   },
+   "LLM pipeline": {
+    "a_only": 0,
+    "b_only": 0,
+    "p_value": 1.0
+   },
+   "LLM rating alone": {
+    "a_only": 16,
+    "b_only": 0,
+    "p_value": 3e-05
+   },
+   "B-LLM": {
+    "a_only": 7,
+    "b_only": 3,
+    "p_value": 0.34375
+   }
+  },
+  "per_category": {
+   "no LLM": {
+    "C1": {
+     "n": 6,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 6
+    },
+    "C2": {
+     "n": 7,
+     "defective": 7,
+     "blocked": 7,
+     "passed": 0
+    },
+    "HF": {
+     "n": 3,
+     "defective": 3,
+     "blocked": 1,
+     "passed": 1
+    },
+    "C3": {
+     "n": 4,
+     "defective": 2,
+     "blocked": 2,
+     "passed": 0
+    },
+    "C4": {
+     "n": 2,
+     "defective": 2,
+     "blocked": 2,
+     "passed": 0
+    },
+    "C5": {
+     "n": 5,
+     "defective": 4,
+     "blocked": 3,
+     "passed": 2
+    },
+    "C6": {
+     "n": 5,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 5
+    },
+    "C7": {
+     "n": 5,
+     "defective": 5,
+     "blocked": 4,
+     "passed": 0
+    }
+   },
+   "+ LLM rating": {
+    "C1": {
+     "n": 6,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 6
+    },
+    "C2": {
+     "n": 7,
+     "defective": 7,
+     "blocked": 7,
+     "passed": 0
+    },
+    "HF": {
+     "n": 3,
+     "defective": 3,
+     "blocked": 1,
+     "passed": 2
+    },
+    "C3": {
+     "n": 4,
+     "defective": 2,
+     "blocked": 2,
+     "passed": 0
+    },
+    "C4": {
+     "n": 2,
+     "defective": 2,
+     "blocked": 2,
+     "passed": 0
+    },
+    "C5": {
+     "n": 5,
+     "defective": 4,
+     "blocked": 3,
+     "passed": 2
+    },
+    "C6": {
+     "n": 5,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 5
+    },
+    "C7": {
+     "n": 5,
+     "defective": 5,
+     "blocked": 4,
+     "passed": 0
+    }
+   },
+   "LLM pipeline": {
+    "C1": {
+     "n": 6,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 6
+    },
+    "C2": {
+     "n": 7,
+     "defective": 7,
+     "blocked": 7,
+     "passed": 0
+    },
+    "HF": {
+     "n": 3,
+     "defective": 3,
+     "blocked": 1,
+     "passed": 1
+    },
+    "C3": {
+     "n": 4,
+     "defective": 2,
+     "blocked": 2,
+     "passed": 0
+    },
+    "C4": {
+     "n": 2,
+     "defective": 2,
+     "blocked": 2,
+     "passed": 0
+    },
+    "C5": {
+     "n": 5,
+     "defective": 4,
+     "blocked": 3,
+     "passed": 2
+    },
+    "C6": {
+     "n": 5,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 5
+    },
+    "C7": {
+     "n": 5,
+     "defective": 5,
+     "blocked": 4,
+     "passed": 0
+    }
+   },
+   "LLM rating alone": {
+    "C1": {
+     "n": 6,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 0
+    },
+    "C2": {
+     "n": 7,
+     "defective": 7,
+     "blocked": 1,
+     "passed": 0
+    },
+    "HF": {
+     "n": 3,
+     "defective": 3,
+     "blocked": 0,
+     "passed": 0
+    },
+    "C3": {
+     "n": 4,
+     "defective": 2,
+     "blocked": 2,
+     "passed": 0
+    },
+    "C4": {
+     "n": 2,
+     "defective": 2,
+     "blocked": 0,
+     "passed": 0
+    },
+    "C5": {
+     "n": 5,
+     "defective": 4,
+     "blocked": 0,
+     "passed": 0
+    },
+    "C6": {
+     "n": 5,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 0
+    },
+    "C7": {
+     "n": 5,
+     "defective": 5,
+     "blocked": 0,
+     "passed": 0
+    }
+   },
+   "B-LLM": {
+    "C1": {
+     "n": 6,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 6
+    },
+    "C2": {
+     "n": 7,
+     "defective": 7,
+     "blocked": 7,
+     "passed": 0
+    },
+    "HF": {
+     "n": 3,
+     "defective": 3,
+     "blocked": 2,
+     "passed": 1
+    },
+    "C3": {
+     "n": 4,
+     "defective": 2,
+     "blocked": 0,
+     "passed": 4
+    },
+    "C4": {
+     "n": 2,
+     "defective": 2,
+     "blocked": 1,
+     "passed": 0
+    },
+    "C5": {
+     "n": 5,
+     "defective": 4,
+     "blocked": 1,
+     "passed": 4
+    },
+    "C6": {
+     "n": 5,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 5
+    },
+    "C7": {
+     "n": 5,
+     "defective": 5,
+     "blocked": 4,
+     "passed": 1
+    }
+   }
+  },
+  "n": 37
+ },
+ "ratings": {
+  "benign": {
+   "low": 12,
+   "medium": 2,
+   "high": 0,
+   "none": 0
+  },
+  "defective": {
+   "low": 17,
+   "medium": 3,
+   "high": 3,
+   "none": 0
+  }
+ },
+ "robustness": {
+  "attacked_prs": 6,
+  "b_llm_attack_success": 0.1667,
+  "sentinel_llm_attack_success": 0.0,
+  "b_llm_probability_shift_from_attack": -0.0533,
+  "paired_attack_pairs": 6,
+  "by_attack": {
+   "injection-body": {
+    "n": 2,
+    "b_llm_approved": 0,
+    "sentinel_pass": 0
+   },
+   "injection-title": {
+    "n": 1,
+    "b_llm_approved": 0,
+    "sentinel_pass": 0
+   },
+   "injection-comment": {
+    "n": 1,
+    "b_llm_approved": 0,
+    "sentinel_pass": 0
+   },
+   "fake-secret": {
+    "n": 1,
+    "b_llm_approved": 0,
+    "sentinel_pass": 0
+   },
+   "oversized": {
+    "n": 1,
+    "b_llm_approved": 1,
+    "sentinel_pass": 0
+   }
+  }
+ },
+ "impact": {
+  "rules": {
+   "prs": 22,
+   "macro_precision": 0.7157,
+   "macro_recall": 0.7851,
+   "macro_f1": 0.7462,
+   "claims": 226,
+   "precision_before_verification": 0.7387,
+   "precision_after_verification": 1.0,
+   "refuted": 48
+  },
+  "llm": {
+   "prs": 22,
+   "macro_precision": 0.7682,
+   "macro_recall": 0.7934,
+   "macro_f1": 0.7723,
+   "claims": 190,
+   "precision_before_verification": 0.7622,
+   "precision_after_verification": 0.9854,
+   "refuted": 39
+  },
+  "impact_mode": {
+   "llm": 22,
+   "rules": 15,
+   "rejected": 1
+  }
+ },
+ "cost": {
+  "prs": 37,
+  "tokens_per_pr": {
+   "mean": 3773.3,
+   "p50": 4121.0,
+   "p95": 6803.199999999999
+  },
+  "calls_per_pr": 4.24,
+  "failed_tasks": {
+   "explain": 20
+  },
+  "latency_s": {
+   "p50": 11.79,
+   "p95": 23.43
+  },
+  "b_llm_tokens_per_pr": 567.2
+ },
+ "consistency": {
+  "compared": 38,
+  "execution_features_differ": []
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "model": "openai/gpt-oss-20b (Groq, temperature 0)",
+ "repo": "uni-erp",
+ "note": "20 labelled PRs with impacted tests (C7 excluded); grounded_rate counts citations that match a given evidence id exactly, before the agent's citation resolution",
+ "results": {
+  "impact@v1": {
+   "prs": 20,
+   "parse_rate": 0.4,
+   "grounded_rate": 0.0,
+   "existing_test_rate": null,
+   "precision": 0.0,
+   "recall": 0.0,
+   "tokens_per_pr": 814.1
+  },
+  "impact@v2": {
+   "prs": 20,
+   "parse_rate": 1.0,
+   "grounded_rate": 0.0,
+   "existing_test_rate": 0.167,
+   "precision": 0.05,
+   "recall": 0.05,
+   "tokens_per_pr": 448.4
+  },
+  "impact@v3": {
+   "prs": 20,
+   "parse_rate": 1.0,
+   "grounded_rate": 0.574,
+   "existing_test_rate": 1.0,
+   "precision": 0.5,
+   "recall": 0.537,
+   "tokens_per_pr": 1520.4
+  }
+ }
+}

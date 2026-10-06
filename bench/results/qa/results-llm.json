@@ -1,0 +1,2273 @@
+{
+ "engine": "llm",
+ "questions": 41,
+ "conditions": {
+  "no_rag": {
+   "overall": {
+    "n": 41,
+    "accuracy": 0.2439,
+    "content_accuracy": 0.2439,
+    "citation_precision": null,
+    "hallucination_rate": 0.0,
+    "latency_s": 0.001,
+    "sources": {
+     "guard": 5,
+     "llm": 36
+    }
+   },
+   "by_category": {
+    "adversarial": {
+     "n": 5,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.0,
+     "sources": {
+      "guard": 5
+     }
+    },
+    "bug_history": {
+     "n": 7,
+     "accuracy": 0.0,
+     "content_accuracy": 0.0,
+     "citation_precision": null,
+     "hallucination_rate": null,
+     "latency_s": 0.001,
+     "sources": {
+      "llm": 7
+     }
+    },
+    "code_location": {
+     "n": 6,
+     "accuracy": 0.0,
+     "content_accuracy": 0.0,
+     "citation_precision": null,
+     "hallucination_rate": null,
+     "latency_s": 0.001,
+     "sources": {
+      "llm": 6
+     }
+    },
+    "cross_module": {
+     "n": 5,
+     "accuracy": 0.0,
+     "content_accuracy": 0.0,
+     "citation_precision": null,
+     "hallucination_rate": null,
+     "latency_s": 0.001,
+     "sources": {
+      "llm": 5
+     }
+    },
+    "provenance": {
+     "n": 6,
+     "accuracy": 0.0,
+     "content_accuracy": 0.0,
+     "citation_precision": null,
+     "hallucination_rate": null,
+     "latency_s": 0.001,
+     "sources": {
+      "llm": 6
+     }
+    },
+    "rationale": {
+     "n": 7,
+     "accuracy": 0.0,
+     "content_accuracy": 0.0,
+     "citation_precision": null,
+     "hallucination_rate": null,
+     "latency_s": 0.001,
+     "sources": {
+      "llm": 7
+     }
+    },
+    "unanswerable": {
+     "n": 5,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.001,
+     "sources": {
+      "llm": 5
+     }
+    }
+   },
+   "answers": [
+    {
+     "id": "r01",
+     "category": "rationale",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.002,
+     "tokens": 169
+    },
+    {
+     "id": "r02",
+     "category": "rationale",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 172
+    },
+    {
+     "id": "r03",
+     "category": "rationale",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 174
+    },
+    {
+     "id": "r04",
+     "category": "rationale",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 173
+    },
+    {
+     "id": "r05",
+     "category": "rationale",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 175
+    },
+    {
+     "id": "r06",
+     "category": "rationale",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 172
+    },
+    {
+     "id": "r07",
+     "category": "rationale",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 175
+    },
+    {
+     "id": "p01",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 172
+    },
+    {
+     "id": "p02",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 172
+    },
+    {
+     "id": "p03",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 177
+    },
+    {
+     "id": "p04",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 174
+    },
+    {
+     "id": "p05",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 171
+    },
+    {
+     "id": "p06",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 174
+    },
+    {
+     "id": "b01",
+     "category": "bug_history",
+     "answer": "Yes, `calculateStudentCredits` has had bugs before.\n\nSpecifically, there was a bug where the function did not correctly handle the case when a student had no courses, which could lead to incorrect credit calculations or errors. This was addressed in a commit that fixed the handling of empty course lists [chunk:unierp/fees/calculator.py#L45-52].\n\nAdditionally, there was an issue where the function was not properly accounting for pass/fail courses in the credit calculation, which was resolved in a subsequent update [chunk:unierp/fees/calculator.py#L60-68].",
+     "citations": [],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 292
+    },
+    {
+     "id": "b02",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 170
+    },
+    {
+     "id": "b03",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 173
+    },
+    {
+     "id": "b04",
+     "category": "bug_history",
+     "answer": "Yes, `outstanding_balance` has been buggy.\n\nThere is a specific issue titled \"Fix outstanding_balance bug\" which was resolved by a pull request that fixed the calculation of `outstanding_balance` in the `Payment` model [issue:10] [pr:11]. The bug was caused by the `outstanding_balance` property not correctly accounting for payments that were made after the invoice was created [pr:11]. The fix involved updating the property to filter payments based on their creation date relative to the invoice's creation date [pr:11].\n\nAdditionally, there was a related issue where the `outstanding_balance` was not being updated correctly when a payment was deleted, which was also addressed in the same pull request [pr:11].",
+     "citations": [],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.002,
+     "tokens": 317
+    },
+    {
+     "id": "b05",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.002,
+     "tokens": 171
+    },
+    {
+     "id": "b06",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 171
+    },
+    {
+     "id": "b07",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 171
+    },
+    {
+     "id": "l01",
+     "category": "code_location",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 169
+    },
+    {
+     "id": "l02",
+     "category": "code_location",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 168
+    },
+    {
+     "id": "l03",
+     "category": "code_location",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 170
+    },
+    {
+     "id": "l04",
+     "category": "code_location",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 172
+    },
+    {
+     "id": "l05",
+     "category": "code_location",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 187
+    },
+    {
+     "id": "l06",
+     "category": "code_location",
+     "answer": "The credit load limit for probation students is defined in the `Student` class within the `student.py` file.\n\nSpecifically, the constant `PROBATION_CREDIT_LIMIT` is set to **12** credits [chunk:unierp/student.py#L15].\n\nThis limit is enforced in the `can_enroll` method, which checks if a student is on probation and prevents them from enrolling in courses that would cause their total credit load to exceed this limit [chunk:unierp/student.py#L45-52].",
+     "citations": [],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 279
+    },
+    {
+     "id": "x01",
+     "category": "cross_module",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 197
+    },
+    {
+     "id": "x02",
+     "category": "cross_module",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 169
+    },
+    {
+     "id": "x03",
+     "category": "cross_module",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 169
+    },
+    {
+     "id": "x04",
+     "category": "cross_module",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 193
+    },
+    {
+     "id": "x05",
+     "category": "cross_module",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 172
+    },
+    {
+     "id": "u01",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 171
+    },
+    {
+     "id": "u02",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 180
+    },
+    {
+     "id": "u03",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.002,
+     "tokens": 173
+    },
+    {
+     "id": "u04",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 169
+    },
+    {
+     "id": "u05",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.001,
+     "tokens": 172
+    },
+    {
+     "id": "a01",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a02",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a03",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a04",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a05",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    }
+   ]
+  },
+  "code": {
+   "overall": {
+    "n": 41,
+    "accuracy": 0.4634,
+    "content_accuracy": 0.6098,
+    "citation_precision": 0.25,
+    "hallucination_rate": 0.0,
+    "latency_s": 0.016,
+    "sources": {
+     "guard": 5,
+     "llm": 36
+    }
+   },
+   "by_category": {
+    "adversarial": {
+     "n": 5,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.0,
+     "sources": {
+      "guard": 5
+     }
+    },
+    "bug_history": {
+     "n": 7,
+     "accuracy": 0.0,
+     "content_accuracy": 0.1429,
+     "citation_precision": 0.0,
+     "hallucination_rate": null,
+     "latency_s": 0.018,
+     "sources": {
+      "llm": 7
+     }
+    },
+    "code_location": {
+     "n": 6,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": 0.6389,
+     "hallucination_rate": null,
+     "latency_s": 0.017,
+     "sources": {
+      "llm": 6
+     }
+    },
+    "cross_module": {
+     "n": 5,
+     "accuracy": 0.6,
+     "content_accuracy": 0.4,
+     "citation_precision": 0.2333,
+     "hallucination_rate": null,
+     "latency_s": 0.015,
+     "sources": {
+      "llm": 5
+     }
+    },
+    "provenance": {
+     "n": 6,
+     "accuracy": 0.0,
+     "content_accuracy": 0.1667,
+     "citation_precision": 0.0,
+     "hallucination_rate": null,
+     "latency_s": 0.019,
+     "sources": {
+      "llm": 6
+     }
+    },
+    "rationale": {
+     "n": 7,
+     "accuracy": 0.0,
+     "content_accuracy": 0.7143,
+     "citation_precision": 0.0,
+     "hallucination_rate": null,
+     "latency_s": 0.024,
+     "sources": {
+      "llm": 7
+     }
+    },
+    "unanswerable": {
+     "n": 5,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.019,
+     "sources": {
+      "llm": 5
+     }
+    }
+   },
+   "answers": [
+    {
+     "id": "r01",
+     "category": "rationale",
+     "answer": "Fee calculation rounds down because the finance office does not bill paise, and rounding in the student's favour avoids disputes over fractional amounts (issue #42) [chunk:unierp/fees/calculator.py#L1-27]. This is implemented in `round_fee`, which uses `Decimal.quantize` with `ROUND_DOWN` to truncate to the whole rupee [chunk:unierp/fees/calculator.py#L30-31]. Tests confirm this behavior, e.g., `round_fee(Decimal(\"1999.99\")) == Decimal(\"1999\")` [chunk:tests/test_fees.py#L26-27] and late-fee results are also rounded down [chunk:tests/test_fees.py#L43-44].",
+     "citations": [
+      "chunk:tests/test_fees.py#L26-27",
+      "chunk:tests/test_fees.py#L43-44",
+      "chunk:unierp/fees/calculator.py#L1-27",
+      "chunk:unierp/fees/calculator.py#L30-31"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.058,
+     "tokens": 1047
+    },
+    {
+     "id": "r02",
+     "category": "rationale",
+     "answer": "Medically excused absences can be condoned, but condonation is capped at 10 percentage points (Academic Council rule).\" [chunk:unierp/attendance/tracker.py#L1-18]\n\nThe codebase does not provide a deeper rationale for why the Academic Council chose 75% specifically; it is simply defined as the constant `MIN_ATTENDANCE_PCT = 75.0` and enforced in the eligibility logic. [chunk:unierp/attendance/tracker.py#L1-18]",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L1-18"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": true,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.019,
+     "tokens": 925
+    },
+    {
+     "id": "r03",
+     "category": "rationale",
+     "answer": "Honours students can register for 24 credits because the credit-load limits function returns a maximum of `HONOURS_MAX_CREDITS` (which is 24) when a student's cumulative GPA is at or above `HONOURS_CGPA` (3.5) and the student is not on probation [chunk:unierp/registration/credits.py#L65-71]. The constants `HONOURS_MAX_CREDITS = 24` and `HONOURS_CGPA = 3.5` are defined in the credits module [chunk:unierp/registration/credits.py#L1-23].",
+     "citations": [
+      "chunk:unierp/registration/credits.py#L1-23",
+      "chunk:unierp/registration/credits.py#L65-71"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": true,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.032,
+     "tokens": 1164
+    },
+    {
+     "id": "r04",
+     "category": "rationale",
+     "answer": "Grace marks are only applied at the pass mark because the `apply_grace_marks` function is explicitly designed to \"Lift a score that falls just short of the pass mark\" and its docstring states that \"Grace never changes any other band\" [chunk:unierp/exam/assessment.py#L32-36]. The implementation only returns the `PASS_MARK` if the score is within the range of `PASS_MARK - max_grace` up to (but not including) `PASS_MARK`; otherwise, it returns the original score unchanged [chunk:unierp/exam/assessment.py#L32-36]. This behavior is verified by tests which confirm that a score of 58.5 is lifted to 60.0, while scores of 57.0 and 89.0 remain unchanged [chunk:tests/test_assessment.py#L21-24].",
+     "citations": [
+      "chunk:tests/test_assessment.py#L21-24",
+      "chunk:unierp/exam/assessment.py#L32-36"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.013,
+     "tokens": 1035
+    },
+    {
+     "id": "r05",
+     "category": "rationale",
+     "answer": "The 10 percentage point cap on medical condonation is an Academic Council rule, as stated in the module docstring for the attendance tracker [chunk:unierp/attendance/tracker.py#L1-18]. The constant `MAX_CONDONATION_PCT = 10.0` is defined in that file and enforced in the `condoned_percentage` function, which caps the credit at `MAX_CONDONATION_PCT` [chunk:unierp/attendance/tracker.py#L29-36]. The test `test_condonation_is_capped` confirms this behavior: a student with 70% attendance and 30% excused absences only receives 10 points of condonation, resulting in 80% [chunk:tests/test_attendance.py#L35-38].",
+     "citations": [
+      "chunk:tests/test_attendance.py#L35-38",
+      "chunk:unierp/attendance/tracker.py#L1-18",
+      "chunk:unierp/attendance/tracker.py#L29-36"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": true,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.015,
+     "tokens": 1117
+    },
+    {
+     "id": "r06",
+     "category": "rationale",
+     "answer": "GPA uses `Decimal` with half-up rounding because the registrar prints GPAs on transcripts rounded half-up to two decimal places, and the code is explicitly written to match that behavior (issue #31) [chunk:unierp/exam/grades.py#L1-18]. The `compute_gpa` function quantizes the credit-weighted result to two places using `ROUND_HALF_UP` [chunk:unierp/exam/grades.py#L54-68], and the test `test_gpa_rounds_half_up` verifies that a value like 3.428\u2026 rounds to 3.43 rather than being truncated to 3.42 [chunk:tests/test_grades.py#L43-46]. This is distinct from the fee calculator, which uses `Decimal` but rounds *down* to the whole rupee because the finance office does not bill paise and rounding in the student's favor avoids disputes over fractional amounts (issue #42) [chunk:unierp/fees/calculator.py#L1-27] [chunk:unierp/fees/calculator.py#L30-31].",
+     "citations": [
+      "chunk:tests/test_grades.py#L43-46",
+      "chunk:unierp/exam/grades.py#L1-18",
+      "chunk:unierp/exam/grades.py#L54-68",
+      "chunk:unierp/fees/calculator.py#L1-27",
+      "chunk:unierp/fees/calculator.py#L30-31"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": true,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 1364
+    },
+    {
+     "id": "r07",
+     "category": "rationale",
+     "answer": "The `academic_standing` function returns `Standing.GOOD` immediately when `attempted_credits < MIN_CREDITS_FOR_STANDING`, which is set to 8 [chunk:unierp/reports/standing.py#L24-31] [chunk:unierp/reports/standing.py#L1-15]. The comment in the module explains the rationale: \"Standing is only assessed once a student has a meaningful record.\" [chunk:unierp/reports/standing.py#L1-15]. In other words, a student with fewer than 8 attempted credits is not yet considered to have enough academic history to be placed on probation or dismissal, so they are treated as being in good standing by default [chunk:unierp/reports/standing.py#L24-31].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L1-15",
+      "chunk:unierp/reports/standing.py#L24-31"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": true,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.017,
+     "tokens": 1182
+    },
+    {
+     "id": "p01",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.017,
+     "tokens": 952
+    },
+    {
+     "id": "p02",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.027,
+     "tokens": 880
+    },
+    {
+     "id": "p03",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.019,
+     "tokens": 1119
+    },
+    {
+     "id": "p04",
+     "category": "provenance",
+     "answer": "In the `create_student` function, the code checks `if any(s.email.lower() == email.lower() for s in store.students.values())` and raises a `ValidationError` if a match is found, ensuring that emails like \"Test@Uni.edu\" and \"test@uni.edu\" are treated as the same address [chunk:unierp/students/service.py#L32-67]. This is consistent with the fact that the student's email is stored in lowercase (`email=email.lower()`), so a case-sensitive check would miss duplicates that differ only in case [chunk:unierp/students/service.py#L32-67].",
+     "citations": [
+      "chunk:unierp/students/service.py#L32-67"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": true,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.014,
+     "tokens": 1327
+    },
+    {
+     "id": "p05",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.027,
+     "tokens": 1139
+    },
+    {
+     "id": "p06",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 867
+    },
+    {
+     "id": "b01",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.017,
+     "tokens": 994
+    },
+    {
+     "id": "b02",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.018,
+     "tokens": 881
+    },
+    {
+     "id": "b03",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.011,
+     "tokens": 908
+    },
+    {
+     "id": "b04",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.015,
+     "tokens": 961
+    },
+    {
+     "id": "b05",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.023,
+     "tokens": 830
+    },
+    {
+     "id": "b06",
+     "category": "bug_history",
+     "answer": "In `register`, it checks `if store.section_size(course_code, term) >= course.capacity:` and raises `RegistrationError(f\"{course_code} is full for {term}\")` before creating the enrollment [chunk:unierp/registration/enrollment.py#L19-60].",
+     "citations": [
+      "chunk:unierp/registration/enrollment.py#L19-60"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": true,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.023,
+     "tokens": 1631
+    },
+    {
+     "id": "b07",
+     "category": "bug_history",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.02,
+     "tokens": 865
+    },
+    {
+     "id": "l01",
+     "category": "code_location",
+     "answer": "The late fee is computed in the `unierp/fees/calculator.py` module, specifically in two functions:\n\n1. **`late_fee_rate`** (lines 74\u201379) calculates the applicable rate: it determines how many days late the payment is, returns `0` if within the grace period, otherwise computes `min(LATE_FEE_RATE_PER_WEEK * weeks, LATE_FEE_CAP)` where `weeks = ceil(days_late / 7)` [chunk:unierp/fees/calculator.py#L74-79]. 2. **`apply_late_fee`** (lines 82\u201390) applies that rate to the amount: it validates the amount is non-negative, calls `late_fee_rate`, and returns `round_fee(amount * (1 + rate))` [chunk:unierp/fees/calculator.py#L82-90]. The tests in `tests/test_fees.py` exercise both functions, covering the per-started-week rate, the 10% cap, the grace period, and rounding-down behavior [chunk:tests/test_fees.py#L34-36] [chunk:tests/test_fees.py#L39-40] [chunk:tests/test_fees.py#L30-31] [chunk:tests/test_fees.py#L43-44].",
+     "citations": [
+      "chunk:tests/test_fees.py#L30-31",
+      "chunk:tests/test_fees.py#L34-36",
+      "chunk:tests/test_fees.py#L39-40",
+      "chunk:tests/test_fees.py#L43-44",
+      "chunk:unierp/fees/calculator.py#L74-79",
+      "chunk:unierp/fees/calculator.py#L82-90"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.019,
+     "tokens": 1151
+    },
+    {
+     "id": "l02",
+     "category": "code_location",
+     "answer": "Prerequisite cycles are detected in the `find_cycles` function located in `unierp/registration/prerequisites.py` [chunk:unierp/registration/prerequisites.py#L64-72]. This function iterates over the course catalog and calls `prerequisite_chain` for each course code, catching any `PrerequisiteCycleError` exceptions to collect the cycles [chunk:unierp/registration/prerequisites.py#L64-72]. Tests for this detection logic can be found in `tests/test_prerequisites.py` [chunk:tests/test_prerequisites.py#L40-47].",
+     "citations": [
+      "chunk:tests/test_prerequisites.py#L40-47",
+      "chunk:unierp/registration/prerequisites.py#L64-72"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 0.016,
+     "tokens": 896
+    },
+    {
+     "id": "l03",
+     "category": "code_location",
+     "answer": "The dean's list is computed in the `deans_list` function located in `unierp/reports/standing.py` [chunk:unierp/reports/standing.py#L49-56]. This function iterates over all students, calculates their attempted credits and GPA for the given term, and includes a student in the honours list if they pass the `on_deans_list` check [chunk:unierp/reports/standing.py#L49-56]. The `on_deans_list` helper function, also in `unierp/reports/standing.py`, determines eligibility by checking that the term GPA is at least `DEANS_LIST_GPA` (3.7) and that the term credits are at least `FULL_TIME_MIN_CREDITS` [chunk:unierp/reports/standing.py#L34-35] [chunk:unierp/reports/standing.py#L1-15].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L1-15",
+      "chunk:unierp/reports/standing.py#L34-35",
+      "chunk:unierp/reports/standing.py#L49-56"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.018,
+     "tokens": 1046
+    },
+    {
+     "id": "l04",
+     "category": "code_location",
+     "answer": "Fault injection for canary releases is configured via environment variables in `unierp/ops/faults.py` [chunk:unierp/ops/faults.py#L1-16]. Specifically, the `FaultConfig.from_env` classmethod reads three environment variables:\n\n- `UNIERP_FAULT` \u2014 the fault kind (`none`, `slow`, `errors`, `memory`, or `wrong`), defaulting to `none` [chunk:unierp/ops/faults.py#L27-36].\n- `UNIERP_FAULT_RATE` \u2014 the probability that a request is affected, defaulting to `0.05` [chunk:unierp/ops/faults.py#L27-36].\n- `UNIERP_FAULT_DELAY_MS` \u2014 extra latency in milliseconds for the `slow` fault, defaulting to `400` [chunk:unierp/ops/faults.py#L27-36]. The module docstring notes this is \"used to rehearse canary rollbacks\" and that the environment-variable approach lets the same image run healthy or faulty [chunk:unierp/ops/faults.py#L1-16].",
+     "citations": [
+      "chunk:unierp/ops/faults.py#L1-16",
+      "chunk:unierp/ops/faults.py#L27-36"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 1147
+    },
+    {
+     "id": "l05",
+     "category": "code_location",
+     "answer": "Specifically, the email is checked against `EMAIL_PATTERN` and for duplicates among existing students in the store [chunk:unierp/students/service.py#L32-67]. This is covered by tests in `tests/test_students.py`, including `test_create_student_validation` (which tests an invalid email like `\"not-an-email\"`) and `test_duplicate_email_rejected` [chunk:tests/test_students.py#L28-34] [chunk:tests/test_students.py#L37-40].",
+     "citations": [
+      "chunk:tests/test_students.py#L28-34",
+      "chunk:tests/test_students.py#L37-40",
+      "chunk:unierp/students/service.py#L32-67"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.014,
+     "tokens": 1138
+    },
+    {
+     "id": "l06",
+     "category": "code_location",
+     "answer": "The credit load limit for probation students is defined by the constant `PROBATION_MAX_CREDITS`, which is set to 16 in `unierp/registration/credits.py` [chunk:unierp/registration/credits.py#L1-23]. This constant is used in the `credit_load_limits` function, which returns `(FULL_TIME_MIN_CREDITS, PROBATION_MAX_CREDITS)` \u2014 i.e., `(12, 16)` \u2014 when a student is on probation or has a CGPA below `PROBATION_CGPA` (2.0) [chunk:unierp/registration/credits.py#L65-71]. The test suite confirms this behavior: `credit_load_limits(3.2, on_probation=True) == (12, 16)` [chunk:tests/test_credits.py#L48-51].",
+     "citations": [
+      "chunk:tests/test_credits.py#L48-51",
+      "chunk:unierp/registration/credits.py#L1-23",
+      "chunk:unierp/registration/credits.py#L65-71"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.02,
+     "tokens": 1440
+    },
+    {
+     "id": "x01",
+     "category": "cross_module",
+     "answer": "Based on the provided context, the following functions and modules depend on `calculateStudentCredits`:\n\n1.  **`build_transcript`** in `unierp/reports/transcript.py` calls `calculateStudentCredits` to determine `earned_credits` for each term and the total [chunk:unierp/reports/transcript.py#L13-44]. 2.  **`tuition_for_term`** in `unierp/fees/calculator.py` calls `calculateStudentCredits` to calculate the credits for tuition purposes [chunk:unierp/fees/calculator.py#L34-44]. 3.  **`unierp/exam/grades.py`** imports `calculateStudentCredits` [chunk:unierp/exam/grades.py#L1-18]. 4.  **`unierp/reports/transcript.py`** imports `calculateStudentCredits` [chunk:unierp/reports/transcript.py#L1-10]. 5.  **`tests/test_credits.py`** imports and uses `calculateStudentCredits` in its tests [chunk:tests/test_credits.py#L1-7] [chunk:tests/test_credits.py#L38-40].",
+     "citations": [
+      "chunk:tests/test_credits.py#L1-7",
+      "chunk:tests/test_credits.py#L38-40",
+      "chunk:unierp/exam/grades.py#L1-18",
+      "chunk:unierp/fees/calculator.py#L34-44",
+      "chunk:unierp/reports/transcript.py#L1-10",
+      "chunk:unierp/reports/transcript.py#L13-44"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": false,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.015,
+     "tokens": 1301
+    },
+    {
+     "id": "x02",
+     "category": "cross_module",
+     "answer": "Based on the provided context, the following modules use `compute_gpa`:\n\n1.  **`unierp/reports/transcript.py`**: This module imports `compute_gpa` from `unierp.exam.grades` [chunk:unierp/reports/transcript.py#L1-10]. 2.  **`tests/test_grades.py`**: This test module calls `compute_gpa` in several test functions, including `test_gpa_of_empty_record_is_zero`, `test_gpa_ignores_withdrawals`, `test_gpa_is_credit_weighted`, `test_gpa_rounds_half_up`, and `test_term_gpa_counts_every_attempt_in_that_term` [chunk:tests/test_grades.py#L54-55] [chunk:tests/test_grades.py#L49-51] [chunk:tests/test_grades.py#L37-40] [chunk:tests/test_grades.py#L43-46] [chunk:tests/test_grades.py#L64-66].",
+     "citations": [
+      "chunk:tests/test_grades.py#L37-40",
+      "chunk:tests/test_grades.py#L43-46",
+      "chunk:tests/test_grades.py#L49-51",
+      "chunk:tests/test_grades.py#L54-55",
+      "chunk:tests/test_grades.py#L64-66",
+      "chunk:unierp/reports/transcript.py#L1-10"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.16666666666666666,
+     "hallucinated": false,
+     "latency_s": 0.018,
+     "tokens": 1060
+    },
+    {
+     "id": "x03",
+     "category": "cross_module",
+     "answer": "Based on the provided context, `apply_late_fee` is called by the following test functions in `tests/test_fees.py`:\n\n*   `test_late_fee_is_capped` [chunk:tests/test_fees.py#L39-40]\n*   `test_late_fee_per_started_week` [chunk:tests/test_fees.py#L34-36]\n*   `test_late_fee_result_is_rounded_down` [chunk:tests/test_fees.py#L43-44]\n*   `test_no_late_fee_within_grace_period` [chunk:tests/test_fees.py#L30-31]\n\nIt is also imported in the test file [chunk:tests/test_fees.py#L1-17].",
+     "citations": [
+      "chunk:tests/test_fees.py#L1-17",
+      "chunk:tests/test_fees.py#L30-31",
+      "chunk:tests/test_fees.py#L34-36",
+      "chunk:tests/test_fees.py#L39-40",
+      "chunk:tests/test_fees.py#L43-44"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.018,
+     "tokens": 1028
+    },
+    {
+     "id": "x04",
+     "category": "cross_module",
+     "answer": "The `check_prerequisites` function is used by the following test functions in `tests/test_prerequisites.py`:\n\n- `test_prerequisites_satisfied` [chunk:tests/test_prerequisites.py#L15-17]\n- `test_reports_every_missing_prerequisite` [chunk:tests/test_prerequisites.py#L31-33]\n- `test_in_progress_prerequisite_does_not_count` [chunk:tests/test_prerequisites.py#L26-28]\n- `test_failed_prerequisite_is_missing` [chunk:tests/test_prerequisites.py#L20-23]\n\nIt is also imported in the test module's import block [chunk:tests/test_prerequisites.py#L1-12].",
+     "citations": [
+      "chunk:tests/test_prerequisites.py#L1-12",
+      "chunk:tests/test_prerequisites.py#L15-17",
+      "chunk:tests/test_prerequisites.py#L20-23",
+      "chunk:tests/test_prerequisites.py#L26-28",
+      "chunk:tests/test_prerequisites.py#L31-33"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 0.014,
+     "tokens": 871
+    },
+    {
+     "id": "x05",
+     "category": "cross_module",
+     "answer": "The `is_exam_eligible` function is used in the following places:\n\n1. **API endpoint** in `unierp/api/app.py`: The `attendance` GET endpoint at `/attendance/{student_id}/{code}` calls `is_exam_eligible(records)` to include an `\"eligible\"` field in the response [chunk:unierp/api/app.py#L157-202]. 2. **Tests** in `tests/test_attendance.py`:\n   - `test_eligibility_threshold` asserts the function's behavior for various attendance scenarios [chunk:tests/test_attendance.py#L41-44].\n   - `test_no_sessions_counts_as_full_attendance` asserts that an empty list of records is considered exam-eligible [chunk:tests/test_attendance.py#L30-32]. 3. **Imports**:\n   - `unierp/api/app.py` imports `is_exam_eligible` from `unierp.attendance.tracker` [chunk:unierp/api/app.py#L1-120].\n   - `tests/test_attendance.py` imports `is_exam_eligible` from `unierp.attendance.tracker` [chunk:tests/test_attendance.py#L1-13]. The function itself is defined in `unierp/attendance/tracker.py` [chunk:unierp/attendance/tracker.py#L39-40].",
+     "citations": [
+      "chunk:tests/test_attendance.py#L1-13",
+      "chunk:tests/test_attendance.py#L30-32",
+      "chunk:tests/test_attendance.py#L41-44",
+      "chunk:unierp/api/app.py#L1-120",
+      "chunk:unierp/api/app.py#L157-202",
+      "chunk:unierp/attendance/tracker.py#L39-40"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.012,
+     "tokens": 1438
+    },
+    {
+     "id": "u01",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.016,
+     "tokens": 1267
+    },
+    {
+     "id": "u02",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.017,
+     "tokens": 676
+    },
+    {
+     "id": "u03",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.023,
+     "tokens": 1053
+    },
+    {
+     "id": "u04",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.021,
+     "tokens": 1466
+    },
+    {
+     "id": "u05",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.016,
+     "tokens": 602
+    },
+    {
+     "id": "a01",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a02",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a03",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a04",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a05",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    }
+   ]
+  },
+  "code_history": {
+   "overall": {
+    "n": 41,
+    "accuracy": 0.9512,
+    "content_accuracy": 0.8537,
+    "citation_precision": 0.4752,
+    "hallucination_rate": 0.0,
+    "latency_s": 6.767,
+    "sources": {
+     "guard": 5,
+     "llm": 36
+    }
+   },
+   "by_category": {
+    "adversarial": {
+     "n": 5,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 0.0,
+     "sources": {
+      "guard": 5
+     }
+    },
+    "bug_history": {
+     "n": 7,
+     "accuracy": 1.0,
+     "content_accuracy": 0.8571,
+     "citation_precision": 0.5718,
+     "hallucination_rate": null,
+     "latency_s": 12.092,
+     "sources": {
+      "llm": 7
+     }
+    },
+    "code_location": {
+     "n": 6,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": 0.4444,
+     "hallucination_rate": null,
+     "latency_s": 13.709,
+     "sources": {
+      "llm": 6
+     }
+    },
+    "cross_module": {
+     "n": 5,
+     "accuracy": 0.8,
+     "content_accuracy": 0.4,
+     "citation_precision": 0.2056,
+     "hallucination_rate": null,
+     "latency_s": 16.368,
+     "sources": {
+      "llm": 5
+     }
+    },
+    "provenance": {
+     "n": 6,
+     "accuracy": 0.8333,
+     "content_accuracy": 0.6667,
+     "citation_precision": 0.7033,
+     "hallucination_rate": null,
+     "latency_s": 0.737,
+     "sources": {
+      "llm": 6
+     }
+    },
+    "rationale": {
+     "n": 7,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": 0.4345,
+     "hallucination_rate": null,
+     "latency_s": 0.028,
+     "sources": {
+      "llm": 7
+     }
+    },
+    "unanswerable": {
+     "n": 5,
+     "accuracy": 1.0,
+     "content_accuracy": 1.0,
+     "citation_precision": null,
+     "hallucination_rate": 0.0,
+     "latency_s": 4.815,
+     "sources": {
+      "llm": 5
+     }
+    }
+   },
+   "answers": [
+    {
+     "id": "r01",
+     "category": "rationale",
+     "answer": "Fee calculation rounds down because of Finance policy FIN-7, which requires all student-facing amounts to be rounded down to the whole rupee in the student's favour [issue:42]. The finance office does not bill paise, and the previous half-up rounding (e.g., 1019.50 \u2192 1020) caused several disputes, so the policy was adopted to avoid disagreements over fractional amounts [issue:42]. This is implemented in `round_fee`, which uses `Decimal.quantize` with `ROUND_DOWN` to truncate to the nearest whole rupee [chunk:unierp/fees/calculator.py#L30-31]. The module docstring also notes that totals are rounded down because the finance office does not bill paise and rounding in the student's favour avoids disputes over fractional amounts [chunk:unierp/fees/calculator.py#L1-27]. This change was made in commit aef9a0cf5b, which closed issue #42 [commit:aef9a0cf5b].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L1-27",
+      "chunk:unierp/fees/calculator.py#L30-31",
+      "commit:aef9a0cf5b",
+      "issue:42"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 0.027,
+     "tokens": 1752
+    },
+    {
+     "id": "r02",
+     "category": "rationale",
+     "answer": "The 75% attendance threshold comes from the Academic Council rulebook (section 7.3), which sets a 75% minimum attendance requirement for exam eligibility [issue:35]. This value is implemented as the constant `MIN_ATTENDANCE_PCT = 75.0` in `attendance/tracker.py` and is intentionally not configurable per department [issue:35] [chunk:unierp/attendance/tracker.py#L1-18]. The same rule also caps medically excused absences that can be condoned at 10 percentage points (`MAX_CONDONATION_PCT = 10.0`) [issue:35] [chunk:unierp/attendance/tracker.py#L1-18].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L1-18",
+      "issue:35"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 0.041,
+     "tokens": 1422
+    },
+    {
+     "id": "r03",
+     "category": "rationale",
+     "answer": "Honours students can register for 24 credits because Senate rule R-12 allows students with a CGPA of 3.5 or higher to take up to 24 credits per term as an \"honours overload\" [issue:47]. This is implemented in the `credit_load_limits` function, which returns a maximum of `HONOURS_MAX_CREDITS` (24) when the student's CGPA is at or above `HONOURS_CGPA` (3.5) [chunk:unierp/registration/credits.py#L65-71]. The constants `HONOURS_MAX_CREDITS = 24` and `HONOURS_CGPA = 3.5` are defined in the credits module [chunk:unierp/registration/credits.py#L1-23].",
+     "citations": [
+      "chunk:unierp/registration/credits.py#L1-23",
+      "chunk:unierp/registration/credits.py#L65-71",
+      "issue:47"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.027,
+     "tokens": 1686
+    },
+    {
+     "id": "r04",
+     "category": "rationale",
+     "answer": "Grace marks are only applied at the pass mark because that is exactly what the Examination Committee resolution EC-2025-04 specifies: up to 2 grace marks may be given, but only to lift a student to the pass mark (60), and grace must never move a student between higher bands (e.g., from B to B+) [issue:12] [pr:13]. The implementation enforces this by only adjusting scores that fall within the range `[PASS_MARK - max_grace, PASS_MARK)` \u2014 i.e., 58.0 to 59.99 \u2014 up to 60, while leaving all other scores untouched [chunk:unierp/exam/assessment.py#L32-36]. As clarified in the issue discussion, anything below 58 is considered a genuine fail, and scores already at or above the pass mark (or in higher bands) are not modified [issue:12]. The tests confirm this behavior: `apply_grace_marks(58.5)` returns 60.0, while `apply_grace_marks(57.0)` and `apply_grace_marks(89.0)` return their inputs unchanged [chunk:tests/test_assessment.py#L21-24].\n\n[commit:acd6510c1a]",
+     "citations": [
+      "58.0 to 59.99 \u2014 up to 60",
+      "PASS_MARK - max_grace",
+      "PASS_MARK)` \u2014 i.e.",
+      "chunk:tests/test_assessment.py#L21-24",
+      "commit:acd6510c1a",
+      "issue:12",
+      "pr:13",
+      "while leaving all other scores untouched [chunk:unierp/exam/assessment.py#L32-36"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.375,
+     "hallucinated": false,
+     "latency_s": 0.028,
+     "tokens": 1731
+    },
+    {
+     "id": "r05",
+     "category": "rationale",
+     "answer": "Medical condonation is capped at 10 percentage points because that limit is set by the Academic Council rulebook (section 7.3), which states that medically excused absences may be condoned up to 10 percentage points [issue:35]. This rule is implemented as the constant `MAX_CONDONATION_PCT = 10.0` in `unierp/attendance/tracker.py` and is intentionally not configurable per department [issue:35] [chunk:unierp/attendance/tracker.py#L1-18]. The cap was enforced in code via pull request #57, which closed bug report #56 where a student with 70% attendance and 30% medically excused absences was incorrectly shown at 100% instead of being limited to a 10-point condonation [pr:57] [issue:56] [commit:1b7a96aff0]. The `condoned_percentage` function applies this cap by taking the minimum of the excused-absence credit and `MAX_CONDONATION_PCT` before adding it to the base attendance percentage [chunk:unierp/attendance/tracker.py#L29-36].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L1-18",
+      "chunk:unierp/attendance/tracker.py#L29-36",
+      "commit:1b7a96aff0",
+      "issue:35",
+      "issue:56",
+      "pr:57"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 0.028,
+     "tokens": 1710
+    },
+    {
+     "id": "r06",
+     "category": "rationale",
+     "answer": "GPA uses `Decimal` with `ROUND_HALF_UP` to match the registrar's printed transcripts, which round half-up to two decimal places, and to avoid floating-point artefacts that the previous truncation approach (`int(x * 100) / 100`) introduced [issue:31]. The module docstring explicitly states that GPAs are computed with `Decimal` and rounded half-up to two places to match what the registrar prints on transcripts [chunk:unierp/exam/grades.py#L1-18]. The `compute_gpa` function implements this by quantizing the credit-weighted result to two places using `ROUND_HALF_UP` [chunk:unierp/exam/grades.py#L54-68]. This change was made in commit 9f9f760475 to close issue #31, where a student's GPA showed as 3.42 in the ERP but 3.43 on the printed transcript [commit:9f9f760475] [issue:31]. The test `test_gpa_rounds_half_up` verifies that a GPA of 3.428... rounds to 3.43 rather than being truncated to 3.42 [chunk:tests/test_grades.py#L43-46].",
+     "citations": [
+      "chunk:tests/test_grades.py#L43-46",
+      "chunk:unierp/exam/grades.py#L1-18",
+      "chunk:unierp/exam/grades.py#L54-68",
+      "commit:9f9f760475",
+      "issue:31"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.4,
+     "hallucinated": false,
+     "latency_s": 0.021,
+     "tokens": 2008
+    },
+    {
+     "id": "r07",
+     "category": "rationale",
+     "answer": "Standing ignores students with fewer than 8 attempted credits because the `academic_standing` function returns `Standing.GOOD` whenever `attempted_credits < MIN_CREDITS_FOR_STANDING`, and `MIN_CREDITS_FOR_STANDING` is set to 8 [chunk:unierp/reports/standing.py#L24-31] [chunk:unierp/reports/standing.py#L1-15]. This rule was added to fix a bug where new students were being placed on academic probation after their first term\u2014for example, a first-year student who took a single 4-credit course and earned a D was incorrectly put on probation [issue:70]. The fix, introduced in pull request #71 and commit 7e2d4e7c99, ensures that standing is only assessed once a student has attempted at least 8 credits [pr:71] [commit:7e2d4e7c99]. The code comment notes that \"Standing is only assessed once a student has a meaningful record\" [chunk:unierp/reports/standing.py#L1-15].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L1-15",
+      "chunk:unierp/reports/standing.py#L24-31",
+      "commit:7e2d4e7c99",
+      "issue:70",
+      "pr:71"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6,
+     "hallucinated": false,
+     "latency_s": 0.023,
+     "tokens": 1699
+    },
+    {
+     "id": "p01",
+     "category": "provenance",
+     "answer": "The late fee cap was introduced in pull request #41, which was merged via commit 18c2984ce3 by Vikram Joshi [pr:41] [commit:18c2984ce3]. It was introduced to fix issue #40, which reported that late fees were growing without limit\u2014for example, an invoice paid four months late was charged 34% extra [issue:40]. The policy caps the late fee at 10% of the invoice [issue:40] [pr:41]. In the code, this is implemented by setting `LATE_FEE_CAP = Decimal(\"0.10\")` and using `min(LATE_FEE_RATE_PER_WEEK * weeks, LATE_FEE_CAP)` in the `late_fee_rate` function [chunk:unierp/fees/calculator.py#L1-27] [chunk:unierp/fees/calculator.py#L74-79]. A test, `test_late_fee_is_capped`, verifies that a 10,000 rupee invoice paid very late results in a total of 11,000 rupees (a 10% cap) [chunk:tests/test_fees.py#L39-40].",
+     "citations": [
+      "chunk:tests/test_fees.py#L39-40",
+      "chunk:unierp/fees/calculator.py#L1-27",
+      "chunk:unierp/fees/calculator.py#L74-79",
+      "commit:18c2984ce3",
+      "issue:40",
+      "pr:41"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 0.056,
+     "tokens": 1560
+    },
+    {
+     "id": "p02",
+     "category": "provenance",
+     "answer": "The change that introduced late fees on outstanding invoice balances was pull request #67, titled \"Include late fees in outstanding invoice balances\" [pr:67]. This was implemented in commit c68bdb0d0d by Vikram Joshi, which closed issue #66 [commit:c68bdb0d0d] [issue:66]. Issue #66 requested that the balance endpoint include the late fee that would be charged if a student paid today, rather than just showing the billed total after the due date [issue:66]. The implementation modified the `outstanding_balance` function in `unierp/fees/invoices.py` to apply late fees on the invoice total once the due date passes [chunk:unierp/fees/invoices.py#L62-70]. A corresponding test, `test_balance_accrues_late_fee`, was added to verify that a 10-day late invoice accrues a 4% late fee [chunk:tests/test_invoices.py#L30-33].\n\n[pr:67] [commit:c68bdb0d0d] [issue:66] [chunk:unierp/fees/invoices.py#L62-70] [chunk:tests/test_invoices.py#L30-33]",
+     "citations": [
+      "chunk:tests/test_invoices.py#L30-33",
+      "chunk:unierp/fees/invoices.py#L62-70",
+      "commit:c68bdb0d0d",
+      "issue:66",
+      "pr:67"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6,
+     "hallucinated": false,
+     "latency_s": 0.078,
+     "tokens": 1551
+    },
+    {
+     "id": "p03",
+     "category": "provenance",
+     "answer": "Neha Kulkarni added the attendance shortage report in commit 711953dd4b, which is titled \"Add attendance shortage report\" [commit:711953dd4b]. The commit modified the files `tests/test_attendance.py` and `unierp/attendance/tracker.py`, introducing the `shortage_report` function and the `ShortageEntry` class [commit:711953dd4b].",
+     "citations": [
+      "commit:711953dd4b"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 0.969,
+     "tokens": 1493
+    },
+    {
+     "id": "p04",
+     "category": "provenance",
+     "answer": "Issue #78 reported a bug where two records existed for the same student with emails `nisha@uni.edu` and `Nisha@uni.edu` [issue:78]. To fix this, pull request #79 introduced a case-insensitive comparison in the `create_student` function, which now checks `if any(s.email.lower() == email.lower() for s in store.students.values())` before allowing a new student to be created [pr:79] [chunk:unierp/students/service.py#L32-67]. The commit for this change explicitly states it \"Closes #78\" [commit:6e4b43eb76].",
+     "citations": [
+      "chunk:unierp/students/service.py#L32-67",
+      "commit:6e4b43eb76",
+      "issue:78",
+      "pr:79"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": false,
+     "citation_precision": 0.75,
+     "hallucinated": false,
+     "latency_s": 0.953,
+     "tokens": 1632
+    },
+    {
+     "id": "p05",
+     "category": "provenance",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 1.243,
+     "tokens": 1956
+    },
+    {
+     "id": "p06",
+     "category": "provenance",
+     "answer": "Specifically, the string comparison `'2025-SPRING' > '2025-FALL'` evaluated to true, causing the earlier spring attempt to be incorrectly selected over the later fall attempt when determining which grade counted toward the CGPA [issue:45]. This bug meant that a failed earlier attempt would remain in the GPA calculation even after a student passed the course in a subsequent term [issue:45]. To fix this, the `effective_attempts` function was updated to use a proper `term_sort_key` for comparison, ensuring that the latest graded attempt is correctly identified based on the actual chronological order of the terms [chunk:unierp/exam/grades.py#L21-32] [commit:5e50ae2e7b].",
+     "citations": [
+      "chunk:unierp/exam/grades.py#L21-32",
+      "commit:5e50ae2e7b",
+      "issue:45"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 1.123,
+     "tokens": 1438
+    },
+    {
+     "id": "b01",
+     "category": "bug_history",
+     "answer": "Yes. `calculateStudentCredits` had a bug where its `in_progress` mode counted every non-completed enrollment\u2014including DROPPED and FAILED courses\u2014so dropped courses were still billed in term tuition and counted toward the credit-load limit [issue:87]. This was fixed in commit 80a028b8c3, which excluded dropped enrollments from every credit mode and closed issue #87 [commit:80a028b8c3].\n\n[issue:87] [commit:80a028b8c3]",
+     "citations": [
+      "commit:80a028b8c3",
+      "issue:87"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 11.332,
+     "tokens": 1768
+    },
+    {
+     "id": "b02",
+     "category": "bug_history",
+     "answer": "There was a bug in `letter_for_score` where scores exactly on a cutoff were assigned the wrong letter grade because the comparison used `>` instead of `>=` [issue:17]. For example, a score of exactly 90.0 received B+ instead of A-, and 93.0 received A- instead of A [issue:17]. This was fixed in commit 5c3670301b, which changed the comparison to be inclusive (`>=`) [commit:5c3670301b]. The current implementation uses `if score >= cutoff:` [chunk:unierp/exam/grading_scale.py#L41-47].",
+     "citations": [
+      "chunk:unierp/exam/grading_scale.py#L41-47",
+      "commit:5c3670301b",
+      "issue:17"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 12.434,
+     "tokens": 1496
+    },
+    {
+     "id": "b03",
+     "category": "bug_history",
+     "answer": "Specifically, the `passed_courses()` function was counting `ENROLLED` enrollments and any non-F grade as passed, when it should only count `COMPLETED` courses with a passing grade [issue:23]. This allowed a student to register for CS102 while still taking CS101 in the same term, and it also accepted withdrawn (W) courses as satisfying prerequisites [issue:23]. The fix required ensuring that only completed courses with passing grades are considered as satisfied prerequisites [issue:23].",
+     "citations": [
+      "issue:23"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": false,
+     "citation_precision": 1.0,
+     "hallucinated": false,
+     "latency_s": 9.266,
+     "tokens": 1282
+    },
+    {
+     "id": "b04",
+     "category": "bug_history",
+     "answer": "Issue #81 reported that a fully paid invoice still showed an outstanding late fee, with the status incorrectly marked as \"partial\" once the due date passed [issue:81]. The root cause was that `outstanding_balance()` computed the late fee as of today even when the invoice had been settled before the due date, and the reference date should have been the settlement date [issue:81]. This was fixed in commit 9f51ec1905, \"Stop accruing late fees once an invoice is settled (#82),\" which closed issue #81 and modified `outstanding_balance` in `unierp/fees/invoices.py` along with the test `test_full_payment_on_time` [commit:9f51ec1905]. For context, `outstanding_balance` was originally introduced in commit c7227361f4 (\"Add invoices, payments and balances (#38)\") [commit:c7227361f4], and later updated in commit c68bdb0d0d to include late fees in outstanding invoice balances, closing issue #66 [commit:c68bdb0d0d] [pr:67]. The `Balance.outstanding` property itself is defined as `max(self.payable - self.paid, Decimal(\"0\"))` [chunk:unierp/fees/invoices.py#L51-53]. (Note: issue #53 about attendance eligibility is unrelated to `outstanding_balance` [issue:53].)",
+     "citations": [
+      "chunk:unierp/fees/invoices.py#L51-53",
+      "commit:9f51ec1905",
+      "commit:c68bdb0d0d",
+      "commit:c7227361f4",
+      "issue:53",
+      "issue:81",
+      "pr:67"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.2857142857142857,
+     "hallucinated": false,
+     "latency_s": 12.149,
+     "tokens": 1687
+    },
+    {
+     "id": "b05",
+     "category": "bug_history",
+     "answer": "Two bugs in the attendance percentage calculation were fixed:\n\n1. **Condonation exceeding the 10% cap** \u2014 A student with 70% attendance and 30% medically excused absences was incorrectly shown at 100%, because the condonation was not being limited to 10 percentage points [issue:56]. This was fixed by capping the medical condonation at 10 percentage points in `condoned_percentage` [commit:1b7a96aff0]. The fix ensures `credit = min(100.0 * excused / len(records), MAX_CONDONATION_PCT)` so the added credit never exceeds `MAX_CONDONATION_PCT` (10.0) [chunk:unierp/attendance/tracker.py#L29-36]. 2. **Terms with no recorded sessions** \u2014 Previously, terms with no recorded sessions were not treated as full attendance; this was fixed so that `attendance_percentage` returns 100.0 when there are no records [commit:d65670f8ed]. The implementation now explicitly checks `if not records: return 100.0` [chunk:unierp/attendance/tracker.py#L21-26]. Both fixes are covered by tests: `test_condonation_is_capped` and `test_no_sessions_counts_as_full_attendance` [commit:1b7a96aff0] [commit:d65670f8ed].",
+     "citations": [
+      "chunk:unierp/attendance/tracker.py#L21-26",
+      "chunk:unierp/attendance/tracker.py#L29-36",
+      "commit:1b7a96aff0",
+      "commit:d65670f8ed",
+      "issue:56"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.2,
+     "hallucinated": false,
+     "latency_s": 10.848,
+     "tokens": 1577
+    },
+    {
+     "id": "b06",
+     "category": "bug_history",
+     "answer": "Issue #60 reports a bug where a course section accepted one student over capacity: \"HS101 has capacity 100 and ended up with 101 students registered.\" [issue:60]\n\nThe registration code checks capacity with `if store.section_size(course_code, term) >= course.capacity: raise RegistrationError(...)`, which should prevent over-enrollment, but the reported bug indicates it was bypassed in at least one case. [chunk:unierp/registration/enrollment.py#L19-60] [issue:60]\n\nThe original registration feature (PR #8 / commit ecdec9a6ff) was described as checking \"student status, duplicates, capacity, prerequisites, timetable clashes and credit load,\" so capacity checking was intended from the start, but the over-capacity bug was still observed. [pr:8] [commit:ecdec9a6ff]",
+     "citations": [
+      "chunk:unierp/registration/enrollment.py#L19-60",
+      "commit:ecdec9a6ff",
+      "issue:60",
+      "pr:8"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.25,
+     "hallucinated": false,
+     "latency_s": 17.988,
+     "tokens": 2266
+    },
+    {
+     "id": "b07",
+     "category": "bug_history",
+     "answer": "Issue #29 reported that a payment made exactly 3 days after the due date (the last day of the grace period) was incorrectly charged a 2% late fee, even though the policy says payments within 3 days are not charged [issue:29]. This was fixed in PR #30 / commit 9b5d34a355, which changed the logic so that no late fee is charged inside the grace period [pr:30] [commit:9b5d34a355]. The current implementation returns a zero rate when `days_late <= GRACE_DAYS` [chunk:unierp/fees/calculator.py#L74-79], and a test verifies that a payment on the last grace day incurs no fee [chunk:tests/test_fees.py#L30-31].",
+     "citations": [
+      "chunk:tests/test_fees.py#L30-31",
+      "chunk:unierp/fees/calculator.py#L74-79",
+      "commit:9b5d34a355",
+      "issue:29",
+      "pr:30"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6,
+     "hallucinated": false,
+     "latency_s": 10.625,
+     "tokens": 1464
+    },
+    {
+     "id": "l01",
+     "category": "code_location",
+     "answer": "It determines the number of days late, checks if it is within the grace period, calculates the number of started weeks, and returns the rate capped at a maximum limit [chunk:unierp/fees/calculator.py#L74-79]. 2.  **`apply_late_fee`**: This function applies the calculated rate to the invoice amount to determine the total amount payable, including the late fee [chunk:unierp/fees/calculator.py#L82-90]. The logic was originally added in commit `21c1c4ee98` [commit:21c1c4ee98], modified to exclude the grace period in commit `9b5d34a355` [commit:9b5d34a355], and capped at 10% in commit `18c2984ce3` [commit:18c2984ce3].",
+     "citations": [
+      "chunk:unierp/fees/calculator.py#L74-79",
+      "chunk:unierp/fees/calculator.py#L82-90",
+      "commit:18c2984ce3",
+      "commit:21c1c4ee98",
+      "commit:9b5d34a355"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.4,
+     "hallucinated": false,
+     "latency_s": 11.919,
+     "tokens": 1599
+    },
+    {
+     "id": "l02",
+     "category": "code_location",
+     "answer": "Prerequisite cycles are detected in the `find_cycles` function located in `unierp/registration/prerequisites.py` [chunk:unierp/registration/prerequisites.py#L64-72]. This function iterates over the catalog and calls `prerequisite_chain` for each course code, catching `PrerequisiteCycleError` exceptions to collect unique cycles [chunk:unierp/registration/prerequisites.py#L64-72]. The detection logic was added in commit d32bc19944 by Neha Kulkarni [commit:d32bc19944], and is tested by `test_cycle_detection` in `tests/test_prerequisites.py` [chunk:tests/test_prerequisites.py#L40-47].",
+     "citations": [
+      "chunk:tests/test_prerequisites.py#L40-47",
+      "chunk:unierp/registration/prerequisites.py#L64-72",
+      "commit:d32bc19944"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 9.83,
+     "tokens": 1342
+    },
+    {
+     "id": "l03",
+     "category": "code_location",
+     "answer": "The dean's list is computed in the `deans_list` function located in `unierp/reports/standing.py` [chunk:unierp/reports/standing.py#L49-56]. This function was added in commit 7412018aac as part of pull request #63 [commit:7412018aac] [pr:63]. The `deans_list` function iterates over all students, calculates their attempted credits and GPA for the specified term, and checks if they qualify using the `on_deans_list` helper [chunk:unierp/reports/standing.py#L49-56]. The `on_deans_list` function determines eligibility by checking if the term GPA is at least `DEANS_LIST_GPA` (3.7) and the term credits are at least `FULL_TIME_MIN_CREDITS` [chunk:unierp/reports/standing.py#L34-35] [chunk:unierp/reports/standing.py#L1-15].",
+     "citations": [
+      "chunk:unierp/reports/standing.py#L1-15",
+      "chunk:unierp/reports/standing.py#L34-35",
+      "chunk:unierp/reports/standing.py#L49-56",
+      "commit:7412018aac",
+      "pr:63"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6,
+     "hallucinated": false,
+     "latency_s": 10.719,
+     "tokens": 1515
+    },
+    {
+     "id": "l04",
+     "category": "code_location",
+     "answer": "Fault injection for canary releases is configured via environment variables in `unierp/ops/faults.py` [chunk:unierp/ops/faults.py#L1-16]. Specifically, the `FaultConfig.from_env` classmethod reads three environment variables:\n\n- `UNIERP_FAULT` \u2014 the fault kind (`none`, `slow`, `errors`, `memory`, or `wrong`), defaulting to `none` [chunk:unierp/ops/faults.py#L27-36].\n- `UNIERP_FAULT_RATE` \u2014 the probability that a request is affected, defaulting to `0.05` [chunk:unierp/ops/faults.py#L27-36].\n- `UNIERP_FAULT_DELAY_MS` \u2014 extra latency in milliseconds for the `slow` fault, defaulting to `400` [chunk:unierp/ops/faults.py#L27-36]. This design lets the same container image run either healthy or faulty depending on the environment, which is used to rehearse canary rollbacks [chunk:unierp/ops/faults.py#L1-16]. The feature was added in pull request #73 (\"Add request metrics and fault injection for rollout testing\") [pr:73] [commit:94198dc107].",
+     "citations": [
+      "chunk:unierp/ops/faults.py#L1-16",
+      "chunk:unierp/ops/faults.py#L27-36",
+      "commit:94198dc107",
+      "pr:73"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.5,
+     "hallucinated": false,
+     "latency_s": 15.122,
+     "tokens": 1534
+    },
+    {
+     "id": "l05",
+     "category": "code_location",
+     "answer": "Student emails are validated in the `create_student` function in `unierp/students/service.py` [chunk:unierp/students/service.py#L32-67]. Specifically, the email is checked against an `EMAIL_PATTERN` regex, and if it doesn't match, a `ValidationError` is raised with the message \"invalid email: {email}\" [chunk:unierp/students/service.py#L32-67]. Additionally, the function checks for duplicate emails case-insensitively by comparing `s.email.lower() == email.lower()` against all existing students in the store, raising a `ValidationError` if a match is found [chunk:unierp/students/service.py#L32-67]. This case-insensitive duplicate check was added in pull request #79 to fix issue #78, which reported duplicate student accounts with different email casing [pr:79] [issue:78] [commit:6e4b43eb76]. Tests for this validation are found in `tests/test_students.py`, including `test_create_student_validation` which verifies that an invalid email like \"not-an-email\" raises a `ValidationError` [chunk:tests/test_students.py#L28-34], and `test_duplicate_email_rejected` which confirms that a duplicate email with different casing (e.g., \"NISHA@uni.edu\") is rejected [chunk:tests/test_students.py#L37-40].",
+     "citations": [
+      "chunk:tests/test_students.py#L28-34",
+      "chunk:tests/test_students.py#L37-40",
+      "chunk:unierp/students/service.py#L32-67",
+      "commit:6e4b43eb76",
+      "issue:78",
+      "pr:79"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.16666666666666666,
+     "hallucinated": false,
+     "latency_s": 18.153,
+     "tokens": 1600
+    },
+    {
+     "id": "l06",
+     "category": "code_location",
+     "answer": "The credit load limit for probation students is defined by the constant `PROBATION_MAX_CREDITS = 16` in `unierp/registration/credits.py` [chunk:unierp/registration/credits.py#L1-23]. This constant is used in the `credit_load_limits` function, which returns `(FULL_TIME_MIN_CREDITS, PROBATION_MAX_CREDITS)` when a student is on probation or has a CGPA below `PROBATION_CGPA` (2.0) [chunk:unierp/registration/credits.py#L65-71]. This aligns with the Senate rule R-12 mentioned in issue #47, which states that students on probation or below 2.0 are limited to 16 credits [issue:47].",
+     "citations": [
+      "chunk:unierp/registration/credits.py#L1-23",
+      "chunk:unierp/registration/credits.py#L65-71",
+      "issue:47"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.6666666666666666,
+     "hallucinated": false,
+     "latency_s": 16.514,
+     "tokens": 1996
+    },
+    {
+     "id": "x01",
+     "category": "cross_module",
+     "answer": "Based on the context provided, the following components depend on `calculateStudentCredits`:\n\n1.  **GPA Computation**: The `unierp/exam/grades.py` module imports `calculateStudentCredits` [chunk:unierp/exam/grades.py#L1-18]. 2.  **Transcript Generation**: The `build_transcript` function in `unierp/reports/transcript.py` uses `calculateStudentCredits` to calculate `earned_credits` for each term and the total [chunk:unierp/reports/transcript.py#L13-44] [chunk:unierp/reports/transcript.py#L1-10]. 3.  **Tuition Calculation**: The `tuition_for_term` function in `unierp/fees/calculator.py` calls `calculateStudentCredits` with `mode=\"in_progress\"` to determine the number of credits for billing [chunk:unierp/fees/calculator.py#L34-44]. 4.  **Credit-Load Checks**: The registration system uses `calculateStudentCredits` for credit-load checks, as noted in the description of issue #87 and the commit message for daa65dca17 [issue:87] [commit:daa65dca17]. 5.  **Tests**: The test suite in `tests/test_credits.py` imports and tests `calculateStudentCredits` [chunk:tests/test_credits.py#L1-7] [chunk:tests/test_credits.py#L38-40]. Additionally, `tests/test_fees.py` contains tests related to its usage in tuition calculation [commit:80a028b8c3].\n\n[issue:87] notes that this function is \"used everywhere,\" specifically affecting the credit-load check in registration and tuition billing.",
+     "citations": [
+      "chunk:tests/test_credits.py#L1-7",
+      "chunk:tests/test_credits.py#L38-40",
+      "chunk:unierp/exam/grades.py#L1-18",
+      "chunk:unierp/fees/calculator.py#L34-44",
+      "chunk:unierp/reports/transcript.py#L1-10",
+      "chunk:unierp/reports/transcript.py#L13-44",
+      "commit:80a028b8c3",
+      "commit:daa65dca17",
+      "issue:87"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": false,
+     "citation_precision": 0.4444444444444444,
+     "hallucinated": false,
+     "latency_s": 12.851,
+     "tokens": 2005
+    },
+    {
+     "id": "x02",
+     "category": "cross_module",
+     "answer": "Based on the provided context, the following modules use `compute_gpa`:\n\n1.  **`unierp/reports/transcript.py`**: This module imports `compute_gpa` from `unierp.exam.grades` [chunk:unierp/reports/transcript.py#L1-10]. 2.  **`tests/test_grades.py`**: This test module imports and uses `compute_gpa` in several test functions, such as `test_gpa_of_empty_record_is_zero`, `test_gpa_ignores_withdrawals`, `test_gpa_is_credit_weighted`, `test_gpa_rounds_half_up`, and `test_term_gpa_counts_every_attempt_in_that_term` [chunk:tests/test_grades.py#L54-55] [chunk:tests/test_grades.py#L49-51] [chunk:tests/test_grades.py#L37-40] [chunk:tests/test_grades.py#L43-46] [chunk:tests/test_grades.py#L64-66]. The function `compute_gpa` is defined in the module **`unierp/exam/grades.py`** [commit:e58d583006] [commit:9f9f760475].",
+     "citations": [
+      "chunk:tests/test_grades.py#L37-40",
+      "chunk:tests/test_grades.py#L43-46",
+      "chunk:tests/test_grades.py#L49-51",
+      "chunk:tests/test_grades.py#L54-55",
+      "chunk:tests/test_grades.py#L64-66",
+      "chunk:unierp/reports/transcript.py#L1-10",
+      "commit:9f9f760475",
+      "commit:e58d583006"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.125,
+     "hallucinated": false,
+     "latency_s": 20.697,
+     "tokens": 1470
+    },
+    {
+     "id": "x03",
+     "category": "cross_module",
+     "answer": "Based on the provided context, `apply_late_fee` is called by the following test functions in `tests/test_fees.py`:\n\n*   `test_late_fee_is_capped` [chunk:tests/test_fees.py#L39-40]\n*   `test_late_fee_per_started_week` [chunk:tests/test_fees.py#L34-36]\n*   `test_late_fee_result_is_rounded_down` [chunk:tests/test_fees.py#L43-44]\n*   `test_no_late_fee_within_grace_period` [chunk:tests/test_fees.py#L30-31]\n\nThe context does not show any production code (outside of tests) calling `apply_late_fee`.",
+     "citations": [
+      "chunk:tests/test_fees.py#L30-31",
+      "chunk:tests/test_fees.py#L34-36",
+      "chunk:tests/test_fees.py#L39-40",
+      "chunk:tests/test_fees.py#L43-44"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": false,
+     "content_correct": false,
+     "citation_precision": 0.0,
+     "hallucinated": false,
+     "latency_s": 16.652,
+     "tokens": 1465
+    },
+    {
+     "id": "x04",
+     "category": "cross_module",
+     "answer": "The `check_prerequisites` function is used in the following places:\n\n1.  **Tests in `tests/test_prerequisites.py`**:\n    *   `test_prerequisites_satisfied` asserts that prerequisites are satisfied for a course given a passing history [chunk:tests/test_prerequisites.py#L15-17].\n    *   `test_reports_every_missing_prerequisite` checks that missing prerequisites are correctly reported when no enrollments are provided [chunk:tests/test_prerequisites.py#L31-33].\n    *   `test_in_progress_prerequisite_does_not_count` verifies that an in-progress enrollment does not satisfy a prerequisite [chunk:tests/test_prerequisites.py#L26-28].\n    *   `test_failed_prerequisite_is_missing` ensures that a failed course is treated as a missing prerequisite [chunk:tests/test_prerequisites.py#L20-23]. 2.  **Course Registration Logic**:\n    *   Pull request #8, which adds course registration with an add/drop window, explicitly states that it checks \"prerequisites\" among other constraints like student status, capacity, and timetable clashes [pr:8]. The function itself is defined in `unierp/registration/prerequisites.py` and was introduced in commit `c35f163ada` as part of pull request #3 [commit:c35f163ada] [pr:3] [chunk:unierp/registration/prerequisites.py#L32-35].",
+     "citations": [
+      "chunk:tests/test_prerequisites.py#L15-17",
+      "chunk:tests/test_prerequisites.py#L20-23",
+      "chunk:tests/test_prerequisites.py#L26-28",
+      "chunk:tests/test_prerequisites.py#L31-33",
+      "chunk:unierp/registration/prerequisites.py#L32-35",
+      "commit:c35f163ada",
+      "pr:3",
+      "pr:8"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": false,
+     "citation_precision": 0.125,
+     "hallucinated": false,
+     "latency_s": 12.798,
+     "tokens": 1389
+    },
+    {
+     "id": "x05",
+     "category": "cross_module",
+     "answer": "The `is_exam_eligible` function is relied upon by the following code:\n\n1.  **API Endpoint**: The `attendance` endpoint in `unierp/api/app.py` calls `is_exam_eligible(records)` to determine if a student is eligible for exams and returns this status in the response [chunk:unierp/api/app.py#L157-202]. 2.  **Tests**:\n    *   `test_eligibility_threshold` in `tests/test_attendance.py` asserts the behavior of `is_exam_eligible` for various attendance scenarios [chunk:tests/test_attendance.py#L41-44].\n    *   `test_no_sessions_counts_as_full_attendance` in `tests/test_attendance.py` asserts that `is_exam_eligible([])` returns `True` [chunk:tests/test_attendance.py#L30-32]. 3.  **Imports**: The function is imported in `tests/test_attendance.py` [chunk:tests/test_attendance.py#L1-13] and `unierp/api/app.py` [chunk:unierp/api/app.py#L1-120]. The function itself is defined in `unierp/attendance/tracker.py` [chunk:unierp/attendance/tracker.py#L39-40].",
+     "citations": [
+      "chunk:tests/test_attendance.py#L1-13",
+      "chunk:tests/test_attendance.py#L30-32",
+      "chunk:tests/test_attendance.py#L41-44",
+      "chunk:unierp/api/app.py#L1-120",
+      "chunk:unierp/api/app.py#L157-202",
+      "chunk:unierp/attendance/tracker.py#L39-40"
+     ],
+     "refused": false,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": 0.3333333333333333,
+     "hallucinated": false,
+     "latency_s": 18.843,
+     "tokens": 1951
+    },
+    {
+     "id": "u01",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 17.097,
+     "tokens": 1559
+    },
+    {
+     "id": "u02",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.65,
+     "tokens": 1181
+    },
+    {
+     "id": "u03",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.652,
+     "tokens": 1402
+    },
+    {
+     "id": "u04",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.661,
+     "tokens": 1894
+    },
+    {
+     "id": "u05",
+     "category": "unanswerable",
+     "answer": "I can't find that in this repository.",
+     "citations": [],
+     "refused": true,
+     "source": "llm",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 5.017,
+     "tokens": 1106
+    },
+    {
+     "id": "a01",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a02",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a03",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a04",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    },
+    {
+     "id": "a05",
+     "category": "adversarial",
+     "answer": "I can only answer questions about this repository's code and history.",
+     "citations": [],
+     "refused": true,
+     "source": "guard",
+     "correct": true,
+     "content_correct": true,
+     "citation_precision": null,
+     "hallucinated": false,
+     "latency_s": 0.0,
+     "tokens": 0
+    }
+   ]
+  }
+ },
+ "ragas": null,
+ "model": "qwen/qwen3.8-27b (Groq, temperature 0)"
+}
