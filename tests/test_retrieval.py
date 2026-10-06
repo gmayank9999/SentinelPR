@@ -155,3 +155,17 @@ def test_nested_functions_resolve_to_the_enclosing_symbol():
     assert graph.enclosing("sym:a.py::Box.pack.fmt") == "sym:a.py::Box.pack"
     assert graph.enclosing("sym:a.py::Box.pack") == "sym:a.py::Box.pack"
     assert graph.enclosing("sym:a.py::gone") == "sym:a.py::gone"
+
+
+def test_llm_citations_resolve_only_to_given_evidence():
+    from sentinel.agents.impact import resolve_evidence
+
+    allowed = {"cov:tests/t.py::test_a", "graph:calls:f->g", "sig:pkg/m.py::f"}
+    assert resolve_evidence("cov:tests/t.py::test_a", allowed) == ["cov:tests/t.py::test_a"]
+    # the bare test id, or a whole evidence line copied from the prompt
+    assert resolve_evidence("tests/t.py::test_a", allowed) == ["cov:tests/t.py::test_a"]
+    assert resolve_evidence("module pkg/m.py: graph:calls:f->g", allowed) == ["graph:calls:f->g"]
+    assert resolve_evidence("signature changed: sig:pkg/m.py::f (callers: h)", allowed) == ["sig:pkg/m.py::f"]
+    # invented ids stay rejected
+    assert resolve_evidence("cov:tests/t.py::test_invented", allowed) == []
+    assert resolve_evidence("pkg/m.py", allowed) == []

@@ -16,6 +16,7 @@ reproduce the call-graph and name-search baselines used in the evaluation.
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 
 from pydantic import BaseModel, Field
@@ -72,6 +73,24 @@ def test_target(graph: CodeGraph, node: str) -> str:
     """A test function node -> the test id used in claims (``tests/x.py::test_y``)."""
     data = graph.node(node)
     return f"{data['path']}::{data['qualname'].replace('.', '::')}"
+
+
+_SEPARATORS = re.compile(r"[\s,;()]+")
+
+
+def resolve_evidence(cited: str, allowed: set[str]) -> list[str]:
+    """The evidence ids a citation refers to, taken only from ``allowed``.
+
+    Models often cite the whole evidence line ("module x.py: graph:calls:a->b") or the bare
+    test id ("tests/t.py::test_a" for "cov:tests/t.py::test_a"). Those are mapped onto the ids
+    they contain; anything that is not one of the ids the model was given is still rejected.
+    """
+    if cited in allowed:
+        return [cited]
+    found = [token for token in _SEPARATORS.split(cited) if token in allowed]
+    if not found:
+        found = [f"{prefix}:{cited}" for prefix in ("cov", "covsym") if f"{prefix}:{cited}" in allowed][:1]
+    return list(dict.fromkeys(found))
 
 
 class ImpactAgent:
@@ -244,7 +263,7 @@ class ImpactAgent:
             if raw.type not in ("test_impact", "module_impact", "api_break"):
                 discarded.append(f"unknown claim type {raw.type!r}")
                 continue
-            cited = [e for e in raw.evidence_ids if e in allowed]
+            cited = list(dict.fromkeys(e for raw_id in raw.evidence_ids for e in resolve_evidence(raw_id, allowed)))
             if not cited:
                 discarded.append(f"{raw.type} {raw.target}: no valid evidence ({raw.evidence_ids})")
                 continue
@@ -268,6 +287,10 @@ class ImpactAgent:
         if mode == "llm":
             try:
                 claims, rating, reason, discarded = self.llm_claims(ctx, ev, ids, feedback)
+                if not claims and rating is not None:
+                    # The model replied but none of its claims was grounded: keep the evidence-only
+                    # claims, and still record its rating (one feature among many).
+                    return ImpactResult(dedupe_claims(self.rule_claims(ctx, ev, ids)), "rules", rating, reason, ev, discarded)
                 if claims:
                     # Coverage-backed tests are facts, not opinions: always keep them as claims too.
                     rule_tests = [c for c in self.rule_claims(ctx, ev, ClaimIds("imp-cov")) if c.evidence_ids[0].startswith("cov:")]
