@@ -82,6 +82,11 @@ def gate_table(arms: dict[str, list[dict]]) -> dict:
         y = np.asarray(labels, int)
         entry["false_block_rate"] = round(float(b[y == 0].mean()), 4)
         entry["block_recall"] = round(float(b[y == 1].mean()), 4)
+        # defective PRs let straight through (PASS; for B-LLM, approved)
+        if name.startswith(("no LLM", "+ LLM", "LLM pipeline")):
+            entry["defective_passed"] = sum(1 for p in preds if p["label"] and _decision(p) == "PASS")
+        elif name == "B-LLM":
+            entry["defective_passed"] = sum(1 for p in preds if p["label"] and p["approve"])
         table[name] = entry
         if name != "no LLM":
             shared = [p for p in preds if p["id"] in reference]
@@ -190,14 +195,15 @@ def render(result: dict) -> str:
              f"{g['n']} PRs scored out of fold on {', '.join(result['bases'])}; model `{result['model']}`, "
              f"temperature 0. Every gate arm uses the same forward-chained model per release.", "",
              "## Release gate", "",
-             "| arm | ROC-AUC | 95% CI | PR-AUC | 95% CI | recall@5%FPR | Brier | ECE | false-block | block recall | McNemar p vs no LLM |",
-             "|---|---|---|---|---|---|---|---|---|---|---|"]
+             "| arm | ROC-AUC | 95% CI | PR-AUC | 95% CI | recall@5%FPR | Brier | ECE | false-block | block recall | defective passed | McNemar p vs no LLM |",
+             "|---|---|---|---|---|---|---|---|---|---|---|---|"]
     f = lambda v: "—" if v is None else (f"{v:.3f}" if isinstance(v, float) else str(v))
     ci = lambda v: f"[{v[0]:.2f}, {v[1]:.2f}]" if v else "—"
     for name, t in g["table"].items():
         p = g["mcnemar_vs_no_llm"].get(name, {}).get("p_value")
         lines.append(f"| {name} | {f(t.get('roc_auc'))} | {ci(t.get('roc_auc_ci'))} | {f(t.get('pr_auc'))} | {ci(t.get('pr_auc_ci'))} | "
-                     f"{f(t.get('recall_at_5fpr'))} | {f(t['brier'])} | {f(t['ece'])} | {f(t['false_block_rate'])} | {f(t['block_recall'])} | {f(p)} |")
+                     f"{f(t.get('recall_at_5fpr'))} | {f(t['brier'])} | {f(t['ece'])} | {f(t['false_block_rate'])} | {f(t['block_recall'])} | "
+                     f"{f(t.get('defective_passed'))} | {f(p)} |")
     lines += ["", "Blocked / passed by category (B-LLM: passed = approved):", "",
               "| category | n | defective | " + " | ".join(f"{a} blocked / passed" for a in ("no LLM", "LLM pipeline", "B-LLM")) + " |",
               "|---|---|---|---|---|---|"]
