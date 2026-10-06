@@ -5,6 +5,8 @@
 
 Metrics per condition and category:
     accuracy            answerable: cites at least one gold source; unanswerable/adversarial: refuses
+    content_accuracy    answerable: the answer contains every gold keyword (no citation needed, so the
+                        no-RAG condition is scored on equal terms); unanswerable/adversarial: refuses
     citation_precision  share of cited ids that match a gold source
     hallucination_rate  share of unanswerable/adversarial questions that were answered anyway
     latency             seconds per question
@@ -46,11 +48,15 @@ def score(item: dict, answer) -> dict:
     cited = answer.citations
     hits = [c for c in cited if any(matches(c, g) for g in item["gold"])]
     if refusal_expected:
-        correct = answer.refused
+        correct = content_correct = answer.refused
     else:
         correct = (not answer.refused) and bool(hits)
+        # citation-independent: the answer states the repository facts the question is about
+        text = answer.answer.lower()
+        content_correct = (not answer.refused) and all(k.lower() in text for k in item["keywords"])
     return {
         "correct": correct,
+        "content_correct": content_correct,
         "citation_precision": (len(hits) / len(cited)) if cited else None,
         "hallucinated": refusal_expected and not answer.refused,
         "latency_s": answer.latency_s,
@@ -61,9 +67,11 @@ def score(item: dict, answer) -> dict:
 def evaluate(bot: QABot, questions: list[dict], mode: str, use_llm: bool) -> dict:
     rows = []
     for item in questions:
+        if bot.llm is not None:
+            bot.llm.reset_usage()  # each question is its own run with its own token budget
         answer = bot.answer(item["question"], mode=mode, use_llm=use_llm)
         rows.append({"id": item["id"], "category": item["category"], "answer": answer.answer, "citations": answer.citations,
-                     "refused": answer.refused, **score(item, answer)})
+                     "refused": answer.refused, "source": answer.source, **score(item, answer)})
     by_category = defaultdict(list)
     for r in rows:
         by_category[r["category"]].append(r)
@@ -74,9 +82,11 @@ def evaluate(bot: QABot, questions: list[dict], mode: str, use_llm: bool) -> dic
         return {
             "n": len(items),
             "accuracy": round(float(np.mean([r["correct"] for r in items])), 4),
+            "content_accuracy": round(float(np.mean([r["content_correct"] for r in items])), 4),
             "citation_precision": round(float(np.mean(precision)), 4) if precision else None,
             "hallucination_rate": round(float(np.mean([r["hallucinated"] for r in refusal_items])), 4) if refusal_items else None,
             "latency_s": round(float(np.mean([r["latency_s"] for r in items])), 3),
+            "sources": {k: sum(1 for r in items if r["source"] == k) for k in sorted({r["source"] for r in items})},
         }
 
     return {"overall": summary(rows), "by_category": {k: summary(v) for k, v in sorted(by_category.items())}, "answers": rows}
@@ -125,7 +135,7 @@ def main(argv: list[str] | None = None) -> None:
     args.out.write_text(json.dumps(results, indent=1), encoding="utf-8")
     for mode, r in results["conditions"].items():
         o = r["overall"]
-        print(f"{mode:13} accuracy {o['accuracy']:.2f}  citation precision {o['citation_precision']}  hallucination {o['hallucination_rate']}")
+        print(f"{mode:13} accuracy {o['accuracy']:.2f}  content {o['content_accuracy']:.2f}  citation precision {o['citation_precision']}  hallucination {o['hallucination_rate']}")
         for cat, c in r["by_category"].items():
             print(f"    {cat:14} {c['accuracy']:.2f} (n={c['n']})")
 
