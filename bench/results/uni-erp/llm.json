@@ -1,115 +1,120 @@
 {
  "repo": "uni-erp",
  "bases": [
-  "Release 1.3.0"
+  "Release 1.3.0",
+  "Release 1.4.0"
  ],
  "model": "openai/gpt-oss-120b",
  "gate": {
   "table": {
    "no LLM": {
-    "n": 37,
-    "positives": 23,
-    "roc_auc": 0.9627,
+    "n": 75,
+    "positives": 47,
+    "roc_auc": 0.9658,
     "roc_auc_ci": [
-     0.8975,
-     1.0
+     0.9259,
+     0.9937
     ],
-    "pr_auc": 0.9799,
+    "pr_auc": 0.9815,
     "pr_auc_ci": [
-     0.9422,
-     1.0
+     0.9582,
+     0.9962
     ],
-    "recall_at_5fpr": 0.8261,
-    "brier": 0.0862,
-    "ece": 0.1063,
-    "threshold": 0.8698,
+    "recall_at_5fpr": 0.8511,
+    "brier": 0.0693,
+    "ece": 0.0879,
+    "threshold": 0.9749,
     "false_block_rate": 0.0,
-    "block_recall": 0.8261
+    "block_recall": 0.7872,
+    "defective_passed": 2
    },
    "+ LLM rating": {
-    "n": 37,
-    "positives": 23,
-    "roc_auc": 0.9596,
+    "n": 75,
+    "positives": 47,
+    "roc_auc": 0.9643,
     "roc_auc_ci": [
-     0.8882,
-     1.0
+     0.9215,
+     0.9931
     ],
-    "pr_auc": 0.9781,
+    "pr_auc": 0.9805,
     "pr_auc_ci": [
-     0.9369,
-     1.0
+     0.9522,
+     0.9958
     ],
-    "recall_at_5fpr": 0.8261,
-    "brier": 0.0916,
-    "ece": 0.1102,
-    "threshold": 0.8698,
+    "recall_at_5fpr": 0.8298,
+    "brier": 0.0737,
+    "ece": 0.0722,
+    "threshold": 0.9749,
     "false_block_rate": 0.0,
-    "block_recall": 0.8261
+    "block_recall": 0.766,
+    "defective_passed": 7
    },
    "LLM pipeline": {
-    "n": 37,
-    "positives": 23,
-    "roc_auc": 0.9534,
+    "n": 75,
+    "positives": 47,
+    "roc_auc": 0.9635,
     "roc_auc_ci": [
-     0.8718,
-     1.0
+     0.9172,
+     0.9927
     ],
-    "pr_auc": 0.9758,
+    "pr_auc": 0.9803,
     "pr_auc_ci": [
-     0.9286,
-     1.0
+     0.9543,
+     0.9959
     ],
-    "recall_at_5fpr": 0.8261,
-    "brier": 0.0866,
-    "ece": 0.0871,
-    "threshold": 0.8698,
+    "recall_at_5fpr": 0.8298,
+    "brier": 0.0735,
+    "ece": 0.0882,
+    "threshold": 0.9749,
     "false_block_rate": 0.0,
-    "block_recall": 0.8261
+    "block_recall": 0.7872,
+    "defective_passed": 5
    },
    "LLM rating alone": {
-    "n": 37,
-    "positives": 23,
-    "roc_auc": 0.5683,
+    "n": 75,
+    "positives": 47,
+    "roc_auc": 0.6292,
     "roc_auc_ci": [
-     0.435,
-     0.6875
+     0.5459,
+     0.7097
     ],
-    "pr_auc": 0.6877,
+    "pr_auc": 0.7258,
     "pr_auc_ci": [
-     0.5331,
-     0.8199
+     0.6174,
+     0.8136
     ],
-    "recall_at_5fpr": 0.1304,
-    "brier": 0.3441,
-    "ece": 0.3324,
+    "recall_at_5fpr": 0.1489,
+    "brier": 0.324,
+    "ece": 0.3307,
     "threshold": 0.65,
     "false_block_rate": 0.0,
-    "block_recall": 0.1304
+    "block_recall": 0.1489
    },
    "B-LLM": {
-    "n": 37,
-    "positives": 23,
-    "roc_auc": 0.9581,
+    "n": 75,
+    "positives": 47,
+    "roc_auc": 0.9236,
     "roc_auc_ci": [
-     0.8967,
-     0.9971
+     0.8582,
+     0.9757
     ],
-    "pr_auc": 0.9697,
+    "pr_auc": 0.9537,
     "pr_auc_ci": [
-     0.9197,
-     0.9986
+     0.9111,
+     0.9847
     ],
-    "recall_at_5fpr": 0.7826,
-    "brier": 0.1863,
-    "ece": 0.2403,
+    "recall_at_5fpr": 0.7234,
+    "brier": 0.193,
+    "ece": 0.2457,
     "threshold": 0.5,
     "false_block_rate": 0.0,
-    "block_recall": 0.6522
+    "block_recall": 0.617,
+    "defective_passed": 13
    }
   },
   "mcnemar_vs_no_llm": {
    "+ LLM rating": {
-    "a_only": 0,
+    "a_only": 1,
     "b_only": 0,
     "p_value": 1.0
    },
@@ -119,364 +124,362 @@
     "p_value": 1.0
    },
    "LLM rating alone": {
-    "a_only": 16,
+    "a_only": 30,
     "b_only": 0,
-    "p_value": 3e-05
+    "p_value": 0.0
    },
    "B-LLM": {
-    "a_only": 7,
-    "b_only": 3,
-    "p_value": 0.34375
+    "a_only": 14,
+    "b_only": 6,
+    "p_value": 0.11532
    }
   },
   "per_category": {
    "no LLM": {
     "C1": {
-     "n": 6,
+     "n": 12,
      "defective": 0,
      "blocked": 0,
-     "passed": 6
+     "passed": 12
     },
     "C2": {
-     "n": 7,
-     "defective": 7,
-     "blocked": 7,
+     "n": 14,
+     "defective": 14,
+     "blocked": 14,
      "passed": 0
     },
     "HF": {
-     "n": 3,
-     "defective": 3,
-     "blocked": 1,
+     "n": 7,
+     "defective": 7,
+     "blocked": 2,
      "passed": 1
     },
     "C3": {
-     "n": 4,
-     "defective": 2,
-     "blocked": 2,
+     "n": 8,
+     "defective": 4,
+     "blocked": 4,
      "passed": 0
     },
     "C4": {
-     "n": 2,
-     "defective": 2,
-     "blocked": 2,
+     "n": 4,
+     "defective": 4,
+     "blocked": 4,
      "passed": 0
     },
     "C5": {
-     "n": 5,
-     "defective": 4,
-     "blocked": 3,
-     "passed": 2
+     "n": 10,
+     "defective": 8,
+     "blocked": 5,
+     "passed": 3
     },
     "C6": {
-     "n": 5,
+     "n": 10,
      "defective": 0,
      "blocked": 0,
-     "passed": 5
+     "passed": 10
     },
     "C7": {
-     "n": 5,
-     "defective": 5,
-     "blocked": 4,
+     "n": 10,
+     "defective": 10,
+     "blocked": 8,
      "passed": 0
     }
    },
    "+ LLM rating": {
     "C1": {
-     "n": 6,
+     "n": 12,
      "defective": 0,
      "blocked": 0,
-     "passed": 6
+     "passed": 12
     },
     "C2": {
-     "n": 7,
-     "defective": 7,
-     "blocked": 7,
+     "n": 14,
+     "defective": 14,
+     "blocked": 14,
      "passed": 0
     },
     "HF": {
-     "n": 3,
-     "defective": 3,
+     "n": 7,
+     "defective": 7,
      "blocked": 1,
-     "passed": 2
+     "passed": 4
     },
     "C3": {
-     "n": 4,
-     "defective": 2,
-     "blocked": 2,
+     "n": 8,
+     "defective": 4,
+     "blocked": 4,
      "passed": 0
     },
     "C4": {
-     "n": 2,
-     "defective": 2,
-     "blocked": 2,
+     "n": 4,
+     "defective": 4,
+     "blocked": 4,
      "passed": 0
     },
     "C5": {
-     "n": 5,
-     "defective": 4,
-     "blocked": 3,
-     "passed": 2
-    },
-    "C6": {
-     "n": 5,
-     "defective": 0,
-     "blocked": 0,
+     "n": 10,
+     "defective": 8,
+     "blocked": 5,
      "passed": 5
     },
+    "C6": {
+     "n": 10,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 10
+    },
     "C7": {
-     "n": 5,
-     "defective": 5,
-     "blocked": 4,
+     "n": 10,
+     "defective": 10,
+     "blocked": 8,
      "passed": 0
     }
    },
    "LLM pipeline": {
     "C1": {
-     "n": 6,
+     "n": 12,
      "defective": 0,
      "blocked": 0,
-     "passed": 6
+     "passed": 12
     },
     "C2": {
-     "n": 7,
-     "defective": 7,
-     "blocked": 7,
+     "n": 14,
+     "defective": 14,
+     "blocked": 14,
      "passed": 0
     },
     "HF": {
-     "n": 3,
-     "defective": 3,
-     "blocked": 1,
-     "passed": 1
+     "n": 7,
+     "defective": 7,
+     "blocked": 2,
+     "passed": 2
     },
     "C3": {
-     "n": 4,
-     "defective": 2,
-     "blocked": 2,
+     "n": 8,
+     "defective": 4,
+     "blocked": 4,
      "passed": 0
     },
     "C4": {
-     "n": 2,
-     "defective": 2,
-     "blocked": 2,
+     "n": 4,
+     "defective": 4,
+     "blocked": 4,
      "passed": 0
     },
     "C5": {
-     "n": 5,
-     "defective": 4,
-     "blocked": 3,
-     "passed": 2
-    },
-    "C6": {
-     "n": 5,
-     "defective": 0,
-     "blocked": 0,
+     "n": 10,
+     "defective": 8,
+     "blocked": 5,
      "passed": 5
     },
+    "C6": {
+     "n": 10,
+     "defective": 0,
+     "blocked": 0,
+     "passed": 10
+    },
     "C7": {
-     "n": 5,
-     "defective": 5,
-     "blocked": 4,
+     "n": 10,
+     "defective": 10,
+     "blocked": 8,
      "passed": 0
     }
    },
    "LLM rating alone": {
     "C1": {
-     "n": 6,
+     "n": 12,
      "defective": 0,
      "blocked": 0,
      "passed": 0
     },
     "C2": {
-     "n": 7,
-     "defective": 7,
-     "blocked": 1,
+     "n": 14,
+     "defective": 14,
+     "blocked": 2,
      "passed": 0
     },
     "HF": {
-     "n": 3,
-     "defective": 3,
+     "n": 7,
+     "defective": 7,
      "blocked": 0,
      "passed": 0
     },
     "C3": {
-     "n": 4,
-     "defective": 2,
-     "blocked": 2,
+     "n": 8,
+     "defective": 4,
+     "blocked": 4,
      "passed": 0
     },
     "C4": {
-     "n": 2,
-     "defective": 2,
-     "blocked": 0,
-     "passed": 0
-    },
-    "C5": {
-     "n": 5,
+     "n": 4,
      "defective": 4,
      "blocked": 0,
      "passed": 0
     },
+    "C5": {
+     "n": 10,
+     "defective": 8,
+     "blocked": 0,
+     "passed": 0
+    },
     "C6": {
-     "n": 5,
+     "n": 10,
      "defective": 0,
      "blocked": 0,
      "passed": 0
     },
     "C7": {
-     "n": 5,
-     "defective": 5,
-     "blocked": 0,
+     "n": 10,
+     "defective": 10,
+     "blocked": 1,
      "passed": 0
     }
    },
    "B-LLM": {
     "C1": {
-     "n": 6,
+     "n": 12,
      "defective": 0,
      "blocked": 0,
-     "passed": 6
+     "passed": 12
     },
     "C2": {
-     "n": 7,
-     "defective": 7,
-     "blocked": 7,
+     "n": 14,
+     "defective": 14,
+     "blocked": 14,
      "passed": 0
     },
     "HF": {
-     "n": 3,
-     "defective": 3,
-     "blocked": 2,
+     "n": 7,
+     "defective": 7,
+     "blocked": 5,
      "passed": 1
     },
     "C3": {
-     "n": 4,
-     "defective": 2,
-     "blocked": 0,
-     "passed": 4
+     "n": 8,
+     "defective": 4,
+     "blocked": 1,
+     "passed": 6
     },
     "C4": {
-     "n": 2,
-     "defective": 2,
-     "blocked": 1,
+     "n": 4,
+     "defective": 4,
+     "blocked": 2,
      "passed": 0
     },
     "C5": {
-     "n": 5,
-     "defective": 4,
+     "n": 10,
+     "defective": 8,
      "blocked": 1,
-     "passed": 4
+     "passed": 9
     },
     "C6": {
-     "n": 5,
+     "n": 10,
      "defective": 0,
      "blocked": 0,
-     "passed": 5
+     "passed": 10
     },
     "C7": {
-     "n": 5,
-     "defective": 5,
-     "blocked": 4,
-     "passed": 1
+     "n": 10,
+     "defective": 10,
+     "blocked": 6,
+     "passed": 2
     }
    }
   },
-  "n": 37
+  "n": 75
  },
  "ratings": {
   "benign": {
-   "low": 12,
+   "low": 26,
    "medium": 2,
    "high": 0,
    "none": 0
   },
   "defective": {
-   "low": 17,
-   "medium": 3,
-   "high": 3,
+   "low": 32,
+   "medium": 8,
+   "high": 7,
    "none": 0
   }
  },
  "robustness": {
-  "attacked_prs": 6,
+  "attacked_prs": 12,
   "b_llm_attack_success": 0.1667,
   "sentinel_llm_attack_success": 0.0,
-  "b_llm_probability_shift_from_attack": -0.0533,
-  "paired_attack_pairs": 6,
+  "b_llm_probability_shift_from_attack": -0.0858,
+  "paired_attack_pairs": 12,
   "by_attack": {
    "injection-body": {
-    "n": 2,
+    "n": 4,
     "b_llm_approved": 0,
     "sentinel_pass": 0
    },
    "injection-title": {
-    "n": 1,
+    "n": 2,
     "b_llm_approved": 0,
     "sentinel_pass": 0
    },
    "injection-comment": {
-    "n": 1,
+    "n": 2,
     "b_llm_approved": 0,
     "sentinel_pass": 0
    },
    "fake-secret": {
-    "n": 1,
+    "n": 2,
     "b_llm_approved": 0,
     "sentinel_pass": 0
    },
    "oversized": {
-    "n": 1,
-    "b_llm_approved": 1,
+    "n": 2,
+    "b_llm_approved": 2,
     "sentinel_pass": 0
    }
   }
  },
  "impact": {
   "rules": {
-   "prs": 22,
-   "macro_precision": 0.7157,
-   "macro_recall": 0.7851,
-   "macro_f1": 0.7462,
-   "claims": 226,
-   "precision_before_verification": 0.7387,
+   "prs": 44,
+   "macro_precision": 0.6766,
+   "macro_recall": 0.7667,
+   "macro_f1": 0.7147,
+   "claims": 488,
+   "precision_before_verification": 0.6213,
    "precision_after_verification": 1.0,
-   "refuted": 48
+   "refuted": 154
   },
   "llm": {
-   "prs": 22,
-   "macro_precision": 0.7682,
-   "macro_recall": 0.7934,
-   "macro_f1": 0.7723,
-   "claims": 190,
-   "precision_before_verification": 0.7622,
-   "precision_after_verification": 0.9854,
-   "refuted": 39
+   "prs": 44,
+   "macro_precision": 0.8081,
+   "macro_recall": 0.8196,
+   "macro_f1": 0.8087,
+   "claims": 381,
+   "precision_before_verification": 0.672,
+   "precision_after_verification": 0.9917,
+   "refuted": 111
   },
   "impact_mode": {
-   "llm": 22,
-   "rules": 15,
-   "rejected": 1
+   "llm": 47,
+   "rules": 28,
+   "rejected": 2
   }
  },
  "cost": {
-  "prs": 37,
+  "prs": 75,
   "tokens_per_pr": {
-   "mean": 3773.3,
-   "p50": 4121.0,
-   "p95": 6803.199999999999
+   "mean": 4441.9,
+   "p50": 4505.0,
+   "p95": 7807.399999999999
   },
-  "calls_per_pr": 4.24,
-  "failed_tasks": {
-   "explain": 20
-  },
+  "calls_per_pr": 4.33,
+  "failed_tasks": {},
   "latency_s": {
-   "p50": 11.79,
-   "p95": 23.43
+   "p50": 6.93,
+   "p95": 15.34
   },
-  "b_llm_tokens_per_pr": 567.2
+  "b_llm_tokens_per_pr": 554.7
  },
  "consistency": {
-  "compared": 38,
+  "compared": 77,
   "execution_features_differ": []
  }
 }
