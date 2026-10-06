@@ -8,6 +8,7 @@ v3 schema- and evidence-constrained) is asked for claims. Reported per version:
 
     parse_rate       replies that validate against the claim schema
     grounded_rate    claims citing only evidence ids the model was given
+    existing_test_rate  test_impact claims naming a test that exists in the suite (the rest are invented)
     precision/recall test_impact claims against the execution ground truth
     tokens           prompt + completion tokens
 """
@@ -62,7 +63,7 @@ def main(argv: list[str] | None = None) -> None:
         base_sha, _ = resolve_base(repo, spec["base"])
         _reset(tree, base_sha)
         _apply(tree, "", spec["edits"])
-        cfg = Config.load(tree, environ={}, overrides={
+        cfg = Config.load(tree, overrides={
             "project": {"root": ".", "package": "unierp", "tests": "tests", "history_repo": str(repo)},
             "workdir": str(ROOT / ".sentinel" / "bench" / args.repo / "index" / base_sha[:10]),
         })
@@ -74,6 +75,7 @@ def main(argv: list[str] | None = None) -> None:
                            store=store, index=RetrievalIndex.load(cfg, store), llm=llm)
         ev = ImpactAgent().gather(ctx)
         truth = {function_level(t) for t in oracle["impacted_tests"]}
+        suite = {function_level(t["test_id"]) for t in store.all_tests()}
         for version in available()["impact"]:
             system, user = render(version, ctx, ev)
             parsed, calls, _ = llm.structured("impact", system, user, _LLMImpact)
@@ -86,7 +88,10 @@ def main(argv: list[str] | None = None) -> None:
             claims = parsed.claims
             t["claims"] += len(claims)
             t["grounded"] += sum(1 for c in claims if c.evidence_ids and all(e in ev.ids for e in c.evidence_ids))
-            score = prf({function_level(c.target) for c in claims if c.type == "test_impact"}, truth)
+            named = [function_level(c.target) for c in claims if c.type == "test_impact"]
+            t["tests_named"] += len(named)
+            t["tests_exist"] += sum(1 for n in named if n in suite)
+            score = prf(set(named), truth)
             t["precision"] += score["precision"]
             t["recall"] += score["recall"]
 
@@ -96,6 +101,7 @@ def main(argv: list[str] | None = None) -> None:
         summary[f"impact@v{version}"] = {
             "prs": int(t["prs"]), "parse_rate": round(t["parsed"] / t["prs"], 3),
             "grounded_rate": round(t["grounded"] / t["claims"], 3) if t["claims"] else None,
+            "existing_test_rate": round(t["tests_exist"] / t["tests_named"], 3) if t["tests_named"] else None,
             "precision": round(t["precision"] / parsed, 3), "recall": round(t["recall"] / parsed, 3),
             "tokens_per_pr": round(t["tokens"] / t["prs"], 1),
         }
