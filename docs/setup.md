@@ -27,6 +27,11 @@ export GEMINI_API_KEY=...      # medium tasks
 ollama pull qwen2.5-coder:1.5b # easy tasks, and fork PRs (no secrets)
 ```
 
+Model ids are set under `llm.providers` in `sentinel/config.yaml` (Groq: `openai/gpt-oss-120b`;
+free-tier catalogues change, so check `https://api.groq.com/openai/v1/models` if calls fail).
+On a rate limit the client tries the next provider in the tier; if every provider is limited it
+waits up to `llm.max_wait_s` (90 s) before the agents fall back to their evidence-only path.
+
 ## First index
 
 ```bash
@@ -70,6 +75,30 @@ python -m bench.run_matrix --repo uni-erp --workers 4 --resume
 python -m bench.analysis.report                     # results.json, report.md, trained model
 python -m bench.qa.evaluate                         # Q&A conditions (add --llm with providers)
 ```
+
+LLM conditions reuse the labelled PRs of the evidence-only run, so both are compared on exactly
+the same PRs (one worker keeps a free-tier key under its tokens-per-minute limit):
+
+```bash
+python -m bench.run_matrix --repo uni-erp --llm --workers 1 --labels bench/out/uni-erp/prs.jsonl     --bases "Release 1.3.0" "Release 1.4.0" --out bench/out/uni-erp-llm
+python -m bench.analysis.llm --base bench/out/uni-erp --llm bench/out/uni-erp-llm   # llm.md, llm.json
+python -m bench.qa.evaluate --llm                   # adds the no-RAG condition
+python -m bench.prompt_ab --limit 20                # impact prompt v1 / v2 / v3
+```
+
+The two open-source repositories are cloned on first use (into `.sentinel/repos/`). Their
+tests import the cloned sources, but the environment needs their test dependencies, and
+humanize's releases read their version from installed metadata:
+
+```bash
+pip install humanize freezegun                                       # humanize
+pip install odfpy openpyxl pandas pyyaml tabulate xlrd xlwt markuppy # tablib
+python -m bench.run_matrix --repo humanize --workers 4
+python -m bench.analysis.report --results bench/out/humanize/results.jsonl --no-model
+```
+
+`--no-model` keeps the shipped risk model (trained on UniERP) untouched; the report then
+also shows how that model does on a repository it never saw.
 
 ## Code search backends
 

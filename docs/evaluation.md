@@ -46,9 +46,21 @@ releases are valid bases.
   gate decisions; Wilcoxon signed-rank on per-PR impact F1.
 * **Ablations** retrain the model on feature subsets: no verification evidence, no mutation, no
   history, no LLM rating; the JIT baseline uses change metrics only.
-* LLM conditions (B-LLM reviewer, LLM-mode agents, Q&A with generation) run when provider keys are
-  set (`python -m bench.run_matrix --llm`, `python -m bench.qa.evaluate --llm`). The committed
-  results were produced without an LLM.
+* **LLM conditions** reuse the labelled PRs of the evidence-only run (`run_matrix --llm --labels`),
+  so the two runs are paired PR by PR, and every gate arm is scored by the same forward-chained
+  model (`bench/analysis/llm.py`). All calls use temperature 0 on Groq's free tier, which allows
+  200k tokens per model per day, so each experiment uses one model and is sized to that quota:
+
+  | experiment | model | scope | result |
+  |---|---|---|---|
+  | LLM agents + B-LLM reviewer | `openai/gpt-oss-120b` | UniERP release 1.3.0, 37 PRs out of fold | [`llm.md`](../bench/results/uni-erp/llm.md) |
+  | Impact prompt v1 / v2 / v3 | `openai/gpt-oss-20b` | 20 UniERP PRs | [`prompt_ab.json`](../bench/results/uni-erp/prompt_ab.json) |
+  | Q&A: no RAG / code / code + history | `qwen/qwen3.8-27b` | 41 questions | [`results-llm.json`](../bench/results/qa/results-llm.json) |
+
+  Release 1.4.0 with the LLM needs another day's quota:
+  `python -m bench.run_matrix --repo uni-erp --llm --workers 1 --labels bench/out/uni-erp/prs.jsonl
+  --bases "Release 1.4.0" --resume --out bench/out/uni-erp-llm`, then `python -m bench.analysis.llm`.
+  The evidence-only results (everything else) use no LLM.
 
 ## Results (UniERP)
 
@@ -60,6 +72,13 @@ The full report with confidence intervals is in
 
 * **Construct.** Generated defects (mutations, reverted fixes, signature changes) approximate real
   defects but are not the same population. C4 reverts real historical fixes to mitigate this.
+* **Shared mutation operators.** C2 and hidden-fault PRs are generated with the same operators
+  (`sentinel/verify/mutation.py`) the verifier uses to measure test adequacy, so the defects
+  have the shape the detector looks for. C3, C4 and C5 are generated differently and are where
+  this bias does not apply.
+* **Circularity in RQ1.** The ground truth for impacted tests is "tests that execute a changed
+  line", and SentinelPR predicts it largely from the base revision's line coverage, so part of
+  its advantage over static reachability and name search comes from sharing that definition.
 * **Circularity in RQ2.** A test-impact claim is verified by executing the test on the head, and the
   ground truth is also execution-based, so post-verification precision is close to 1 by
   construction. The meaningful quantity is how many *true* claims verification loses (8%).
@@ -72,15 +91,50 @@ The full report with confidence intervals is in
   now selected by forward-chained PR-AUC. Every variant is still reported. The expert weights
   were written before the benchmark existed, but the choice to deploy them was made after seeing
   these results, so the headline numbers carry some selection optimism.
+* **The "merge if tests pass" baseline is binary.** Its ROC curve has a single operating point,
+  which flatters the AUC gap. At the decision level the two disagree on 3 of 75 PRs (all in
+  SentinelPR's favour, exact McNemar p = 0.25): the gain over passing tests is in ranking and
+  calibration (Brier 0.069 vs 0.173), not a significant difference in what gets blocked.
 * **What the ablations say.** Verification evidence carries the signal (PR-AUC 0.98 → 0.86
   without it). Mutation adds little over changed-line coverage on UniERP, whose visible suite
   already covers 94% of lines; it matters where coverage is high but assertions are weak, which
-  the hidden-fault category exercises only with 14 PRs.
+  the hidden-fault category exercises only with 14 PRs. Out of fold, removing mutation even
+  gives 4 more correct block decisions (0 vs 4, p = 0.125): most hidden faults sit on lines no
+  test executes, which changed-line coverage already flags. The untrained expert prior scores as
+  well as the deployed model (PR-AUC 0.984 vs 0.982), so training contributes calibration and
+  thresholds, not ranking.
 * **Small sample.** 154 PRs in total and 75 scored out-of-fold; confidence intervals are wide.
-* **External validity.** One small Python project so far. `bench/repos.yaml` is ready for two real
-  open-source repositories (they need hidden oracle tests before they can be enabled).
-* **Q&A set.** The 41 questions were written with knowledge of the repository; answers are
-  scored automatically by gold citations, which rewards finding the right sources rather than
-  judging the prose.
+* **External validity.** UniERP plus two real open-source libraries, humanize
+  ([report](../bench/results/humanize/report.md)) and tablib
+  ([report](../bench/results/tablib/report.md)). Verification evidence carries the signal on all
+  three (PR-AUC without it: 0.86 / 0.72 / 0.80), and on tablib the block decisions improve
+  significantly over passing tests (McNemar p = 0.021). Hidden faults are the weak spot outside
+  UniERP: 3 of 10 passed on humanize and 5 of 10 on tablib. On humanize the ranking holds (PR-AUC 0.891 vs 0.757 for
+  passing tests) but the false-block rate is 8.1%, above the 5% target, and the model trained on
+  UniERP needs re-chosen thresholds there (21.6% false blocks with UniERP's). On humanize the
+  family selection kept expert weights (PR-AUC 0.891 vs 0.884 for fitted sign-constrained weights)
+  although the unconstrained model did better (0.958): the selection only compares the two
+  families, chosen before humanize was run. The generators produced no C5 (config/dependency)
+  PRs for humanize, so that category is UniERP-only.
+* **Attack success vs. missed faults.** The one attacked PR that passed (tablib) is a hidden fault
+  whose unattacked twin passed too; attack success should be read against the clean twin.
+* **Oracle completeness.** A PR is defective only if a base or hidden test catches it. On humanize,
+  source-only reverts of real bug fixes that no test covers, and new optional parameters no test
+  exercises, are labelled benign; SentinelPR blocks several of them, which counts as a false block.
+* **What the LLM measurements can and cannot say.** 37 paired PRs from one release and one model
+  per experiment: they show the LLM adds no measurable signal *here*, with wide intervals, not that
+  no model could. B-LLM sees the unified diff truncated to 8,000 characters, so a defect late in
+  an oversized PR is invisible to it by construction. Free-tier models change; ids are recorded in
+  every result file.
+* **Q&A set.** The 41 questions were written with knowledge of the repository; `accuracy` is
+  scored by gold citations, which rewards finding the right sources rather than judging the prose,
+  and a code-only retriever cannot cite a commit or issue, so its 0% on the three history
+  categories is structural. `content_accuracy` (the answer states every gold keyword) does not
+  need citations and is the fair comparison across conditions, including no-RAG.
+* **Order-dependent tests.** Running a relevance-ranked subset of a suite can surface test-order
+  dependencies: humanize's i18n tests set `i18n.__file__ = None` and rely on later-defined tests
+  running first. The first humanize run blocked three comment/docstring PRs because of this.
+  Selected tests now run in definition order (`sentinel/verify/pytest_plugin.py`); order-dependent
+  suites remain a risk for any test-selection tool.
 * **Model drift.** When LLMs are used, provider model ids and prompt versions are recorded in every
   run report.

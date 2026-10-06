@@ -12,7 +12,8 @@ rollback watches the change in (simulated) production.
 > LLMs propose. Execution verifies. A calibrated model decides. The pipeline acts. A human approves.
 
 Everything runs on GitHub Actions and free tooling. No LLM is required: without providers the
-agents fall back to evidence-only claims, and the decision never depends on model output anyway.
+agents fall back to evidence-only claims, and the decision never depends on model output anyway
+(measured: switching the LLM on does not change the gate's accuracy; see Results).
 
 ## What a PR sees
 
@@ -74,35 +75,72 @@ trained on earlier releases and calibrated on release *k−1*.
 | JIT defect prediction | 0.871 | 0.799 | 0.383 | 0.074 | 0% | 15% |
 | ablation: no verification evidence | 0.857 | 0.771 | 0.298 | 0.263 | 0% | 77% |
 
-Removing the verified evidence is what hurts: PR-AUC falls from 0.98 to 0.86. On this benchmark
-mutation adds little on top of changed-line coverage (0.981 without it); history features barely
-move the numbers. All benign refactors and test/docs-only PRs passed. Of the 7 hidden-fault PRs
-scored out of fold (every visible test passes, the change is still defective), 6 were held back
-(2 BLOCK, 4 CANARY) and 1 passed.
+Removing the verified evidence is what hurts: PR-AUC falls from 0.98 to 0.86. Against "merge if
+tests pass" the gain is in ranking and calibration (Brier 0.069 vs 0.173); the block decisions
+themselves differ on only 3 of 75 PRs (McNemar p = 0.25). On this benchmark mutation does not
+help on top of changed-line coverage (PR-AUC 0.981 without it, and 4 more correct blocks), because
+most hidden faults sit on lines no test executes; history features barely move the numbers. All
+benign refactors and test/docs-only PRs passed. Of the 7 hidden-fault PRs scored out of fold
+(every visible test passes, the change is still defective), 6 were held back (2 BLOCK, 4 CANARY)
+and 1 passed.
 
 With only ~115 training PRs, expert weights with a learned calibration beat fitted coefficients
 out of fold, so that family is deployed; the selection procedure and both results are in the
 report.
 
+**On a real open-source project — humanize** (150 generated PRs over releases 4.7–4.10, 72 scored
+out of fold; [report](bench/results/humanize/report.md)): PR-AUC 0.891 for SentinelPR vs 0.757 for
+"merge if tests pass" and 0.715 for JIT prediction, and again 0.723 without verification evidence.
+It transfers less cleanly: 8.1% of benign PRs were blocked (target 5%), mostly new optional
+parameters with no test exercising them (mutation score 0) and source-only reverts of real bug
+fixes that the oracle cannot see as defects; 3 of 10 hidden faults passed. The UniERP-trained
+model applied unchanged ranks well (ROC-AUC 0.913) but its thresholds do not carry over (21.6%
+false blocks), so thresholds have to be re-chosen per repository.
+
+**tablib** (143 PRs over releases 3.6–3.9, 70 out of fold; [report](bench/results/tablib/report.md)):
+PR-AUC 0.944 vs 0.794 for "merge if tests pass" (here the block decisions differ significantly,
+McNemar p = 0.021) and 0.792 for JIT prediction; 0.799 without verification evidence. 6.7% false
+blocks, and 5 of 10 hidden faults passed. One attacked PR passed, but its unattacked twin passed
+too (the injection raised its risk from 0.21 to 0.38): the gate missed the hidden fault, the
+attack did not move it.
+
 **RQ1 — change impact**: test-impact F1 0.71 (static reachability 0.59, name search 0.44; Wilcoxon
 p < 0.001). Test selection runs 11 of 107 tests on average — 86% of suite time saved — while
 still selecting 95% of the tests that actually fail.
 
-**RQ5 — cost**: 4.1 s per PR at the median (13.4 s p95) on a laptop, almost all of it test
-execution and mutation; zero LLM tokens in the committed runs.
+**RQ5 — cost**: 4.1 s per PR at the median (13.4 s p95) on a laptop without an LLM, almost all of
+it test execution and mutation. With the LLM agents on (Groq `gpt-oss-120b`): about 3,800 tokens
+and 4 calls per PR; a free-tier key's 200k tokens per day cover roughly 45 PRs.
+
+**What the LLM adds** (37 PRs of release 1.3.0 scored out of fold, both runs on the same PRs;
+[report](bench/results/uni-erp/llm.md)): nothing measurable for the gate. The Impact agent's own
+risk rating is close to chance (ROC-AUC 0.57; it rated 17 of 23 defective PRs "low"), and adding
+it or the LLM's claims leaves the gate where it was (PR-AUC 0.980 → 0.976, same decisions). LLM
+impact claims are slightly better than the rule-based ones (test F1 0.77 vs 0.75). A single-call
+LLM reviewer that sees the full diff (B-LLM) ranks well (ROC-AUC 0.958) but is poorly calibrated
+(Brier 0.186 vs 0.086) and approved defective API and config changes, a hidden fault and an
+oversized PR whose defect sat past its context; where the two disagree, SentinelPR was right on 7
+PRs and B-LLM on 3 (McNemar p = 0.34). In the prompt study
+([`prompt_ab.json`](bench/results/uni-erp/prompt_ab.json), `gpt-oss-20b`, 20 PRs) the zero-shot
+prompt parsed 40% of the time, the few-shot prompt parsed always but 83% of the tests it named do
+not exist, and the evidence-constrained prompt named only real tests (precision 0.50, recall 0.54).
 
 **RQ2 — claim verification**: of 789 execution-checkable impact claims, 54% were true before
 verification and 100% of those kept as VERIFIED were true, at the cost of 8% of true claims
 becoming unverifiable or refuted. (Verification and ground truth both rest on execution, so the
 second number is partly by construction; the recall cost is the informative part.)
 
-**RQ4 — repository Q&A** (41 questions, extractive mode): accuracy 98% with code + history
-retrieval vs 49% with code only; 0% hallucinated answers on unanswerable and adversarial
-questions.
+**RQ4 — repository Q&A** (41 questions, extractive mode): citing a gold source, 98% with code +
+history retrieval vs 49% with code only (a code-only retriever cannot cite history, so its 0% on the
+history categories is structural); stating the expected facts, 80% vs 41%. With an LLM writing the
+answers (`qwen3.8-27b`): stating the expected facts 85% with code + history, 61% with code only
+and 24% without retrieval (the model correctly refuses every repository-specific question it
+cannot know). 0% hallucinated answers on unanswerable and adversarial questions in every condition.
 
 **RQ6 — adversarial robustness**: 0 of 24 attacked defective PRs (injection in title, body or
-comments; planted secrets; oversized diffs) received PASS; no guardrail false positives on
-benign PRs.
+comments; planted secrets; oversized diffs) received PASS on UniERP and on humanize, 1 of 24 on
+tablib (a hidden fault that also passed without the attack); no guardrail false positives on
+benign PRs. The LLM-only reviewer approved 1 of 6 attacked PRs.
 
 Limitations and threats to validity: [docs/evaluation.md](docs/evaluation.md).
 

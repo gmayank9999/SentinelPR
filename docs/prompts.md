@@ -16,8 +16,20 @@ The shift from v2 to v3 is the core idea of SentinelPR in miniature: instead of 
 be right, ask it to choose among checkable facts and cite them, then check.
 
 `python -m bench.prompt_ab` measures the three versions on benchmark PRs (parse rate, share of
-claims grounded in given evidence, precision/recall against execution ground truth, tokens);
-it needs an LLM provider.
+claims grounded in given evidence, share of named tests that exist, precision/recall against
+execution ground truth, tokens); it needs an LLM provider. On 20 UniERP PRs with `gpt-oss-20b`
+([`prompt_ab.json`](../bench/results/uni-erp/prompt_ab.json)):
+
+| version | parses | named tests that exist | precision | recall | tokens / PR |
+|---|---|---|---|---|---|
+| v1 zero-shot | 40% | — (no test claims) | 0.00 | 0.00 | 814 |
+| v2 few-shot | 100% | 17% | 0.05 | 0.05 | 448 |
+| v3 evidence-constrained | 100% | 100% | 0.50 | 0.54 | 1,520 |
+
+Even v3's replies cite evidence ids loosely: only 57% of citations match a given id exactly; the
+rest copy the whole evidence line or drop the `cov:` prefix. The agent resolves each citation to
+the given ids it contains (`resolve_evidence` in `sentinel/agents/impact.py`), so a citation that
+contains no given id is still rejected.
 
 ## Other prompts
 
