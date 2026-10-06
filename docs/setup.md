@@ -31,6 +31,8 @@ Model ids are set under `llm.providers` in `sentinel/config.yaml` (Groq: `openai
 free-tier catalogues change, so check `https://api.groq.com/openai/v1/models` if calls fail).
 On a rate limit the client tries the next provider in the tier; if every provider is limited it
 waits up to `llm.max_wait_s` (90 s) before the agents fall back to their evidence-only path.
+Network errors are retried the same way. `GROQ_API_KEY` may hold several comma-separated keys
+from separate accounts; each is used in turn as the previous one reaches its daily quota.
 
 ## First index
 

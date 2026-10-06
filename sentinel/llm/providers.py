@@ -28,6 +28,9 @@ class ProviderUnavailable(ProviderError):
     pass
 
 
+NETWORK_RETRY_S = 15.0  # a dropped connection or DNS failure is usually over in seconds
+
+
 @dataclass
 class Completion:
     text: str
@@ -62,16 +65,32 @@ class GroqProvider:
 
     def __init__(self, model: str, api_key: str | None = None, timeout: float = 60):
         self.model = model
-        self.api_key = api_key or os.getenv("GROQ_API_KEY")
+        # several comma-separated keys (separate accounts) are used in turn as each hits its quota
+        self.api_keys = [k.strip() for k in (api_key or os.getenv("GROQ_API_KEY") or "").split(",") if k.strip()]
+        self._key = 0
         self.timeout = timeout
 
     @property
+    def api_key(self) -> str | None:
+        return self.api_keys[self._key] if self.api_keys else None
+
+    @property
     def available(self) -> bool:
-        return bool(self.api_key)
+        return bool(self.api_keys)
 
     def complete(self, system: str, user: str, *, json_mode: bool, temperature: float, max_tokens: int) -> Completion:
         if not self.available:
             raise ProviderUnavailable("groq: no API key")
+        limited: RateLimited | None = None
+        for _ in range(len(self.api_keys)):
+            try:
+                return self._complete(system, user, json_mode=json_mode, temperature=temperature, max_tokens=max_tokens)
+            except RateLimited as exc:
+                limited = exc if limited is None or (exc.retry_after or 0) < (limited.retry_after or 0) else limited
+                self._key = (self._key + 1) % len(self.api_keys)
+        raise limited
+
+    def _complete(self, system: str, user: str, *, json_mode: bool, temperature: float, max_tokens: int) -> Completion:
         body = {
             "model": self.model,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
@@ -86,6 +105,9 @@ class GroqProvider:
         started = time.time()
         try:
             response = httpx.post(self.url, json=body, headers={"Authorization": f"Bearer {self.api_key}"}, timeout=self.timeout)
+        except (httpx.ConnectError, httpx.TimeoutException) as exc:
+            # transient: let the client wait and retry like a rate limit instead of degrading
+            raise RateLimited(f"groq: network error: {exc}", NETWORK_RETRY_S) from exc
         except httpx.HTTPError as exc:
             raise ProviderUnavailable(f"groq: {exc}") from exc
         _raise_for(response, self.name)

@@ -127,3 +127,33 @@ def test_prompt_library():
     assert load_prompt("impact", "v1").version == 1
     for name in ("historian", "intent", "explain", "rationale_judge", "qa", "patch"):
         assert load_prompt(name).system
+
+
+def test_groq_rotates_keys_on_rate_limit(monkeypatch):
+    from sentinel.llm.providers import GroqProvider
+
+    seen = []
+
+    def fake(self, system, user, **kwargs):
+        seen.append(self.api_key)
+        if self.api_key == "k1":
+            raise RateLimited("quota", retry_after=600)
+        return Completion("ok", self.model, 1, 1, 0.0)
+
+    monkeypatch.setattr(GroqProvider, "_complete", fake)
+    provider = GroqProvider("m", api_key="k1, k2")
+    assert provider.complete("s", "u", json_mode=False, temperature=0, max_tokens=5).text == "ok"
+    assert seen == ["k1", "k2"]
+
+
+def test_groq_network_errors_are_retried_not_fatal(monkeypatch):
+    import httpx
+
+    from sentinel.llm.providers import GroqProvider
+
+    def boom(*args, **kwargs):
+        raise httpx.ConnectError("getaddrinfo failed")
+
+    monkeypatch.setattr(httpx, "post", boom)
+    with pytest.raises(RateLimited):
+        GroqProvider("m", api_key="k").complete("s", "u", json_mode=False, temperature=0, max_tokens=5)
