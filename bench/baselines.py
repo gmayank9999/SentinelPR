@@ -24,18 +24,9 @@ class _Review(BaseModel):
     reason: str = ""
 
 
-def _diff_text(report: dict, spec: PRSpec, limit: int = 6000) -> str:
-    parts = []
-    for change in report.get("changes", []):
-        content = spec.edits.get(change["path"]) or ""
-        lines = content.split("\n")
-        added = [f"+{lines[n - 1]}" for n in change["added_lines"] if 0 < n <= len(lines)]
-        parts.append(f"--- {change['path']}\n" + "\n".join(added[:80]))
-    return "\n".join(parts)[:limit]
-
-
-def llm_reviewer(llm, spec: PRSpec, report: dict) -> dict:
-    user = f"Title: {spec.title}\nDescription: {spec.body}\n\nDiff (added lines):\n{_diff_text(report, spec)}"
+def llm_reviewer(llm, spec: PRSpec, diff: str, limit: int = 8000) -> dict:
+    """``diff`` is the PR's unified diff (removed and added lines), as a review bot receives it."""
+    user = f"Title: {spec.title}\nDescription: {spec.body}\n\nDiff:\n{diff[:limit]}"
     try:
         review, calls, _ = llm.structured("impact", SYSTEM, user, _Review)
     except Exception as exc:
@@ -46,4 +37,5 @@ def llm_reviewer(llm, spec: PRSpec, report: dict) -> dict:
         "probability": max(0.0, min(1.0, review.defect_probability)),
         "approve": review.verdict.lower().startswith("approve"),
         "tokens": sum(c.prompt_tokens + c.completion_tokens for c in calls),
+        "model": calls[-1].model if calls else None,
     }

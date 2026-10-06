@@ -75,6 +75,21 @@ def _apply(tree: Path, prefix: str, edits: dict[str, str | None]) -> None:
             target.write_text(content, encoding="utf-8", newline="\n")
 
 
+def _failed_tasks(calls: list[dict]) -> list[str]:
+    """LLM tasks that never got an answer (a rate limit followed by a success is not a failure)."""
+    ok = {c["task"] for c in calls if not c.get("error")}
+    return sorted({c["task"] for c in calls if c.get("error")} - ok)
+
+
+def _unified_diff(tree: Path) -> str:
+    """The PR as a unified diff against the base, new files included."""
+    _git(tree, "add", "-A", "--intent-to-add")
+    try:
+        return _git(tree, "diff", "--unified=3")
+    finally:
+        _git(tree, "reset", "-q")
+
+
 def _changed_lines(tree: Path, prefix: str, base_sha: str) -> dict[str, set[int]]:
     from sentinel.retrieval.diff_parser import DiffContext
     from sentinel.verify.verifier import changed_source_lines
@@ -126,13 +141,15 @@ def analyse_job(job: dict) -> dict:
     tree = _worker_tree(job)
     _reset(tree, job["base_sha"])
     _apply(tree, job["prefix"], spec.edits)
+    diff = _unified_diff(tree) if job["llm"] else ""
     scratch = Path(job["work_root"]) / "scratch" / f"w{os.getpid()}" / "verify"
     cfg = Config.load(tree, environ=job["environ"], overrides={
         "project": {"root": job["project_root"], "package": job["package"], "tests": job["tests"],
                     "history_repo": job["repo_path"], "tracker_dir": job.get("tracker_dir")},
         "workdir": job["index_dir"],
         "verify": {"scratch": str(scratch)},
-        "llm": {"enabled": job["llm"]},
+        # a benchmark waits out rate limits rather than silently mixing in evidence-only runs
+        "llm": {"enabled": job["llm"], "max_wait_s": job.get("llm_wait", 600)},
     })
     started = time.time()
     store = open_store(cfg)
@@ -161,7 +178,12 @@ def analyse_job(job: dict) -> dict:
         "sentinel": {
             "decision": report["decision"], "risk": report["risk"], "rejected": report["rejected"],
             "impact_mode": report["impact_mode"], "verdict_counts": report["verdict_counts"],
-            "tokens": report["tokens"], "llm_calls": report["llm"]["calls"], "elapsed_s": round(time.time() - started, 2),
+            "tokens": report["tokens"], "llm_calls": report["llm"]["calls"], "llm_risk": report.get("llm_risk"),
+            "llm_errors": sum(1 for c in report["llm"].get("calls_detail", []) if c.get("error")),
+            "llm_failed_tasks": _failed_tasks(report["llm"].get("calls_detail", [])),
+            # what the calls cost when made, cache hits included (``tokens`` counts fresh calls only)
+            "llm_tokens_all": sum(c["prompt_tokens"] + c["completion_tokens"] for c in report["llm"].get("calls_detail", []) if not c.get("error")),
+            "elapsed_s": round(time.time() - started, 2),
             "guards": sorted({e["guard"] for e in report["guard_events"] if e["severity"] != "info"}),
             "mutation_score": (verification.get("mutation") or {}).get("score"),
             "changed_coverage": (verification.get("changed_lines") or {}).get("coverage"),
@@ -183,7 +205,7 @@ def analyse_job(job: dict) -> dict:
     if job["llm"] and llm.available:
         from bench.baselines import llm_reviewer
 
-        row["llm_reviewer"] = llm_reviewer(llm, spec, report)
+        row["llm_reviewer"] = llm_reviewer(llm, spec, diff)
     return row
 
 
@@ -221,7 +243,8 @@ def index_base(repo: Path, spec: dict, base_sha: str, index_dir: Path) -> None:
     ensure_index(cfg, base_sha).close()
 
 
-def run(repo_name: str, *, bases: list[str] | None, workers: int, limit: int | None, out: Path, llm: bool, resume: bool = False) -> None:
+def run(repo_name: str, *, bases: list[str] | None, workers: int, limit: int | None, out: Path, llm: bool, resume: bool = False,
+        labels: Path | None = None, llm_wait: float = 600) -> None:
     repos = yaml.safe_load((ROOT / "bench" / "repos.yaml").read_text())["repos"]
     spec = repos[repo_name]
     repo = ensure_repo(repo_name, spec)
@@ -238,8 +261,16 @@ def run(repo_name: str, *, bases: list[str] | None, workers: int, limit: int | N
         done_bases = {r["base"] for r in rows}
         log.info("resuming: %d PRs already analysed on %s", len(rows), ", ".join(sorted(done_bases)) or "no bases")
 
-    for order, base_ref in enumerate(bases or spec["bases"]):
-        if base_ref in done_bases:
+    reused: dict[str, list[dict]] = {}
+    if labels:  # analyse PRs labelled by an earlier run instead of generating new ones
+        for line in labels.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                item = json.loads(line)
+                reused.setdefault(item["spec"]["base"], []).append(item)
+        log.info("reusing %d labelled PRs from %s", sum(map(len, reused.values())), labels)
+
+    for order, base_ref in enumerate(spec["bases"]):
+        if (bases and base_ref not in bases) or base_ref in done_bases:
             continue
         base_sha, base_time = resolve_base(repo, base_ref)
         index_dir = work_root / "index" / base_sha[:10]
@@ -262,18 +293,21 @@ def run(repo_name: str, *, bases: list[str] | None, workers: int, limit: int | N
             "project_root": spec["project_root"], "package": spec["package"].replace("src/", ""), "tests": spec["tests"],
             "hidden": str(ROOT / spec["hidden"]) if spec.get("hidden") else None,
             "tracker_dir": str(ROOT / spec["tracker_dir"]) if spec.get("tracker_dir") else None,
-            "index_dir": str(index_dir), "llm": llm, "environ": environ,
+            "index_dir": str(index_dir), "llm": llm, "llm_wait": llm_wait, "environ": environ,
             "base_tests": {p: snapshot.read(p) for p in snapshot.files if p.startswith(spec["tests"] + "/") and p.endswith(".py")},
         }
 
-        log.info("[%s] %s: labelling %d candidate PRs", repo_name, base_ref, len(candidates))
-        labelled = _parallel(label_job, [{**common, "spec": c.to_dict()} for c in candidates], workers)
-        chosen = _select(labelled, counts)
-        defective = [PRSpec.from_dict(r["spec"]) for r in chosen if r["oracle"]["label"] == 1 and r["spec"]["category"] in ("C2", "HF", "C4")]
-        by_id = {r["spec"]["id"]: r for r in chosen}
-        for attacked in adversarial.generate(defective, counts["C7"], seed):
-            attacked.id = attacked.id + "-c7"
-            chosen.append({"spec": attacked.to_dict(), "oracle": by_id[attacked.id[:-3]]["oracle"]})
+        if base_ref in reused:
+            chosen = reused[base_ref]
+        else:
+            log.info("[%s] %s: labelling %d candidate PRs", repo_name, base_ref, len(candidates))
+            labelled = _parallel(label_job, [{**common, "spec": c.to_dict()} for c in candidates], workers)
+            chosen = _select(labelled, counts)
+            defective = [PRSpec.from_dict(r["spec"]) for r in chosen if r["oracle"]["label"] == 1 and r["spec"]["category"] in ("C2", "HF", "C4")]
+            by_id = {r["spec"]["id"]: r for r in chosen}
+            for attacked in adversarial.generate(defective, counts["C7"], seed):
+                attacked.id = attacked.id + "-c7"
+                chosen.append({"spec": attacked.to_dict(), "oracle": by_id[attacked.id[:-3]]["oracle"]})
         labelled_all += chosen
 
         log.info("[%s] %s: analysing %d PRs", repo_name, base_ref, len(chosen))
@@ -343,10 +377,12 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--llm", action="store_true", help="use configured LLM providers")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--resume", action="store_true", help="keep results for bases already completed")
+    parser.add_argument("--llm-wait", type=float, default=600, help="seconds to wait out LLM rate limits per call")
+    parser.add_argument("--labels", type=Path, help="prs.jsonl of an earlier run: analyse its PRs instead of generating new ones (bases it lacks are generated)")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
     logging.getLogger("sentinel").setLevel(logging.WARNING)
-    run(args.repo, bases=args.bases, workers=args.workers, limit=args.limit, out=args.out or ROOT / "bench" / "out" / args.repo, llm=args.llm, resume=args.resume)
+    run(args.repo, bases=args.bases, workers=args.workers, limit=args.limit, out=args.out or ROOT / "bench" / "out" / args.repo, llm=args.llm, resume=args.resume, labels=args.labels, llm_wait=args.llm_wait)
 
 
 if __name__ == "__main__":
