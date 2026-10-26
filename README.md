@@ -158,7 +158,24 @@ python demo/scenarios.py                               # analyse the demo PRs
 python -m sentinel.run --base main                     # analyse your working tree
 ```
 
-Dashboard: `python -m sentinel.publish.dashboard_data && cd dashboard && npm install && npm run dev`.
+**The application** — connect a repository, choose a pull request, watch the pipeline run stage by stage
+(*Live Execution*), and inspect the claims, mutants, risk breakdown and decision (*Product View*):
+
+```bash
+python -m sentinel.api                                # server, http://127.0.0.1:8765
+cd dashboard && npm install && npm run dev            # UI, http://localhost:5173
+```
+
+What it does for real pull requests: it clones the repository from GitHub, installs its declared test dependencies and runs its tests and
+mutants in a **Docker sandbox** (no network, read-only system, resource limits), can use Groq/Gemini/Ollama for claims and explanations
+(never for the verdict), rolls a candidate commit out to a **staging** target in measured steps with verified rollback, and can post the
+result to the PR. Which of those have been observed working and which have not (the live model and GitHub publishing
+need credentials this environment lacked) is listed plainly in [docs/validation.md](docs/validation.md). Start from [docs/product.md](docs/product.md); then [docs/security.md](docs/security.md)
+(sandbox, residual risks, GitHub permissions), [docs/deployment.md](docs/deployment.md) (staging canary, connecting your own target) and
+[.env.example](.env.example). Check a running server end to end with `python -m sentinel.validate`.
+
+How it works, the API, and its security model and limits: [docs/product.md](docs/product.md). The research
+pages read static results: `python -m sentinel.publish.dashboard_data`.
 Full setup, LLM providers, Zoekt/Sourcegraph and the canary: [docs/setup.md](docs/setup.md).
 
 ## Use it in your repository
@@ -200,7 +217,8 @@ sentinel/            the tool
   publish/           PR comment, Check Run, dashboard data
 bench/               PR generators (C1–C7), execution oracle, runner, statistics, Q&A set, hidden tests
 demo/uni-erp/        the demo service, its tests, and the scripted development history
-dashboard/           React dashboard (GitHub Pages)
+dashboard/           the web application: product UI, live execution view, research pages
+  (service/ in sentinel/: repositories, runs, live events, API routes)
 docs/                architecture, setup, evaluation, responsible use
 .github/workflows/   PR gate, index, commands, canary, benchmark, CI, dashboard
 action.yml           reusable action

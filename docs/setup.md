@@ -54,6 +54,13 @@ python -m sentinel.run --base main --head demo/change   # two revisions
 
 The report is printed as a summary line and written to `.sentinel/runs/<run_id>.json`.
 
+## Application
+
+The interactive application (repositories, pull requests, live execution) is described in
+[product.md](product.md). Environment variables it reads: `GITHUB_TOKEN` (read private repositories),
+`SENTINEL_API_TOKEN` (require a bearer token), `SENTINEL_CORS_ORIGINS` (allowed dashboard origins),
+`SENTINEL__SERVICE__MAX_CONCURRENT_RUNS`.
+
 ## Q&A, API and dashboard
 
 ```bash
