@@ -157,3 +157,68 @@ def test_groq_network_errors_are_retried_not_fatal(monkeypatch):
     monkeypatch.setattr(httpx, "post", boom)
     with pytest.raises(RateLimited):
         GroqProvider("m", api_key="k").complete("s", "u", json_mode=False, temperature=0, max_tokens=5)
+
+
+# --- provider health checks and hostile model output ---------------------------------------------------
+
+import httpx  # noqa: E402
+
+from sentinel.llm.health import check_provider, status  # noqa: E402
+
+
+def _http(handler):
+    return httpx.Client(transport=httpx.MockTransport(handler))
+
+
+def _cfg(tmp_path):
+    return Config.load(tmp_path, environ={}, overrides={"workdir": str(tmp_path / "w")})
+
+
+@pytest.mark.parametrize("code,state", [(401, "invalid_credentials"), (403, "invalid_credentials"), (429, "rate_limited"), (404, "model_not_found"), (503, "provider_error")])
+def test_health_check_classifies_provider_failures(tmp_path, monkeypatch, code, state):
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_" + "k" * 40)
+    result = check_provider("groq", _cfg(tmp_path), http=_http(lambda request: httpx.Response(code, headers={"retry-after": "7"})))
+    assert result["state"] == state and result["ok"] is False
+    assert "gsk_" not in str(result)  # the key never appears in a result
+
+
+def test_health_check_reports_model_availability(tmp_path, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_" + "k" * 40)
+    cfg = _cfg(tmp_path)
+    present = check_provider("groq", cfg, http=_http(lambda r: httpx.Response(200, json={"data": [{"id": "openai/gpt-oss-120b"}]})))
+    assert present["ok"] and present["model_available"] is True and present["latency_ms"] is not None
+    absent = check_provider("groq", cfg, http=_http(lambda r: httpx.Response(200, json={"data": [{"id": "other-model"}]})))
+    assert absent["ok"] is False and absent["state"] == "model_not_found"
+
+
+def test_health_check_without_credentials_is_not_configured_and_makes_no_request(tmp_path, monkeypatch):
+    for name in ("GROQ_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"):
+        monkeypatch.delenv(name, raising=False)
+
+    def forbidden(request):
+        raise AssertionError("no request may be made without credentials")
+
+    result = check_provider("gemini", _cfg(tmp_path), http=_http(forbidden))
+    assert result["state"] == "not_configured" and result["configured"] is False and "GEMINI_API_KEY" in result["instructions"]
+
+
+def test_timeouts_and_unreachable_providers_are_reported(tmp_path, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_" + "k" * 40)
+
+    def timeout(request):
+        raise httpx.ReadTimeout("slow")
+
+    def down(request):
+        raise httpx.ConnectError("no route")
+
+    assert check_provider("groq", _cfg(tmp_path), http=_http(timeout))["state"] == "timeout"
+    assert check_provider("groq", _cfg(tmp_path), http=_http(down))["state"] == "unreachable"
+
+
+def test_status_names_the_mode_and_never_contains_a_key(tmp_path, monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "gsk_" + "s" * 40)
+    on = status(_cfg(tmp_path))
+    assert on["mode"] == "llm-assisted" and on["providers"]["groq"]["configured"] is True and "gsk_" not in str(on)
+    monkeypatch.delenv("GROQ_API_KEY")
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    assert status(_cfg(tmp_path))["providers"]["groq"]["configured"] is False
