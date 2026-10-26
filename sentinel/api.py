@@ -10,14 +10,19 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 from functools import lru_cache
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from sentinel.config import Config
+
+
+log = logging.getLogger("sentinel.api")
 
 
 class Question(BaseModel):
@@ -26,8 +31,24 @@ class Question(BaseModel):
 
 
 def create_api(cfg: Config) -> FastAPI:
+    from sentinel.service.api import Service, allowed_origins, create_router, error_handlers
+
     app = FastAPI(title="SentinelPR API")
-    app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["GET", "POST"], allow_headers=["*"])
+
+    @app.middleware("http")
+    async def internal_errors(request, call_next):
+        # Added before CORS so the browser still receives CORS headers with a JSON error,
+        # instead of a bare 500 it would report as "server unreachable".
+        try:
+            return await call_next(request)
+        except Exception:  # noqa: BLE001
+            log.exception("unhandled error in %s %s", request.method, request.url.path)
+            return JSONResponse({"error": {"code": "internal_error", "message": "The server hit an unexpected error; see its log."}}, status_code=500)
+
+    # The API can start analyses, so it only answers the dashboard's own origin(s), not any website.
+    app.add_middleware(CORSMiddleware, allow_origins=allowed_origins(), allow_methods=["GET", "POST", "DELETE"], allow_headers=["*"])
+    error_handlers(app)
+    app.include_router(create_router(Service(cfg)))
 
     @lru_cache(maxsize=1)
     def store():
@@ -110,6 +131,11 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args(argv)
+    from sentinel.envfile import load_env
+
+    loaded = load_env(Path(args.repo_root) / ".env")  # names only are ever reported, never values
+    if loaded:
+        log.info("loaded %d variable(s) from .env: %s", len(loaded), ", ".join(sorted(loaded)))
     uvicorn.run(create_api(Config.load(args.repo_root)), host=args.host, port=args.port)
 
 
