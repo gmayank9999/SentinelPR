@@ -79,6 +79,7 @@ def build_coverage_map(
     workdir: Path,
     python: str = sys.executable,
     timeout_s: int = 900,
+    sandbox=None,
 ) -> tuple[list[tuple[str, int, str]], list[dict], dict]:
     import coverage
 
@@ -88,6 +89,7 @@ def build_coverage_map(
     for stale in (data_file, report_file):
         stale.unlink(missing_ok=True)
 
+    in_container = sandbox is not None and sandbox.docker
     cmd = [
         python, "-m", "pytest", tests_dir,
         f"--cov={package}", "--cov-context=test", "--cov-report=",
@@ -95,14 +97,21 @@ def build_coverage_map(
         "-q", "-o", "addopts=", *pytest_isolation(project_root, workdir),
     ]
     started = time.time()
-    proc = subprocess.run(
-        cmd,
-        cwd=project_root,
-        env=pytest_env({"COVERAGE_FILE": str(data_file), "SENTINEL_TEST_REPORT": str(report_file)}, project_root),
-        capture_output=True,
-        text=True,
-        timeout=timeout_s,
-    )
+    if in_container:
+        from sentinel.verify import sandbox as sbx
+
+        result = sbx.run_pytest(sandbox, project_dir=project_root, scratch=workdir / "cov-scratch", pytest_args=[tests_dir], package=package, coverage=True, timeout_s=timeout_s)
+        data_file, report_file = workdir / "cov-scratch" / "coverage.dat", workdir / "cov-scratch" / "report.json"
+        proc = subprocess.CompletedProcess([], result.returncode, result.stdout, result.stderr)
+    else:
+        proc = subprocess.run(
+            cmd,
+            cwd=project_root,
+            env=pytest_env({"COVERAGE_FILE": str(data_file), "SENTINEL_TEST_REPORT": str(report_file)}, project_root),
+            capture_output=True,
+            text=True,
+            timeout=timeout_s,
+        )
     elapsed = time.time() - started
     if not data_file.exists():
         raise RuntimeError(f"coverage run produced no data (exit {proc.returncode}):\n{proc.stdout[-2000:]}\n{proc.stderr[-2000:]}")
@@ -112,10 +121,15 @@ def build_coverage_map(
     rows: list[tuple[str, int, str]] = []
     root = project_root.resolve()
     for measured in data.measured_files():
-        try:
-            rel = Path(measured).resolve().relative_to(root).as_posix()
-        except ValueError:
-            continue
+        if in_container:
+            if not measured.startswith("/work/"):
+                continue
+            rel = measured[len("/work/"):]
+        else:
+            try:
+                rel = Path(measured).resolve().relative_to(root).as_posix()
+            except ValueError:
+                continue
         for line, contexts in (data.contexts_by_lineno(measured) or {}).items():
             for context in contexts:
                 if context:

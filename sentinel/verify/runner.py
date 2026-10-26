@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from sentinel.data.coverage_map import pytest_env, pytest_isolation
+from sentinel.verify import sandbox as sbx
 from sentinel.models import TestOutcome, TestRun
 
 IGNORED = shutil.ignore_patterns(
@@ -55,7 +56,11 @@ def run_tests(
     python: str = sys.executable,
     scratch: Path | None = None,
     extra_args: list[str] | None = None,
+    sandbox: sbx.SandboxSpec | None = None,
+    disposable: bool = False,
+    job: str | None = None,
 ) -> ExecutionResult:
+    """Run tests. With a docker ``sandbox`` they run in a locked-down container; otherwise on the host."""
     if not test_ids:
         return ExecutionResult(TestRun(), 0)
     scratch = Path(scratch or tempfile.mkdtemp(prefix="sentinel-run-"))
@@ -64,16 +69,21 @@ def run_tests(
     data_file = (scratch / "coverage.dat").resolve()
     for stale in (report, data_file):
         stale.unlink(missing_ok=True)
-    cmd = pytest_command(test_ids, (scratch / "tests.args").resolve(), package=package, coverage=coverage, stop_first=stop_first, python=python)
-    cmd += pytest_isolation(project_root, scratch) + list(extra_args or [])
-    env = pytest_env({"SENTINEL_TEST_REPORT": str(report), "COVERAGE_FILE": str(data_file)}, project_root)
-
+    in_container = sandbox is not None and sandbox.docker
     started = time.time()
-    try:
-        proc = subprocess.run(cmd, cwd=project_root, env=env, capture_output=True, text=True, timeout=timeout_s)
-        exit_code, stderr, timed_out = proc.returncode, proc.stderr[-3000:] + proc.stdout[-3000:], False
-    except subprocess.TimeoutExpired:
-        exit_code, stderr, timed_out = -1, "timed out", True
+    if in_container:
+        result = sbx.run_pytest(sandbox, project_dir=project_root, scratch=scratch, pytest_args=["@/scratch/tests.args"] + list(extra_args or []), package=package,
+                                coverage=coverage, timeout_s=timeout_s, stop_first=stop_first, disposable=disposable, job=job, test_ids=test_ids)
+        exit_code, stderr, timed_out = result.returncode, result.stderr[-3000:] + result.stdout[-3000:], result.timed_out
+    else:
+        cmd = pytest_command(test_ids, (scratch / "tests.args").resolve(), package=package, coverage=coverage, stop_first=stop_first, python=python)
+        cmd += pytest_isolation(project_root, scratch) + list(extra_args or [])
+        env = pytest_env({"SENTINEL_TEST_REPORT": str(report), "COVERAGE_FILE": str(data_file)}, project_root)
+        try:
+            proc = subprocess.run(cmd, cwd=project_root, env=env, capture_output=True, text=True, timeout=timeout_s)
+            exit_code, stderr, timed_out = proc.returncode, proc.stderr[-3000:] + proc.stdout[-3000:], False
+        except subprocess.TimeoutExpired:
+            exit_code, stderr, timed_out = -1, "timed out", True
     duration = time.time() - started
 
     outcomes: list[TestOutcome] = []
@@ -95,10 +105,15 @@ def run_tests(
         cov.read()
         root = project_root.resolve()
         for measured in cov.measured_files():
-            try:
-                rel = Path(measured).resolve().relative_to(root).as_posix()
-            except ValueError:
-                continue
+            if in_container:  # the container saw the project at /work
+                if not measured.startswith("/work/"):
+                    continue
+                rel = measured[len("/work/"):]
+            else:
+                try:
+                    rel = Path(measured).resolve().relative_to(root).as_posix()
+                except ValueError:
+                    continue
             for line, contexts in (cov.contexts_by_lineno(measured) or {}).items():
                 for context in contexts:
                     if context:

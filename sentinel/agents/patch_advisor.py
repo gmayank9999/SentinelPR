@@ -27,6 +27,7 @@ from sentinel.guards.output import PatchReview, review_patch
 from sentinel.models import TestRun
 from sentinel.retrieval.graph import is_test_path
 from sentinel.verify.runner import make_workspace, run_tests
+from sentinel.verify.sandbox import SandboxSpec
 
 log = logging.getLogger(__name__)
 MAX_CONTEXT_CHARS = 14000
@@ -137,7 +138,8 @@ class PatchAdvisor:
             target.write_text(content, encoding="utf-8", newline="\n")
         new_tests = [p for p in proposal.files if is_test_path(p) and proposal.originals.get(p) is None]
         targets = sorted(set(test_ids) | set(new_tests) | {p for p in proposal.files if is_test_path(p)})
-        proposal.tests = run_tests(workspace, targets or [self.cfg.get("project.tests", "tests")], scratch=scratch / "patch-run").run
+        proposal.tests = run_tests(workspace, targets or [self.cfg.get("project.tests", "tests")], scratch=scratch / "patch-run",
+                                   sandbox=SandboxSpec.from_config(self.cfg), disposable=True).run
         return proposal
 
 

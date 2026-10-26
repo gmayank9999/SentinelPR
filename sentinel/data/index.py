@@ -63,8 +63,10 @@ def index_coverage(cfg: Config, store: Store, force: bool = False) -> dict:
     fingerprint = project_fingerprint(cfg.project_root, package, tests_dir)
     if not force and store.get_meta("coverage_fingerprint") == fingerprint and store.has_coverage():
         return {"cached": True, "fingerprint": fingerprint}
+    from sentinel.verify.sandbox import SandboxSpec
+
     rows, tests, summary = build_coverage_map(
-        cfg.project_root, package, tests_dir, cfg.workdir, timeout_s=cfg.get("verify.test_timeout_s", 900)
+        cfg.project_root, package, tests_dir, cfg.workdir, timeout_s=cfg.get("verify.test_timeout_s", 900), sandbox=SandboxSpec.from_config(cfg)
     )
     store.replace_coverage(rows, tests)
     store.set_meta("coverage_fingerprint", fingerprint)

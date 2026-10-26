@@ -168,6 +168,8 @@ def run_mutation(
     scratch: Path | None = None,
     import_lines: set[tuple[str, int]] | None = None,
     fallback_tests: list[str] | None = None,
+    on_mutant=None,
+    sandbox=None,
 ) -> MutationReport:
     """Execute each mutant against the tests that cover its line, restoring the file after.
 
@@ -183,12 +185,14 @@ def run_mutation(
         tests = sorted(t for t in covering if t not in broken_tests)
         if not tests:
             mutant.status = "survived"  # no test executes this line: nothing could notice the bug
+            if on_mutant is not None:
+                on_mutant(mutant)
             continue
         target = workspace / mutant.file
         original = target.read_text(encoding="utf-8")
         try:
             target.write_text(mutated_source, encoding="utf-8", newline="\n")
-            result = run_tests(workspace, tests, stop_first=True, timeout_s=per_mutant_timeout_s, scratch=scratch)
+            result = run_tests(workspace, tests, stop_first=True, timeout_s=per_mutant_timeout_s, scratch=scratch, sandbox=sandbox, disposable=True)
         finally:
             target.write_text(original, encoding="utf-8", newline="\n")
         if result.timed_out:
@@ -201,4 +205,6 @@ def run_mutation(
             mutant.killed_by = ["<collection>"]
         else:
             mutant.status = "survived"
+        if on_mutant is not None:
+            on_mutant(mutant)
     return MutationReport(mutants=[m for m, _ in mutants], duration_s=round(time.time() - started, 2))
