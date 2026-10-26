@@ -9,3 +9,4 @@ pydriller>=2.6           # alternative history miner
 lizard>=1.17             # multi-language complexity
 ragas>=0.1               # RAG evaluation
 locust>=2.24             # canary load generation
+cryptography>=42        # signs the GitHub App JWT (Check Runs)
