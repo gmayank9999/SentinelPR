@@ -1,39 +1,81 @@
 @import "tailwindcss";
 
+/* Design tokens. Neutral charcoal surfaces, one restrained accent, and three status hues that
+   always travel with an icon or a word (colour is never the only signal). */
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --color-bg: #0a0b0d;
+  --color-s1: #101114;
+  --color-s2: #15171b;
+  --color-s3: #1b1d22;
+  --color-line: #24262c;
+  --color-line2: #30333a;
+  --color-ink: #e9eaed;
+  --color-muted: #a0a3ab;
+  --color-faint: #6d7079;
+  --color-brand: #7b8dff;
+  --color-ok: #46c08a;
+  --color-warn: #e6a73c;
+  --color-bad: #ec5f58;
+
+  /* The research pages predate the tokens and use Tailwind's slate scale: map it onto the same neutrals. */
+  --color-slate-50: #f3f4f5;
+  --color-slate-100: #e9eaed;
+  --color-slate-200: #d6d8dc;
+  --color-slate-300: #bfc2c8;
+  --color-slate-400: #a0a3ab;
+  --color-slate-500: #7a7d86;
+  --color-slate-600: #53565e;
+  --color-slate-700: #30333a;
+  --color-slate-800: #24262c;
+  --color-slate-900: #15171b;
+  --color-slate-950: #0a0b0d;
 }
 
-.card {
-  @apply rounded-xl border border-slate-800 bg-slate-900/60 p-5;
+html { color-scheme: dark; }
+body { background: var(--color-bg); color: var(--color-ink); font-family: var(--font-sans); font-feature-settings: "cv11", "ss01"; -webkit-font-smoothing: antialiased; }
+::selection { background: color-mix(in srgb, var(--color-brand) 35%, transparent); }
+:focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; border-radius: 6px; }
+
+/* scrollbars */
+* { scrollbar-width: thin; scrollbar-color: var(--color-line2) transparent; }
+
+.card { @apply rounded-lg border border-line bg-s1 p-5; }
+.card-title { @apply mb-3 text-xs font-medium uppercase tracking-wider text-faint; }
+.table { @apply w-full text-left text-sm; }
+.table th { @apply border-b border-line px-3 py-2 text-xs font-medium uppercase tracking-wider text-faint; }
+.table td { @apply border-b border-line/60 px-3 py-2 align-top; }
+.table tbody tr:last-child td { border-bottom: 0; }
+.pill { @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-medium; }
+
+.mono { font-family: var(--font-mono); font-size: 0.8125rem; }
+.kbd { @apply rounded border border-line2 bg-s2 px-1.5 py-0.5 text-[11px] text-muted; font-family: var(--font-mono); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.skeleton {
+  background: linear-gradient(90deg, var(--color-s2) 25%, var(--color-s3) 37%, var(--color-s2) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
 }
 
-.card-title {
-  @apply mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400;
-}
-
-.table {
-  @apply w-full text-left text-sm;
-}
-
-.table th {
-  @apply border-b border-slate-800 px-2 py-2 font-medium text-slate-400;
-}
-
-.table td {
-  @apply border-b border-slate-800/60 px-2 py-1.5 align-top;
-}
-
-.pill {
-  @apply inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium;
-}
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 160ms ease-out both; }
 
 @keyframes pulse-ring {
-  0% { box-shadow: 0 0 0 0 rgb(16 185 129 / 0.6); }
-  100% { box-shadow: 0 0 0 12px rgb(16 185 129 / 0); }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand) 55%, transparent); }
+  100% { box-shadow: 0 0 0 10px transparent; }
+}
+.node-active { animation: pulse-ring 1.4s ease-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spin, .skeleton, .rise, .node-active { animation: none; }
 }
 
-.node-active {
-  animation: pulse-ring 1s ease-out infinite;
-}
+/* JSON / code blocks */
+.codeblock { @apply max-h-72 overflow-auto rounded-md border border-line bg-bg p-3 text-xs text-muted; font-family: var(--font-mono); white-space: pre-wrap; word-break: break-word; }

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { NoData, PageHeader, RunPicker, StatusPill, useRunSelection } from "../components.jsx";
 import { api } from "../data.js";
 
@@ -24,8 +24,11 @@ function runGraph(run) {
     const kind = c.type === "test_impact" ? "test" : c.type === "module_impact" ? "module" : c.type === "api_break" ? "api" : "history";
     const target = kind === "history" ? (c.evidence_ids.find((e) => e.startsWith("issue:")) || c.evidence_ids[0]) : c.target;
     const label = kind === "test" ? target.split("::").pop() : target.split("/").pop();
+    // A claim hangs off the changed symbol it is about (history claims name it as their target);
+    // decide that before adding the claim's own node, which may share the target's id.
+    const source = nodes.get(c.target)?.kind === "change" ? c.target : centre;
     add(target, kind, label, { status: c.status, claim: c });
-    edges.push({ source: nodes.has(c.target) ? c.target : centre, target, status: c.status });
+    edges.push({ source, target, status: c.status });
   }
   return { nodes: [...nodes.values()], edges: edges.filter((e) => e.source && e.source !== e.target) };
 }
@@ -43,6 +46,8 @@ function layout(nodes) {
   return pos;
 }
 
+const EXAMPLE_SYMBOL = "unierp/exam/grades.py::compute_gpa";
+
 export default function Evidence() {
   const { runs, runId, setRunId, run } = useRunSelection();
   const [selected, setSelected] = useState(null);
@@ -52,12 +57,24 @@ export default function Evidence() {
   const graph = useMemo(() => (run ? runGraph(run) : { nodes: [], edges: [] }), [run]);
   const pos = useMemo(() => layout(graph.nodes), [graph]);
 
+  // Start from the function the selected PR changed, so "Go" works without typing.
+  useEffect(() => {
+    const unit = (run?.change_units || []).find((u) => u.kind !== "module");
+    setSymbol(unit ? unit.id : "");
+    setLive(null);
+    setError("");
+  }, [run]);
+
   const explore = async () => {
     setError("");
+    const target = symbol.trim() || EXAMPLE_SYMBOL;
     try {
-      setLive(await api(`/api/graph?symbol=${encodeURIComponent(symbol)}&hops=1`));
+      setLive(await api(`/api/graph?symbol=${encodeURIComponent(target)}&hops=1`));
     } catch (e) {
-      setError(`Live graph needs the API (python -m sentinel.api): ${e.message}`);
+      setLive(null);
+      setError(e.message.includes("unknown symbol")
+        ? `No symbol ${target} in the indexed code; use path::function, e.g. ${EXAMPLE_SYMBOL}`
+        : `Live graph needs the API (python -m sentinel.api): ${e.message}`);
     }
   };
 
@@ -108,7 +125,7 @@ export default function Evidence() {
             <div className="card">
               <div className="card-title">Explore the code graph (live)</div>
               <div className="flex gap-2">
-                <input value={symbol} onChange={(e) => setSymbol(e.target.value)} placeholder="unierp/exam/grades.py::compute_gpa"
+                <input value={symbol} onChange={(e) => setSymbol(e.target.value)} placeholder={EXAMPLE_SYMBOL}
                   className="min-w-0 flex-1 rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 text-xs" />
                 <button onClick={explore} className="rounded-lg bg-emerald-600 px-3 text-sm text-white hover:bg-emerald-500">Go</button>
               </div>

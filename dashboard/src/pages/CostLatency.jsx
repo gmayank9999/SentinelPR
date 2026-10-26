@@ -42,7 +42,7 @@ export default function CostLatency() {
               <div className="card-title">Mean time per pipeline stage (benchmark)</div>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={nodes} layout="vertical" margin={{ left: 40 }}>
-                  <CartesianGrid stroke="#1e293b" /><XAxis type="number" tick={axis} unit="s" /><YAxis type="category" dataKey="node" tick={axis} width={100} />
+                  <CartesianGrid stroke="#1e293b" /><XAxis type="number" tick={axis} unit="s" /><YAxis type="category" dataKey="node" tick={axis} width={100} interval={0} />
                   <Tooltip contentStyle={{ background: "#0f172a", border: "1px solid #334155" }} formatter={(v) => `${num(v, 3)}s`} />
                   <Bar dataKey="s" fill="#38bdf8" />
                 </BarChart>

@@ -24,7 +24,9 @@ export default function CanaryMonitor() {
 
   return (
     <div>
-      <PageHeader title="Canary Monitor" subtitle="Traffic shifts 10% → 25% → 50% → 100% while the SLO monitor compares canary against stable on each step's own traffic; the first breach sends everything back.">
+      <div role="note" className="mb-4 rounded-lg border border-warn/30 bg-warn/5 p-3 text-sm text-muted"><b className="text-ink">Historical demo data.</b> These are recorded simulations of the bundled demo service
+        (a rollout of two local processes), kept for the evaluation. For a live, measured rollout use <a className="text-brand hover:underline" href="#/canary">Canary Deployments</a>.</div>
+      <PageHeader title="Canary Monitor (recorded demo reports)" subtitle="Traffic shifts 10% → 25% → 50% → 100% while the SLO monitor compares canary against stable on each step's own traffic; the first breach sends everything back.">
         <select value={current} onChange={(e) => setFile(e.target.value)} className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm">
           {files.map((f) => <option key={f}>{f}</option>)}
         </select>
