@@ -55,6 +55,10 @@ def collect(cfg: Config, out: Path, max_runs: int = 50) -> dict:
             bench.append(name)
             shutil.copy(results, out / "bench" / f"{name}.json")
 
+    # The analysed project's own benchmark comes first: the dashboard's headline numbers use it.
+    own = Path(cfg.get("project.root") or "").name
+    bench.sort(key=lambda name: name != own)
+
     qa_file = root / "bench" / "out" / "qa" / "results.json"
     if not qa_file.exists():
         qa_file = root / "bench" / "results" / "qa" / "results.json"

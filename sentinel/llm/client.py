@@ -70,6 +70,7 @@ class LLMClient:
             cache = ResponseCache(cfg.workdir / "llm-cache.sqlite")
         self.cache = cache
         self.calls: list[LLMCall] = []
+        self.listeners: list = []  # called with each recorded LLMCall (live run events)
         self.tokens_used = 0
         self._lock = threading.Lock()
         self._cooldown: dict[str, float] = {}
@@ -178,6 +179,11 @@ class LLMClient:
             self.calls.append(call)
             if count_tokens:
                 self.tokens_used += call.prompt_tokens + call.completion_tokens
+        for listener in list(self.listeners):
+            try:
+                listener(call)
+            except Exception:  # observers must never break a model call
+                pass
 
     def usage(self) -> dict:
         by_provider: dict[str, int] = {}

@@ -18,6 +18,7 @@ import logging
 import os
 import shutil
 import sys
+import time
 from pathlib import Path
 
 from sentinel import gitutil
@@ -25,6 +26,7 @@ from sentinel.agents.base import PullRequest
 from sentinel.config import Config
 from sentinel.data.index import build_index, open_store, seed_demo
 from sentinel.llm.client import LLMClient
+from sentinel.orchestrator.observe import Emit, RunCancelled, no_emit
 from sentinel.orchestrator.pipeline import Pipeline, make_context
 from sentinel.retrieval.hybrid import RetrievalIndex
 
@@ -58,11 +60,13 @@ def config_for(cfg: Config, root: Path) -> Config:
     return Config.load(root, overrides=cfg.with_overrides(overrides).data)
 
 
-def ensure_index(cfg: Config, base_sha: str, force: bool = False):
+def ensure_index(cfg: Config, base_sha: str, force: bool = False, emit: Emit = no_emit):
     """Index the *base* revision (coverage line numbers must refer to the base), cached by SHA."""
     store = open_store(cfg)
     if not force and store.get_meta("indexed_revision") == base_sha and store.has_coverage():
+        emit("index", "stage_completed", "completed", f"index for {base_sha[:10]} already built (cached by SHA)", {"cached": True, "base_sha": base_sha})
         return store
+    emit("index", "stage_started", "running", f"indexing base revision {base_sha[:10]}: history, SZZ, per-test coverage, retrieval index")
     store.close()
     if cfg.get("project.history_repo") and not cfg.history_repo.exists():
         seed_demo(cfg)
@@ -74,6 +78,7 @@ def ensure_index(cfg: Config, base_sha: str, force: bool = False):
         gitutil.git(cfg.repo_root, "worktree", "remove", "--force", str(tree), check=False)
     store = open_store(cfg)
     store.set_meta("indexed_revision", base_sha)
+    emit("index", "stage_completed", "completed", f"indexed {base_sha[:10]}", {"cached": False, "base_sha": base_sha})
     return store
 
 
@@ -94,7 +99,11 @@ def pr_from_event(path: Path) -> tuple[PullRequest, str]:
     ), event.get("repository", {}).get("full_name", "")
 
 
-def analyse(cfg: Config, *, base: str, head: str | None, pr: PullRequest, impact_mode: str | None = None, force_index: bool = False) -> dict:
+def analyse(cfg: Config, *, base: str, head: str | None, pr: PullRequest, impact_mode: str | None = None, force_index: bool = False,
+            emit: Emit = no_emit, run_id: str | None = None, cancelled=None) -> dict:
+    """Analyse one pull request. ``emit`` receives live events (see sentinel.orchestrator.observe);
+    ``cancelled`` is polled between stages."""
+    started_intake = time.time()
     base_sha = gitutil.rev_parse(cfg.repo_root, base)
     pr.base_sha = base_sha
     run_cfg, run_head = cfg, None
@@ -116,12 +125,17 @@ def analyse(cfg: Config, *, base: str, head: str | None, pr: PullRequest, impact
     if not pr.author:
         pr.author = gitutil.git(cfg.repo_root, "log", "-1", "--format=%an", pr.head_sha, check=False).strip()
 
+    emit("intake", "stage_completed", "completed", f"base {base_sha[:10]} .. head {(pr.head_sha or '')[:10]}",
+         {"base_sha": base_sha, "head_sha": pr.head_sha, "commits": len(pr.commit_messages), "author": pr.author,
+          "duration_s": round(time.time() - started_intake, 3)})
     try:
-        store = ensure_index(cfg, base_sha, force=force_index)
+        if cancelled and cancelled():
+            raise RunCancelled("index")
+        store = ensure_index(cfg, base_sha, force=force_index, emit=emit)
         index = RetrievalIndex.load(run_cfg, store)
         llm = LLMClient(run_cfg)
         ctx = make_context(run_cfg, base=base_sha, head=run_head, pr=pr, store=store, index=index, llm=llm)
-        report = Pipeline(run_cfg, ctx, impact_mode=impact_mode).run()
+        report = Pipeline(run_cfg, ctx, impact_mode=impact_mode, emit=emit, cancelled=cancelled, run_id=run_id).run()
         store.save_run(report)
         return report
     finally:

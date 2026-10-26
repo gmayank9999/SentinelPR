@@ -31,6 +31,8 @@ from sentinel.config import PACKAGE_DIR, Config
 from sentinel.guards.input import InputGuardResult, scan_inputs
 from sentinel.guards.output import check_decision_integrity
 from sentinel.models import Claim, GuardEvent, RiskAssessment, TraceEvent, Verdict
+from sentinel.orchestrator.details import stage_detail
+from sentinel.orchestrator.observe import Emit, RunCancelled, no_emit
 from sentinel.orchestrator.state import SentinelState
 from sentinel.retrieval.diff_parser import DiffContext
 from sentinel.risk.explain import llm_explanation, template_explanation
@@ -41,6 +43,12 @@ from sentinel.verify.reconciler import Reconciliation, reconcile
 from sentinel.verify.verifier import VerificationResult, Verifier
 
 log = logging.getLogger(__name__)
+
+# LLM tasks each pipeline node issues (see sentinel/orchestrator/router.py for the task names)
+NODE_TASKS = {
+    "impact": {"impact"}, "impact_retry": {"impact"}, "historian": {"historian"}, "signals": {"intent"},
+    "verify": {"rationale_judge"}, "decide": {"explain"},
+}
 
 
 @dataclass
@@ -70,8 +78,12 @@ class Runtime:
 
 class Pipeline:
     def __init__(self, cfg: Config, ctx: AgentContext, *, impact_mode: str | None = None, model: RiskModel | None = None,
-                 use_verification: bool = True, use_history: bool = True):
+                 use_verification: bool = True, use_history: bool = True, emit: Emit | None = None, cancelled=None,
+                 run_id: str | None = None):
         self.cfg = cfg
+        self.emit = emit or no_emit
+        self.cancelled = cancelled or (lambda: False)
+        self.run_id = run_id
         self.rt = Runtime(ctx)
         self.impact_agent = ImpactAgent(impact_mode or cfg.get("agents.impact.mode", "auto"))
         self.historian = HistorianAgent()
@@ -81,13 +93,17 @@ class Pipeline:
         self.use_history = use_history
         old_sources = {c.path: ctx.read_old(c.old_path or c.path) for c in ctx.changes if c.status in ("modified", "renamed") and c.path.endswith(".py")}
         self.verifier = Verifier(cfg, cfg.project_root, ctx.index.sources, old_sources)
+        self.verifier.emit = lambda kind, status, message, data=None: self.emit("verify", kind, status, message, data)
 
     # tracing ----------------------------------------------------------------------
     def _traced(self, name, fn):
         def node(state: SentinelState) -> dict:
             llm = self.rt.ctx.llm
-            tokens_before, calls_before = llm.tokens_used, len(llm.calls)
+            if self.cancelled():
+                raise RunCancelled(name)  # outside the try below: it must stop the run, not degrade it
+            calls_before = len(llm.calls)
             started = time.time()
+            self.emit(name, "stage_started", "running", f"{name} started")
             status, note = "ok", ""
             try:
                 update = fn(state) or {}
@@ -95,16 +111,25 @@ class Pipeline:
                 log.exception("node %s failed", name)
                 status, note, update = "error", f"{type(exc).__name__}: {exc}", {}
                 self.rt.ctx.guard("pipeline", "mid", "warn", f"{name} failed: {note}")
-            calls = llm.calls[calls_before:]
+            # Impact, Historian and Signals run in parallel, so the client's counters move for all
+            # three at once; attribute each call to the node by its task instead.
+            calls = [c for c in llm.calls[calls_before:] if c.task in NODE_TASKS.get(name, ())]
             event = TraceEvent(
                 node=name, start=started, end=time.time(), status=status,
-                tokens=llm.tokens_used - tokens_before,
+                tokens=sum(c.prompt_tokens + c.completion_tokens for c in calls if not c.cache_hit and not c.error),
                 model=", ".join(sorted({f"{c.provider}:{c.model}" for c in calls})) or None,
                 retries=sum(1 for c in calls if c.error),
                 note=note or update.pop("_note", ""),
             )
             update["trace"] = [event.model_dump()]
             update["budget_tokens_left"] = llm.budget_left
+            data = {"duration_s": round(event.end - event.start, 3), "tokens": event.tokens, "model": event.model,
+                    "retries": event.retries, "note": event.note, "started_at": event.start, "ended_at": event.end}
+            if status == "ok":
+                data["detail"] = stage_detail(name, self.rt)
+                self.emit(name, "stage_completed", "completed", event.note or f"{name} finished", data)
+            else:
+                self.emit(name, "stage_failed", "failed", event.note, data)
             return update
         return node
 
@@ -259,8 +284,23 @@ class Pipeline:
 
     def run(self) -> dict:
         started = time.time()
-        final = self.build().invoke({"guard_flags": [], "trace": [], "budget_tokens_left": self.rt.ctx.llm.budget_left})
-        return build_report(self, final, time.time() - started)
+        llm = self.rt.ctx.llm
+        stage_of_task = {task: node for node, tasks in NODE_TASKS.items() for task in tasks if node != "impact_retry"}
+
+        def listener(call) -> None:
+            self.emit(
+                stage_of_task.get(call.task, "pipeline"), "llm_call", "warn" if call.error else "info",
+                f"{call.task}: {call.provider}:{call.model}" + (f" ({call.error})" if call.error else ""),
+                {"task": call.task, "provider": call.provider, "model": call.model, "tier": call.tier, "cache_hit": call.cache_hit,
+                 "prompt_tokens": call.prompt_tokens, "completion_tokens": call.completion_tokens,
+                 "latency_s": call.latency_s, "error": call.error})
+
+        llm.listeners.append(listener)
+        try:
+            final = self.build().invoke({"guard_flags": [], "trace": [], "budget_tokens_left": llm.budget_left})
+        finally:
+            llm.listeners.remove(listener)
+        return build_report(self, final, time.time() - started, self.run_id)
 
 
 def model_path(cfg: Config) -> Path:
@@ -272,14 +312,14 @@ def model_path(cfg: Config) -> Path:
     return in_repo if in_repo.exists() else PACKAGE_DIR.parent / configured
 
 
-def build_report(pipeline: Pipeline, state: dict, elapsed: float) -> dict:
+def build_report(pipeline: Pipeline, state: dict, elapsed: float, run_id: str | None = None) -> dict:
     rt, ctx, cfg = pipeline.rt, pipeline.rt.ctx, pipeline.cfg
     claims = rt.claims
     verdicts = rt.verification.verdicts if rt.verification else []
     status = {v.claim_id: v.status.value for v in verdicts}
     report = {
         "schema": "sentinelpr.run/1",
-        "run_id": f"run-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6]}",
+        "run_id": run_id or f"run-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}-{uuid.uuid4().hex[:6]}",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "sentinel_version": __version__,
         "repository": cfg.get("publish.repository") or "",
