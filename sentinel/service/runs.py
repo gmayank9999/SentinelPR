@@ -26,6 +26,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 from sentinel import __version__
+from sentinel.risk.severity import verdict_fields, with_verdict
 from sentinel.config import Config
 from sentinel.orchestrator.observe import PIPELINE_NODES, SKIP_REASONS, RunCancelled
 from sentinel.publish.app_auth import AppAuthError
@@ -54,6 +55,7 @@ class RunManager:
         self._repo_locks: dict[str, threading.Lock] = {}
         self._lock = threading.RLock()
         self.app_auth = None  # GitHubAppAuth, set by the service; creates Check Runs, which a personal token cannot
+        self.slack = None
         self._publishing: set[str] = set()  # runs with a publish in flight: a double click must not post twice
         self._recover_interrupted()
 
@@ -151,7 +153,10 @@ class RunManager:
             from sentinel.run import analyse
 
             spec = self.registry.prepare(meta["repo_id"], meta["pr"]["ref"], emit, run_id=run_id)
+            repo = self.registry.get(meta["repo_id"])
             cfg = spec.cfg.with_overrides({"llm": {"enabled": bool(meta["options"]["llm"])}})
+            if repo["kind"] == "github":
+                cfg = cfg.with_overrides({"publish": {"repository": repo["full_name"]}})
             if spec.cfg.get("sandbox.mode") is None:
                 raise RuntimeError("internal error: the analysis has no execution mode")
             meta["pr"] = {**meta["pr"], **{k: v for k, v in spec.info.items() if v is not None}, "base_sha": spec.base, "head_sha": spec.head}
@@ -165,9 +170,13 @@ class RunManager:
             for node in sorted(PIPELINE_NODES - executed | {"canary"} | ({"publish"} if not meta["options"].get("publish") else set())):
                 reason = SKIP_REASONS.get(node) or ("The input guard rejected the PR before this stage." if report.get("rejected") else "Not reached.")
                 events.emit(node, "stage_skipped", "skipped", reason, {"reason": reason})
-            meta.update(decision=report["decision"], risk=report["risk"], tokens=report.get("tokens", 0), elapsed_s=report.get("elapsed_s"),
+            meta.update(**verdict_fields(report), decision=report["decision"], risk=report["risk"], tokens=report.get("tokens", 0), elapsed_s=report.get("elapsed_s"),
                         config=run_config(report), pr={**meta["pr"], "title": report["pr"]["title"], "author": report["pr"]["author"]})
             self._finish(meta, events, "completed")
+            if self.slack:
+                from sentinel.service.slack import notify_completed
+
+                notify_completed(self.cfg, report, self.slack)
         except RunCancelled as exc:
             self._finish(meta, events, "cancelled", error=f"Cancelled before {exc}.")
         except Exception as exc:  # noqa: BLE001 - every failure must end up on the run, not in a thread
@@ -204,8 +213,15 @@ class RunManager:
     def get_meta(self, run_id: str) -> dict | None:
         meta = self._read_meta(run_id)
         if meta is not None:
-            return meta
+            return self._with_legacy_verdict(meta)
         return next((m for m in self._legacy_runs() if m["run_id"] == run_id), None)
+
+    def _with_legacy_verdict(self, meta: dict) -> dict:
+        if meta["status"] == "completed" and "detailed_decision" not in meta:
+            report = self.get_report(meta["run_id"])
+            if report:
+                return meta | verdict_fields(report)
+        return meta
 
     def list_runs(self, repo_id: str | None = None, status: str | None = None, limit: int = 200) -> list[dict]:
         metas = []
@@ -219,7 +235,7 @@ class RunManager:
             metas = [m for m in metas if m["repo_id"] == repo_id]
         if status:
             metas = [m for m in metas if m["status"] == status]
-        return sorted(metas, key=lambda m: m["created_at"] or 0, reverse=True)[:limit]
+        return [self._with_legacy_verdict(m) for m in sorted(metas, key=lambda m: m["created_at"] or 0, reverse=True)[:limit]]
 
     def get_report(self, run_id: str) -> dict | None:
         try:
@@ -227,8 +243,14 @@ class RunManager:
         except RepoError:
             return None
         if path.exists():
-            return json.loads(path.read_text(encoding="utf-8"))
-        return self._legacy_report(run_id)
+            report = json.loads(path.read_text(encoding="utf-8"))
+            if not report.get("repository"):
+                meta = self._read_meta(run_id)
+                if meta and meta.get("repo_id") != DEMO_ID and meta.get("repo_name"):
+                    report["repository"] = meta["repo_name"]
+            return with_verdict(report)
+        report = self._legacy_report(run_id)
+        return with_verdict(report) if report else None
 
     def get_log(self, run_id: str) -> EventLog | None:
         if run_id in self._logs:
@@ -398,7 +420,7 @@ class RunManager:
                 except json.JSONDecodeError:
                     continue
                 created = datetime.fromisoformat(r["created_at"]).timestamp() if r.get("created_at") else path.stat().st_mtime
-                out.append({"schema": "sentinelpr.run-meta/1", "run_id": r["run_id"], "repo_id": DEMO_ID, "repo_name": "sentinelpr/unierp-demo",
+                out.append({**verdict_fields(r), "schema": "sentinelpr.run-meta/1", "run_id": r["run_id"], "repo_id": DEMO_ID, "repo_name": "sentinelpr/unierp-demo",
                             "pr": {k: r["pr"].get(k) for k in ("number", "title", "author", "base_sha", "head_sha")} | {"ref": str(r["pr"].get("number") or "")},
                             "status": "completed", "decision": r["decision"], "risk": r["risk"], "created_at": created, "started_at": created,
                             "ended_at": created + (r.get("elapsed_s") or 0), "elapsed_s": r.get("elapsed_s"), "tokens": r.get("tokens", 0), "error": None,
@@ -585,8 +607,8 @@ def compare_runs(a_meta: dict, a: dict, b_meta: dict, b: dict) -> dict:
     mb = ((b.get("verification") or {}).get("mutation") or {}).get("score")
     cfg_a, cfg_b = run_config(a), run_config(b)
     return {
-        "a": {"run_id": a_meta["run_id"], "decision": a["decision"], "risk": a["risk"], "head_sha": (a.get("pr") or {}).get("head_sha")},
-        "b": {"run_id": b_meta["run_id"], "decision": b["decision"], "risk": b["risk"], "head_sha": (b.get("pr") or {}).get("head_sha")},
+        "a": {"run_id": a_meta["run_id"], "decision": a["decision"], "risk": a["risk"], "head_sha": (a.get("pr") or {}).get("head_sha")} | verdict_fields(a),
+        "b": {"run_id": b_meta["run_id"], "decision": b["decision"], "risk": b["risk"], "head_sha": (b.get("pr") or {}).get("head_sha")} | verdict_fields(b),
         "same_pr": a_meta["repo_id"] == b_meta["repo_id"] and a_meta["pr"].get("ref") == b_meta["pr"].get("ref"),
         "same_head": (a.get("pr") or {}).get("head_sha") == (b.get("pr") or {}).get("head_sha"),
         "decision_changed": a["decision"] != b["decision"],

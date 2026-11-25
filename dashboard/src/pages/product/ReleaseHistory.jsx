@@ -35,7 +35,7 @@ export default function ReleaseHistory() {
                 <ol className="space-y-px overflow-hidden rounded-lg border border-line">
                   {items.map((r) => (
                     <li key={r.run_id}><Link to={`/runs/${r.run_id}`} className="grid grid-cols-[auto_minmax(0,1fr)] gap-4 bg-s1 px-5 py-3.5 hover:bg-s2 md:grid-cols-[110px_minmax(0,1fr)_minmax(0,1fr)]">
-                      <span><DecisionBadge decision={r.decision} /><div className="mono mt-1 text-xs text-faint">risk {r.risk?.toFixed(2)}</div></span>
+                      <span><DecisionBadge decision={r.decision} detailed={r.detailed_decision} /><div className="mono mt-1 text-xs text-faint">risk {r.risk?.toFixed(2)}</div></span>
                       <span className="min-w-0"><span className="block truncate text-sm font-medium">{r.pr.title || prLabel(r.pr)}</span><span className="text-xs text-faint">{r.repo_name} · {prLabel(r.pr)} · {short(r.pr.head_sha)}</span></span>
                       <span className="col-span-2 text-sm text-muted md:col-span-1">{ACTION[r.decision]}</span>
                     </Link></li>))}

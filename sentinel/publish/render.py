@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from sentinel.risk.severity import verdict_fields
 
 ICON = {"PASS": "✅", "CANARY": "🟡", "BLOCK": "⛔"}
 CONCLUSION = {"PASS": "success", "CANARY": "neutral", "BLOCK": "failure"}
@@ -25,15 +26,21 @@ def _short(unit_id: str) -> str:
 
 def headline(report: dict) -> str:
     decision = report["decision"]
+    detail = verdict_fields(report)["detailed_decision"] or decision
     if report.get("rejected"):
-        return f"## 🛡️ SentinelPR — {ICON[decision]} {decision} (analysis refused)"
+        return f"## 🛡️ SentinelPR — {ICON[decision]} {detail} (analysis refused)"
+    if report.get("risk") is None:
+        return f"## 🛡️ SentinelPR — {ICON[decision]} {detail} (risk unavailable)"
     calibrated = "calibrated" if report.get("calibrated") else "prior model"
-    return f"## 🛡️ SentinelPR — {ICON[decision]} {decision} (risk {report['risk']:.2f}, {calibrated})"
+    return f"## 🛡️ SentinelPR — {ICON[decision]} {detail} (risk {report['risk']:.2f}, {calibrated})"
 
 
 def summary_lines(report: dict) -> list[str]:
+    fields = verdict_fields(report)
+    override = fields["policy_override"]
+    policy = [f"**Policy override:** {override['reason']}"] if override else []
     if report.get("rejected"):
-        return [f"**Why:** {report['decision_reason']}", "", "Nothing from this PR was sent to a language model."]
+        return [*policy, f"**Next action:** {fields['recommended_action']}", "", "Nothing from this PR was sent to a language model."]
     claims = report.get("claims", [])
     verified_impact = [c for c in claims if c["status"] == "VERIFIED" and c["type"] in ("module_impact", "api_break")]
     refuted = sum(1 for c in claims if c["status"] == "REFUTED")
@@ -77,6 +84,7 @@ def summary_lines(report: dict) -> list[str]:
     if guards:
         lines.append("**Guardrails:** " + ", ".join(f"{k} ×{v}" for k, v in guards.items()))
     lines.append(f"**Decision:** {ROLLOUT[report['decision']]} — {report.get('decision_reason', '')}")
+    lines.extend(policy)
     return lines
 
 
@@ -141,10 +149,11 @@ def annotations(report: dict, prefix: str = "") -> list[dict]:
 
 
 def check_run_output(report: dict, prefix: str = "") -> dict:
-    title = f"{report['decision']}" + ("" if report.get("risk") is None else f" — risk {report['risk']:.2f}")
+    detail = verdict_fields(report)["detailed_decision"] or report["decision"]
+    title = detail + ("" if report.get("risk") is None else f" — risk {report['risk']:.2f}")
     return {
         "title": title,
-        "summary": "\n\n".join(summary_lines(report)),
+        "summary": "\n\n".join([f"**Verdict:** {detail}", *summary_lines(report)]),
         "text": details(report)[:60000],
         "annotations": annotations(report, prefix),
     }

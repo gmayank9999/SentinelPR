@@ -14,13 +14,13 @@ const DECISIONS = {
   BLOCK: { icon: ShieldX, tone: "text-bad bg-bad/10 ring-bad/30", word: "BLOCK" },
 };
 
-export function DecisionBadge({ decision, size = "sm" }) {
+export function DecisionBadge({ decision, detailed, size = "sm" }) {
   const d = DECISIONS[decision];
   if (!d) return <span className="pill bg-s3 text-faint ring-1 ring-line2">No decision</span>;
   const Icon = d.icon;
   return (
     <span className={cx("inline-flex items-center gap-1.5 rounded-md font-semibold ring-1", d.tone, size === "lg" ? "px-3 py-1.5 text-base" : "px-2 py-0.5 text-xs")}>
-      <Icon size={size === "lg" ? 18 : 13} aria-hidden /> {d.word}
+      <Icon size={size === "lg" ? 18 : 13} aria-hidden /> {detailed || d.word}
     </span>
   );
 }
