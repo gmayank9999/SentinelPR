@@ -29,7 +29,6 @@ from sentinel.llm.client import LLMClient
 from sentinel.orchestrator.observe import Emit, RunCancelled, no_emit
 from sentinel.orchestrator.pipeline import Pipeline, make_context
 from sentinel.retrieval.hybrid import RetrievalIndex
-from sentinel.risk.severity import with_verdict
 
 log = logging.getLogger("sentinel")
 
@@ -136,9 +135,7 @@ def analyse(cfg: Config, *, base: str, head: str | None, pr: PullRequest, impact
         index = RetrievalIndex.load(run_cfg, store)
         llm = LLMClient(run_cfg)
         ctx = make_context(run_cfg, base=base_sha, head=run_head, pr=pr, store=store, index=index, llm=llm)
-        report = with_verdict(Pipeline(run_cfg, ctx, impact_mode=impact_mode, emit=emit, cancelled=cancelled, run_id=run_id).run())
-        if head is None and os.getenv("GITHUB_ACTIONS") == "true":
-            report["verification_checkout_sha"] = gitutil.rev_parse(run_cfg.repo_root, "HEAD")
+        report = Pipeline(run_cfg, ctx, impact_mode=impact_mode, emit=emit, cancelled=cancelled, run_id=run_id).run()
         store.save_run(report)
         return report
     finally:
@@ -157,7 +154,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--title", default="")
     parser.add_argument("--body", default="")
     parser.add_argument("--pr", type=int)
-    parser.add_argument("--repository", help="owner/repo for a real GitHub PR in local mode")
     parser.add_argument("--out", type=Path)
     parser.add_argument("--publish", action="store_true", help="post the Check Run and PR comment")
     parser.add_argument("--no-llm", action="store_true")
@@ -170,7 +166,7 @@ def main(argv: list[str] | None = None) -> int:
 
     overrides = {"llm": {"enabled": False}} if args.no_llm else None
     cfg = Config.load(args.repo_root, args.config, overrides=overrides)
-    repository = args.repository or os.getenv("GITHUB_REPOSITORY", "")
+    repository = os.getenv("GITHUB_REPOSITORY", "")
     if args.event:
         pr, repository = pr_from_event(args.event)
         base, head = pr.base_sha, None  # Actions checks out the PR merge commit
@@ -190,26 +186,6 @@ def main(argv: list[str] | None = None) -> int:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(payload, encoding="utf-8")
 
-    # The trusted workflow relay handles hosted CI. A local PR notification is
-    # bound to the clean checkout or explicit commit that the verifier executed.
-    if not os.getenv("GITHUB_ACTIONS") and os.getenv("SLACK_ENABLED", "").strip().lower() in {"1", "true", "yes"}:
-        from sentinel.service.slack import notify_completed
-
-        try:
-            checkout = gitutil.rev_parse(cfg.repo_root, "HEAD")
-            isolated = head and gitutil.rev_parse(cfg.repo_root, head) != checkout
-            clean = isolated or not gitutil.git(cfg.repo_root, "status", "--porcelain")
-        except gitutil.GitError:
-            log.warning("Slack skipped because the analyzed checkout could not be confirmed.")
-        else:
-            if clean:
-                # The analyzed checkout's implicit config cannot add a Slack
-                # destination. An explicit --config is operator-selected.
-                slack_cfg = cfg if args.config else cfg.with_overrides({"slack": {"repositories": None}})
-                notify_completed(slack_cfg, report)
-            else:
-                log.warning("Slack skipped for a dirty worktree. Analyze a committed PR revision to enable review.")
-
     if args.publish:
         token = os.getenv("GITHUB_TOKEN")
         if token and repository and pr.head_sha:
@@ -221,8 +197,7 @@ def main(argv: list[str] | None = None) -> int:
             log.warning("--publish given but GITHUB_TOKEN / repository / head SHA missing; skipped")
 
     risk = "n/a" if report["risk"] is None else f"{report['risk']:.2f}"
-    reason = f"policy override: {report['decision_reason']}" if report["policy_override"] else report["decision_reason"]
-    print(f"SentinelPR decision: {report['detailed_decision'] or report['decision']} (risk {risk}): {reason}")
+    print(f"SentinelPR decision: {report['decision']} (risk {risk}): {report['decision_reason']}")
     summary = os.getenv("GITHUB_STEP_SUMMARY")
     if summary:
         from sentinel.publish.render import render_comment

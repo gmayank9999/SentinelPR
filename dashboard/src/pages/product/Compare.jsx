@@ -9,7 +9,7 @@ const Side = ({ s, label }) => (
   <div className="flex-1 rounded-lg border border-line bg-s2 p-4">
     <div className="text-xs text-faint">{label}</div>
     <Link to={`/runs/${s.run_id}`} className="mono text-xs text-brand hover:underline">{s.run_id}</Link>
-    <div className="mt-2 flex items-center gap-3"><DecisionBadge decision={s.decision} detailed={s.detailed_decision} size="lg" /><span className="text-2xl font-semibold tabular-nums">{num(s.risk)}</span></div>
+    <div className="mt-2 flex items-center gap-3"><DecisionBadge decision={s.decision} size="lg" /><span className="text-2xl font-semibold tabular-nums">{num(s.risk)}</span></div>
     <div className="mono mt-2 text-xs text-faint">head {short(s.head_sha)}</div>
   </div>
 );

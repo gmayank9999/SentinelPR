@@ -20,7 +20,6 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from sentinel.config import Config
-from sentinel.risk.severity import verdict_fields, with_verdict
 
 
 log = logging.getLogger("sentinel.api")
@@ -33,7 +32,6 @@ class Question(BaseModel):
 
 def create_api(cfg: Config) -> FastAPI:
     from sentinel.service.api import Service, allowed_origins, create_router, error_handlers
-    from sentinel.service.slack import interaction_router
 
     app = FastAPI(title="SentinelPR API")
 
@@ -50,9 +48,7 @@ def create_api(cfg: Config) -> FastAPI:
     # The API can start analyses, so it only answers the dashboard's own origin(s), not any website.
     app.add_middleware(CORSMiddleware, allow_origins=allowed_origins(), allow_methods=["GET", "POST", "DELETE"], allow_headers=["*"])
     error_handlers(app)
-    service = Service(cfg)
-    app.include_router(create_router(service))
-    app.include_router(interaction_router(service.slack, cfg))
+    app.include_router(create_router(Service(cfg)))
 
     @lru_cache(maxsize=1)
     def store():
@@ -72,14 +68,14 @@ def create_api(cfg: Config) -> FastAPI:
 
     @app.get("/api/runs")
     def runs(limit: int = 50):
-        return [{k: r.get(k) for k in ("run_id", "created_at", "decision", "decision_reason", "risk", "elapsed_s", "tokens")} | {"pr": r.get("pr")} | verdict_fields(r)
+        return [{k: r.get(k) for k in ("run_id", "created_at", "decision", "risk", "elapsed_s", "tokens")} | {"pr": r.get("pr")}
                 for r in store().runs(limit)]
 
     @app.get("/api/runs/{run_id}")
     def run(run_id: str):
         for r in store().runs(500):
             if r["run_id"] == run_id:
-                return with_verdict(r)
+                return r
         raise HTTPException(404, "unknown run")
 
     @app.post("/api/ask")

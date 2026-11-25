@@ -39,7 +39,7 @@ export default function Runs() {
                 <tr key={r.run_id} className="hover:bg-s2/50">
                   <td><input type="checkbox" aria-label={`Select ${r.run_id} for comparison`} disabled={r.status !== "completed"} checked={picked.includes(r.run_id)} onChange={() => toggle(r.run_id)} className="accent-[var(--color-brand)]" /></td>
                   <td><Link to={`/runs/${r.run_id}`} className="block"><span className="block max-w-80 truncate font-medium text-ink hover:underline">{r.pr.title || prLabel(r.pr)}</span><span className="text-xs text-faint">{r.repo_name} · {prLabel(r.pr)}{r.imported ? " · imported" : ""}</span></Link><Id value={r.run_id} className="text-[11px]" /></td>
-                  <td><RunStatus status={r.status} /></td><td>{r.decision ? <DecisionBadge decision={r.decision} detailed={r.detailed_decision} /> : <span className="text-faint">—</span>}</td>
+                  <td><RunStatus status={r.status} /></td><td>{r.decision ? <DecisionBadge decision={r.decision} /> : <span className="text-faint">—</span>}</td>
                   <td className="mono text-right">{r.risk != null ? r.risk.toFixed(2) : "—"}</td><td className="mono text-muted">{short(r.pr.head_sha)}</td>
                   <td className="mono text-right text-muted">{duration(r.elapsed_s)}</td><td className="text-muted">{ago(r.created_at)}</td>
                 </tr>))}

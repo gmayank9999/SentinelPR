@@ -86,7 +86,7 @@ export default function Overview() {
                           <span className="block truncate text-sm text-ink">{r.pr.title || r.pr.ref}</span>
                           <span className="text-xs text-faint">{r.repo_name} · {ago(r.created_at)}</span>
                         </span>
-                        {r.decision ? <DecisionBadge decision={r.decision} detailed={r.detailed_decision} /> : <RunStatus status={r.status} />}
+                        {r.decision ? <DecisionBadge decision={r.decision} /> : <RunStatus status={r.status} />}
                       </Link>
                     </li>
                   ))}

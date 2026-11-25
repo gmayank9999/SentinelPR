@@ -35,9 +35,6 @@ outputs:
   risk:
     description: Calibrated risk in [0, 1].
     value: ${{ steps.run.outputs.risk }}
-  detailed_decision:
-    description: Descriptive verdict such as PASS_HIGH, if available.
-    value: ${{ steps.run.outputs.detailed_decision }}
   report:
     description: Path to the run report JSON.
     value: ${{ steps.run.outputs.report }}
@@ -82,7 +79,6 @@ runs:
         import json
         report = json.load(open(".sentinel/run.json"))
         print(f"decision={report['decision']}")
-        print(f"detailed_decision={report.get('detailed_decision') or ''}")
         print(f"risk={report['risk'] if report['risk'] is not None else ''}")
         print("report=.sentinel/run.json")
         PY

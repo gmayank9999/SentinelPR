@@ -108,40 +108,6 @@ function LlmPanel() {
   );
 }
 
-function SlackPanel() {
-  const status = useApi("/slack/status");
-  const [result, setResult] = useState(null);
-  const [busy, setBusy] = useState(null);
-  const check = async (action) => {
-    setBusy(action);
-    try {
-      setResult(await api(`/slack/${action}`, { method: "POST" }));
-    } catch (error) {
-      setResult({ ok: false, detail: error.message });
-    } finally {
-      setBusy(null);
-    }
-  };
-  return (
-    <Card title="Slack">
-      <Async state={status}>
-        {(d) => (
-          <div className="space-y-3">
-            <KV rows={[["Integration", d.enabled ? "Enabled" : "Disabled"], ["Bot credentials", d.bot_configured ? "Configured" : "Missing"],
-              ["Interactive reviews", d.interactivity_configured ? "Configured" : "Missing configuration"], ["Repository routes", String(d.repositories)]]} />
-            <p className="text-xs text-muted">Manage credentials and repository routing on the server. See docs/slack.md for the Slack App manifest and callback setup.</p>
-            <div className="flex flex-wrap gap-2">
-              <Button size="sm" loading={busy === "check"} disabled={!d.enabled || !d.bot_configured || Boolean(busy)} onClick={() => check("check")}>Check connection</Button>
-              <Button size="sm" loading={busy === "test"} disabled={!d.enabled || !d.bot_configured || !d.default_channel_configured || !d.management_available || Boolean(busy)} onClick={() => check("test")}>Send test notification</Button>
-            </div>
-            {result && <div role="status" className={result.ok ? "text-sm text-ok" : "text-sm text-bad"}>{result.detail}</div>}
-          </div>
-        )}
-      </Async>
-    </Card>
-  );
-}
-
 export default function Settings() {
   const toast = useToast();
   const status = useApi("/service/status");
@@ -175,8 +141,6 @@ export default function Settings() {
         </Card>
 
         <AppPanel />
-
-        <SlackPanel />
 
         <LlmPanel />
 

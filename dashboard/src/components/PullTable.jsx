@@ -37,7 +37,7 @@ export default function PullTable({ pulls, repos, showRepo = false }) {
                   <td>
                     {run ? (
                       <Link to={`/runs/${run.run_id}`} className="flex flex-col gap-1">
-                        <span className="flex items-center gap-2">{run.decision ? <DecisionBadge decision={run.decision} detailed={run.detailed_decision} /> : <RunStatus status={run.status} />}
+                        <span className="flex items-center gap-2">{run.decision ? <DecisionBadge decision={run.decision} /> : <RunStatus status={run.status} />}
                           {p.stale && <span className="pill bg-warn/10 text-warn" title="The pull request changed after this analysis">stale</span>}</span>
                         <span className="text-xs text-faint">{ago(run.created_at)}{run.risk != null ? ` · risk ${run.risk.toFixed(2)}` : ""}</span>
                       </Link>

@@ -22,7 +22,6 @@ mutants/
 
 # SentinelPR working state (index, caches, run outputs)
 .sentinel/
-.sentinel-slack/
 bench/out/
 
 # Node / dashboard

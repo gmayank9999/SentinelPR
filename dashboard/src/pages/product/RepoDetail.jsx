@@ -98,7 +98,7 @@ export default function RepoDetail() {
               {items.map((m) => (
                 <li key={m.run_id}><Link to={`/runs/${m.run_id}`} className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-s2/60">
                   <span className="min-w-0 truncate text-sm">{m.pr.title || m.pr.ref} <span className="text-faint">· {ago(m.created_at)}</span></span>
-                  {m.decision ? <DecisionBadge decision={m.decision} detailed={m.detailed_decision} /> : <RunStatus status={m.status} />}
+                  {m.decision ? <DecisionBadge decision={m.decision} /> : <RunStatus status={m.status} />}
                 </Link></li>
               ))}
             </ul>

@@ -30,7 +30,6 @@ from sentinel.canary.targets import DeployError, TargetConfig, capabilities
 from sentinel.service.github import GitHubClient, GitHubError
 from sentinel.service.repos import RepoError, RepoRegistry
 from sentinel.service.runs import RunManager, compare_runs, publishing_enabled
-from sentinel.service.slack import SlackIntegration, notify_completed
 
 DEFAULT_ORIGINS = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:4173", "http://127.0.0.1:4173"]
 STARTED = time.time()
@@ -100,7 +99,6 @@ class Service:
         self.github = GitHubClient()
         self.app_auth = GitHubAppAuth()
         self.runs.app_auth = self.app_auth
-        self.slack = self.runs.slack = SlackIntegration(cfg, self.app_auth)
         self.deployments = DeploymentManager(cfg, self.registry.demo_path, deploy_targets(cfg), self.dir)
         self._pulls: dict[str, tuple[float, list[dict]]] = {}
 
@@ -118,7 +116,7 @@ class Service:
         for item in items:
             run = latest.get(str(item.get("number") if item.get("number") is not None else item.get("ref")))
             item["repo_id"] = repo_id
-            item["latest_run"] = ({k: run.get(k) for k in ("run_id", "status", "decision", "detailed_decision", "risk", "created_at")} | {"head_sha": run["pr"].get("head_sha")}) if run else None
+            item["latest_run"] = ({k: run[k] for k in ("run_id", "status", "decision", "risk", "created_at")} | {"head_sha": run["pr"].get("head_sha")}) if run else None
             item["stale"] = bool(run and run["pr"].get("head_sha") and item.get("head_sha") and run["pr"]["head_sha"] != item["head_sha"])
         return items
 
@@ -359,40 +357,6 @@ def create_router(svc: Service) -> APIRouter:
     @router.post("/analyses/{run_id}/cancel", status_code=202)
     def cancel(run_id: str):
         return svc.runs.cancel(run_id)
-
-    @router.get("/slack/status")
-    def slack_status():
-        return svc.slack.snapshot() | {"management_available": bool(os.getenv("SENTINEL_API_TOKEN"))}
-
-    @router.post("/slack/check")
-    def slack_check():
-        return svc.slack.check()
-
-    def allow_slack_write(request: Request):
-        if svc.slack.enabled and (not os.getenv("SENTINEL_API_TOKEN") or not request.headers.get("authorization", "").lower().startswith("bearer ")):
-            raise HTTPException(403, "Use the configured API bearer token for Slack management actions.")
-
-    @router.post("/slack/test", dependencies=[Depends(allow_slack_write)])
-    def slack_test():
-        return svc.slack.check(test=True)
-
-    @router.get("/analyses/{run_id}/slack")
-    def slack_delivery(run_id: str):
-        meta = svc.runs.get_meta(run_id)
-        if not meta:
-            raise RepoError("Unknown run.", 404, "not_found")
-        report = svc.runs.get_report(run_id) if meta["status"] == "completed" else None
-        eligible = bool(svc.slack.enabled and svc.slack.client and (report or {}).get("repository") and
-                        svc.slack.configured_channel(report["repository"]) and (report.get("pr") or {}).get("number"))
-        return svc.slack.status(run_id) | {"can_resend": eligible and bool(os.getenv("SENTINEL_API_TOKEN"))}
-
-    @router.post("/analyses/{run_id}/slack", dependencies=[Depends(allow_slack_write)])
-    def slack_resend(run_id: str):
-        meta = svc.runs.get_meta(run_id)
-        report = svc.runs.get_report(run_id) if meta and meta["status"] == "completed" else None
-        if not report:
-            raise RepoError("Slack delivery needs a completed analysis report.", 409, "report_required")
-        return notify_completed(svc.cfg, report, svc.slack, resend=True, allow_refresh=True)
 
     # --- deployments (staging canary) ---------------------------------------------------------------
     @router.get("/deployments/targets")

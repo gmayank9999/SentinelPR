@@ -37,8 +37,7 @@ export function SummaryTab({ report, meta }) {
         {meta.execution === "docker" ? " Tests ran in a Docker sandbox." : " Tests ran on the host, unsandboxed."}</Banner>}
       <div className="grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
-          <div className="flex flex-wrap items-center gap-4"><DecisionBadge decision={r.decision} detailed={r.detailed_decision} size="lg" /><span className="text-sm text-muted">{r.decision_reason}</span></div>
-          {r.policy_override && <p className="mt-2 text-sm text-warn">Policy override · {r.policy_override.reason}</p>}
+          <div className="flex flex-wrap items-center gap-4"><DecisionBadge decision={r.decision} size="lg" /><span className="text-sm text-muted">{r.decision_reason}</span></div>
           <div className="mt-5 max-w-xl"><RiskMeter risk={r.risk} thresholds={r.thresholds} /></div>
           <div className="mt-5 border-t border-line pt-4">
             <Explanation text={r.explanation} />
@@ -140,7 +139,7 @@ export function RiskTab({ report }) {
     <div className="space-y-6">
       <div className="grid gap-4 lg:grid-cols-3">
         <Card title="Calibrated risk" className="lg:col-span-2">
-          <div className="mb-4 flex items-baseline gap-3"><span className="text-3xl font-semibold tabular-nums">{r.risk != null ? num(r.risk, 3) : "Not measured"}</span><DecisionBadge decision={r.decision} detailed={r.detailed_decision} /></div>
+          <div className="mb-4 flex items-baseline gap-3"><span className="text-3xl font-semibold tabular-nums">{r.risk != null ? num(r.risk, 3) : "Not measured"}</span><DecisionBadge decision={r.decision} /></div>
           <div className="max-w-xl"><RiskMeter risk={r.risk} thresholds={r.thresholds} /></div>
           <dl className="mt-5 grid max-w-xl grid-cols-2 gap-3 text-sm text-muted">
             <div><dt className="text-faint">Raw score vs calibrated</dt><dd>The model's raw score is passed through {r.calibrated ? "a fitted Platt calibrator" : "no calibrator"} to give the probability shown. The policy compares that probability with the thresholds.</dd></div>
@@ -181,7 +180,7 @@ export function HistoryTab({ runs, currentId, repoId }) {
         {runs.map((m, i) => (
           <li key={m.run_id} className="flex flex-wrap items-center gap-3 px-5 py-3">
             <Link to={`/runs/${m.run_id}`} className="min-w-0 flex-1">
-              <span className="flex items-center gap-2 text-sm">{m.decision ? <DecisionBadge decision={m.decision} detailed={m.detailed_decision} /> : <RunStatus status={m.status} />}{m.run_id === currentId && <span className="pill bg-brand/15 text-brand">viewing</span>}</span>
+              <span className="flex items-center gap-2 text-sm">{m.decision ? <DecisionBadge decision={m.decision} /> : <RunStatus status={m.status} />}{m.run_id === currentId && <span className="pill bg-brand/15 text-brand">viewing</span>}</span>
               <span className="mono text-xs text-faint">{short(m.pr.head_sha)} · {stamp(m.created_at)} ({ago(m.created_at)}){m.risk != null ? ` · risk ${m.risk.toFixed(2)}` : ""} · {m.options?.llm ? "LLM on" : "no LLM"}</span>
             </Link>
             {runs[i + 1] && m.status === "completed" && runs[i + 1].status === "completed" && <Link to={`/compare?a=${runs[i + 1].run_id}&b=${m.run_id}`}><Button size="sm" icon={GitCompare}>Compare with previous</Button></Link>}

@@ -13,7 +13,6 @@ import EvidenceExplorer from "../../features/run/EvidenceExplorer.jsx";
 import { DiffImpactTab, HistoryTab, RiskTab, SummaryTab, TraceTab } from "../../features/run/tabs.jsx";
 import LiveView from "../../features/live/LiveView.jsx";
 import PublishPanel from "../../features/run/PublishPanel.jsx";
-import SlackReview from "../../features/run/SlackReview.jsx";
 
 const TABS = [
   { id: "summary", label: "Summary", icon: LayoutList },
@@ -66,7 +65,7 @@ function Header({ meta, report, pull, runs, onAnalyse, analysing, onCancel, publ
           </div>
         </div>
         <div className="flex flex-col items-end gap-2">
-          {meta?.decision ? <DecisionBadge decision={meta.decision} detailed={report?.detailed_decision || meta.detailed_decision} size="lg" /> : <RunStatus status={meta?.status} />}
+          {meta?.decision ? <DecisionBadge decision={meta.decision} size="lg" /> : <RunStatus status={meta?.status} />}
           <span className="text-xs text-faint">{meta?.status === "completed" ? `Analysed ${ago(meta.ended_at)} (${stamp(meta.ended_at)}) in ${duration(meta.elapsed_s)}` : meta ? `Started ${ago(meta.created_at)}` : ""}</span>
         </div>
       </div>
@@ -74,7 +73,7 @@ function Header({ meta, report, pull, runs, onAnalyse, analysing, onCancel, publ
         {runs?.length > 1 && (
           <label className="flex items-center gap-2 text-xs text-muted">Analysis
             <select aria-label="Choose analysis" value={meta?.run_id} onChange={(e) => (window.location.hash = `#/runs/${e.target.value}`)} className="h-8 rounded-md border border-line2 bg-bg px-2 text-sm text-ink">
-              {runs.map((m) => <option key={m.run_id} value={m.run_id}>{stamp(m.created_at)} · {m.detailed_decision || m.decision || m.status} · {short(m.pr.head_sha)}</option>)}
+              {runs.map((m) => <option key={m.run_id} value={m.run_id}>{stamp(m.created_at)} · {m.decision || m.status} · {short(m.pr.head_sha)}</option>)}
             </select></label>
         )}
         <div className="ml-auto flex items-center gap-2">
@@ -124,7 +123,6 @@ function Workspace({ runId, repoId, pull }) {
       <Header meta={meta} report={report} pull={prInfo} runs={runs} onAnalyse={again} analysing={busy != null} onCancel={cancel} publishSlot={canPublish ? <PublishPanel runId={runId} meta={meta} onPublished={() => reload()} /> : null} />
       {status === "failed" && <div className="mb-4"><Banner tone="bad" title="This analysis failed">{meta?.error || run.error}</Banner></div>}
       {status === "cancelled" && <div className="mb-4"><Banner title="This analysis was cancelled">{meta?.error || "It was stopped before it finished."}</Banner></div>}
-      {report && <SlackReview runId={runId} />}
 
       {view === "live" ? (
         <LiveView pipeline={pipeline.data} run={run} meta={meta} report={report} connection={connection} status={status} active={active} />
