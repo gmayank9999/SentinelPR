@@ -59,9 +59,12 @@ export default function Overview() {
         <Stat label="Repositories" value={o?.repositories ?? "—"} icon={FolderGit2} to="/repos" />
         <Stat label="Open PRs awaiting analysis" value={o?.awaiting_analysis ?? "—"} icon={Hourglass} to="/pulls" hint={o ? `${o.open_pulls} open in total` : ""} />
         <Stat label="Running or queued" value={o ? o.running + o.queued : "—"} icon={Activity} to="/runs" tone={o && o.running + o.queued ? "text-brand" : "text-ink"} />
-        <Stat label="Blocked" value={o?.decisions.BLOCK ?? "—"} icon={ShieldX} tone={o?.decisions.BLOCK ? "text-bad" : "text-ink"} hint="latest decision per PR" />
-        <Stat label="Awaiting canary" value={o?.decisions.CANARY ?? "—"} icon={Rocket} tone={o?.decisions.CANARY ? "text-warn" : "text-ink"} hint="latest decision per PR" />
-        <Stat label="Passed" value={o?.decisions.PASS ?? "—"} icon={CheckCircle2} tone={o?.decisions.PASS ? "text-ok" : "text-ink"} hint="latest decision per PR" />
+        <Stat label="Blocked" value={o?.decisions.BLOCK ?? "—"} icon={ShieldX} tone={o?.decisions.BLOCK ? "text-bad" : "text-ink"}
+          hint={o?.decisions_detailed ? `L:${o.decisions_detailed.BLOCK_LOW} · M:${o.decisions_detailed.BLOCK_MEDIUM} · H:${o.decisions_detailed.BLOCK_HIGH}` : "latest decision per PR"} />
+        <Stat label="Awaiting canary" value={o?.decisions.CANARY ?? "—"} icon={Rocket} tone={o?.decisions.CANARY ? "text-warn" : "text-ink"}
+          hint={o?.decisions_detailed ? `L:${o.decisions_detailed.CANARY_LOW} · M:${o.decisions_detailed.CANARY_MEDIUM} · H:${o.decisions_detailed.CANARY_HIGH}` : "latest decision per PR"} />
+        <Stat label="Passed" value={o?.decisions.PASS ?? "—"} icon={CheckCircle2} tone={o?.decisions.PASS ? "text-ok" : "text-ink"}
+          hint={o?.decisions_detailed ? `L:${o.decisions_detailed.PASS_LOW} · M:${o.decisions_detailed.PASS_MEDIUM} · H:${o.decisions_detailed.PASS_HIGH}` : "latest decision per PR"} />
       </div>
       {o?.errors?.length > 0 && (
         <div className="mt-4 rounded-lg border border-warn/30 bg-warn/5 p-3 text-sm text-muted">

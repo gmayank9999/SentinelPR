@@ -140,7 +140,7 @@ def create_router(svc: Service) -> APIRouter:
         if origin and origin not in allowed_origins():
             raise HTTPException(403, {"code": "origin_not_allowed", "message": f"Origin {origin} may not call this API."})
         expected = os.getenv("SENTINEL_API_TOKEN")
-        if expected:
+        if expected and not request.url.path.endswith("/slack/interactive"):
             auth = request.headers.get("authorization", "")
             supplied = auth[7:].strip() if auth.lower().startswith("bearer ") else request.query_params.get("token", "")
             if not hmac.compare_digest(supplied.encode(), expected.encode()):
@@ -176,6 +176,14 @@ def create_router(svc: Service) -> APIRouter:
              "detail": ("Enabled: a run may post a PR comment and a commit status with the personal token (Pull requests and Commit statuses: Read and write), "
                         "and a Check Run only through a configured GitHub App." if publishing_enabled()
                         else "Disabled (default). Set SENTINEL_ALLOW_PUBLISH=1 and a token with pull-request write access to allow runs to publish.")},
+            {"id": "slack", "ok": bool(os.getenv("SLACK_BOT_TOKEN") and os.getenv("SLACK_CHANNEL")), "label": "Slack notifications",
+             "detail": ("SLACK_BOT_TOKEN and SLACK_CHANNEL configured — analysis results will be posted to Slack."
+                        if (os.getenv("SLACK_BOT_TOKEN") and os.getenv("SLACK_CHANNEL"))
+                        else "Not configured. Set SLACK_BOT_TOKEN and SLACK_CHANNEL to enable Slack notifications.")},
+            {"id": "notion", "ok": bool(os.getenv("NOTION_API_KEY") and os.getenv("NOTION_DATABASE_ID")), "label": "Notion database",
+             "detail": ("NOTION_API_KEY and NOTION_DATABASE_ID configured — analysis results will be logged to Notion."
+                        if (os.getenv("NOTION_API_KEY") and os.getenv("NOTION_DATABASE_ID"))
+                        else "Not configured. Set NOTION_API_KEY and NOTION_DATABASE_ID to enable Notion logging.")},
         ]
         return {"version": __version__, "python": platform.python_version(), "platform": platform.system(), "uptime_s": round(time.time() - STARTED),
                 "checks": checks, "auth": "token" if token_set else "none", "publish_enabled": publishing_enabled(),
@@ -252,7 +260,18 @@ def create_router(svc: Service) -> APIRouter:
             "repositories": len(svc.registry.list()), "open_pulls": len(items),
             "awaiting_analysis": sum(1 for p in items if p["latest_run"] is None or p["stale"]),
             "running": sum(r["status"] == "running" for r in runs), "queued": sum(r["status"] == "queued" for r in runs),
-            "decisions": {d: sum(1 for v in decided.values() if v == d) for d in ("PASS", "CANARY", "BLOCK")},
+            "decisions": {
+                d: sum(1 for v in decided.values() if v == d or v.startswith(d + "_"))
+                for d in ("PASS", "CANARY", "BLOCK")
+            },
+            "decisions_detailed": {
+                d: sum(1 for v in decided.values() if v == d)
+                for d in (
+                    "PASS_LOW", "PASS_MEDIUM", "PASS_HIGH",
+                    "CANARY_LOW", "CANARY_MEDIUM", "CANARY_HIGH",
+                    "BLOCK_LOW", "BLOCK_MEDIUM", "BLOCK_HIGH",
+                )
+            },
             "completed_7d": sum(1 for r in runs if r["status"] == "completed" and (r["ended_at"] or 0) > week),
             "recent_runs": runs[:8], "errors": errors,
         }
@@ -394,6 +413,70 @@ def create_router(svc: Service) -> APIRouter:
     def github_app(repo: str | None = None):
         """The GitHub App used for Check Runs: configured? installed on this repository? allowed Checks: write? No key or token is returned."""
         return svc.app_auth.describe(repo)
+
+    # --- Slack interactive callbacks ---------------------------------------------------------------
+    @router.post("/slack/interactive", include_in_schema=False)
+    async def slack_interactive(request: Request):
+        """Slack interactive component callback handler."""
+        from sentinel.publish.slack import handle_interactive_payload, verify_slack_signature
+
+        body = await request.body()
+        timestamp = request.headers.get("x-slack-request-timestamp", "")
+        signature = request.headers.get("x-slack-signature", "")
+
+        # Replay attack protection: reject if >5 minutes old
+        try:
+            if abs(time.time() - int(timestamp)) > 300:
+                raise HTTPException(403, {"code": "replay_attack", "message": "Request too old."})
+        except ValueError:
+            raise HTTPException(400, {"code": "bad_timestamp"})
+
+        if not verify_slack_signature(body, timestamp, signature):
+            raise HTTPException(403, {"code": "invalid_signature", "message": "Slack signature verification failed."})
+
+        # Slack sends URL-encoded "payload=..."
+        from urllib.parse import parse_qs
+        decoded = parse_qs(body.decode())
+        payload_str = decoded.get("payload", ["{}"])[0]
+        payload = json.loads(payload_str)
+
+        action_result = handle_interactive_payload(payload)
+        action = action_result.get("action")
+        run_id = action_result.get("run_id", "")
+        user = action_result.get("user", "slack-user")
+
+        # Handle the action
+        if action == "rerun":
+            meta = svc.runs.get_meta(run_id)
+            if meta:
+                repo_id = meta.get("repo_id", "")
+                ref = str(meta.get("pr", {}).get("ref", ""))
+                if repo_id and ref:
+                    new_run = svc.runs.submit(repo_id, ref, llm=True, publish=False)
+                    return {"response_type": "in_channel", "replace_original": False,
+                            "text": f":arrows_counterclockwise: Rerun started by @{user}: `{new_run.get('run_id', 'unknown')}`"}
+            return {"replace_original": False, "text": f"Could not find run `{run_id}` to rerun."}
+
+        if action in ("approve", "reject"):
+            meta = svc.runs.get_meta(run_id)
+            if meta:
+                guidance = {"action": action, "user": user, "at": time.time()}
+                meta["slack_guidance"] = guidance
+                svc.runs._write_meta(meta)
+                verb = "✅ Approved" if action == "approve" else "⛔ Changes requested"
+                return {"response_type": "in_channel", "replace_original": False,
+                        "text": f"{verb} for run `{run_id}` by @{user}."}
+            return {"replace_original": False, "text": f"Could not find run `{run_id}`."}
+
+        if action == "ask":
+            report = svc.runs.get_report(run_id)
+            if report:
+                reason = report.get("decision_reason") or "No reason recorded."
+                return {"replace_original": False,
+                        "text": f"*Run `{run_id}`* — *{report.get('decision')}* (risk `{report.get('risk')}`): {reason}"}
+            return {"replace_original": False, "text": f"No report found for run `{run_id}`."}
+
+        return {"ok": True, "action": action_result}
 
     # --- language models --------------------------------------------------------------------------
     @router.get("/llm/status")

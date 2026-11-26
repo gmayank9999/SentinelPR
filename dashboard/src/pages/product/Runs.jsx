@@ -12,7 +12,10 @@ export default function Runs() {
   const [decision, setDecision] = useState("all");
   const [picked, setPicked] = useState([]);
 
-  const rows = useMemo(() => (runs.data || []).filter((r) => (status === "all" || r.status === status) && (decision === "all" || r.decision === decision)), [runs.data, status, decision]);
+  const rows = useMemo(() => (runs.data || []).filter((r) => (
+    (status === "all" || r.status === status) &&
+    (decision === "all" || r.decision === decision || (r.decision && r.decision.startsWith(`${decision}_`)))
+  )), [runs.data, status, decision]);
   const toggle = (id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p.slice(-1), id]));
   const compare = () => {
     const [a, b] = picked.map((id) => (runs.data || []).find((r) => r.run_id === id)).sort((x, y) => x.created_at - y.created_at);
@@ -28,7 +31,7 @@ export default function Runs() {
           <select aria-label="Filter by status" value={status} onChange={(e) => setStatus(e.target.value)} className="h-8 rounded-md border border-line2 bg-bg px-2 text-sm">
             {["all", "queued", "running", "completed", "failed", "cancelled"].map((s) => <option key={s} value={s}>{s === "all" ? "Any status" : s}</option>)}</select>
           <select aria-label="Filter by decision" value={decision} onChange={(e) => setDecision(e.target.value)} className="h-8 rounded-md border border-line2 bg-bg px-2 text-sm">
-            {["all", "PASS", "CANARY", "BLOCK"].map((s) => <option key={s} value={s}>{s === "all" ? "Any decision" : s}</option>)}</select>
+            {["all", "PASS", "PASS_LOW", "PASS_MEDIUM", "PASS_HIGH", "CANARY", "CANARY_LOW", "CANARY_MEDIUM", "CANARY_HIGH", "BLOCK", "BLOCK_LOW", "BLOCK_MEDIUM", "BLOCK_HIGH"].map((s) => <option key={s} value={s}>{s === "all" ? "Any decision" : s}</option>)}</select>
           <span className="text-xs text-faint">{rows.length} run{rows.length === 1 ? "" : "s"}</span>
         </div>
         <Async state={runs} skeleton={<div className="p-5"><SkeletonRows /></div>}

@@ -204,7 +204,7 @@ def main(argv: list[str] | None = None) -> int:
 
         with open(summary, "a", encoding="utf-8") as handle:
             handle.write(render_comment(report, "", cfg.get("publish.dashboard_url")) + "\n")
-    return 1 if args.fail_on_block and report["decision"] == "BLOCK" else 0
+    return 1 if args.fail_on_block and str(report["decision"]).split("_")[0] == "BLOCK" else 0
 
 
 if __name__ == "__main__":

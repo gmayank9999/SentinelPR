@@ -9,18 +9,28 @@ export const cx = (...parts) => parts.filter(Boolean).join(" ");
 // status vocabulary: every state has an icon AND a word, never colour alone
 
 const DECISIONS = {
-  PASS: { icon: ShieldCheck, tone: "text-ok bg-ok/10 ring-ok/30", word: "PASS" },
-  CANARY: { icon: ShieldAlert, tone: "text-warn bg-warn/10 ring-warn/30", word: "CANARY" },
-  BLOCK: { icon: ShieldX, tone: "text-bad bg-bad/10 ring-bad/30", word: "BLOCK" },
+  PASS: { icon: ShieldCheck, tone: "text-ok bg-ok/10 ring-ok/30", word: "PASS", level: null },
+  PASS_LOW: { icon: ShieldCheck, tone: "text-emerald-300 bg-emerald-500/10 ring-emerald-500/30", word: "PASS_LOW", level: "LOW" },
+  PASS_MEDIUM: { icon: ShieldCheck, tone: "text-teal-300 bg-teal-500/10 ring-teal-500/30", word: "PASS_MEDIUM", level: "MEDIUM" },
+  PASS_HIGH: { icon: AlertTriangle, tone: "text-lime-300 bg-lime-500/10 ring-lime-500/30", word: "PASS_HIGH", level: "HIGH" },
+  CANARY: { icon: ShieldAlert, tone: "text-warn bg-warn/10 ring-warn/30", word: "CANARY", level: null },
+  CANARY_LOW: { icon: ShieldAlert, tone: "text-sky-300 bg-sky-500/10 ring-sky-500/30", word: "CANARY_LOW", level: "LOW" },
+  CANARY_MEDIUM: { icon: ShieldAlert, tone: "text-warn bg-warn/10 ring-warn/30", word: "CANARY_MEDIUM", level: "MEDIUM" },
+  CANARY_HIGH: { icon: ShieldAlert, tone: "text-orange-300 bg-orange-500/10 ring-orange-500/30", word: "CANARY_HIGH", level: "HIGH" },
+  BLOCK: { icon: ShieldX, tone: "text-bad bg-bad/10 ring-bad/30", word: "BLOCK", level: null },
+  BLOCK_LOW: { icon: ShieldX, tone: "text-orange-300 bg-orange-500/10 ring-orange-500/30", word: "BLOCK_LOW", level: "LOW" },
+  BLOCK_MEDIUM: { icon: ShieldX, tone: "text-bad bg-bad/10 ring-bad/30", word: "BLOCK_MEDIUM", level: "MEDIUM" },
+  BLOCK_HIGH: { icon: ShieldX, tone: "text-red-300 bg-red-600/15 ring-red-500/40", word: "BLOCK_HIGH", level: "HIGH" },
 };
 
 export function DecisionBadge({ decision, size = "sm" }) {
-  const d = DECISIONS[decision];
+  const base = decision ? String(decision).split("_")[0] : null;
+  const d = DECISIONS[decision] || (base && DECISIONS[base]);
   if (!d) return <span className="pill bg-s3 text-faint ring-1 ring-line2">No decision</span>;
   const Icon = d.icon;
   return (
     <span className={cx("inline-flex items-center gap-1.5 rounded-md font-semibold ring-1", d.tone, size === "lg" ? "px-3 py-1.5 text-base" : "px-2 py-0.5 text-xs")}>
-      <Icon size={size === "lg" ? 18 : 13} aria-hidden /> {d.word}
+      <Icon size={size === "lg" ? 18 : 13} aria-hidden /> {decision}
     </span>
   );
 }

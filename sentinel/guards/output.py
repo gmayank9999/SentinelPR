@@ -44,13 +44,29 @@ def enforce_citations(text: str, allowed_ids: set[str], *, drop: bool = True) ->
 
 
 def check_decision_integrity(recorded: str, expected: str, llm_text: str = "") -> list[GuardEvent]:
-    """The decision must equal what the policy computes from the risk model; LLM text is irrelevant."""
+    """The decision must equal what the policy computes from the risk model; LLM text is irrelevant.
+
+    Both *recorded* and *expected* may be 9-category decisions (e.g. ``"PASS_LOW"``).  Comparison
+    is first done exactly, then by base tier so that a legacy ``"PASS"`` stored value is accepted
+    when the policy now returns ``"PASS_LOW"``.
+    """
     events = []
-    if recorded != expected:
+
+    def _base(d: str) -> str:
+        return d.split("_")[0]
+
+    # Accept an exact match or a base-tier match (legacy vs. 9-category interop).
+    if recorded != expected and _base(recorded) != _base(expected):
         events.append(GuardEvent(guard="decision-integrity", stage="out", severity="block",
                                  message=f"decision {recorded} does not match policy output {expected}; policy output enforced"))
-    claimed = re.findall(r"\b(PASS|CANARY|BLOCK)\b", llm_text or "")
-    if any(c != expected for c in claimed):
+
+    # Pattern matches both legacy (PASS/CANARY/BLOCK) and 9-category variants.
+    _DECISION_RE = re.compile(
+        r"\b(PASS(?:_(?:LOW|MEDIUM|HIGH))?|CANARY(?:_(?:LOW|MEDIUM|HIGH))?|BLOCK(?:_(?:LOW|MEDIUM|HIGH))?)\b"
+    )
+    claimed = _DECISION_RE.findall(llm_text or "")
+    # Compare at the base-tier level so PASS_LOW and PASS are treated as equivalent.
+    if any(_base(c) != _base(expected) for c in claimed):
         events.append(GuardEvent(guard="decision-integrity", stage="out", severity="warn",
                                  message=f"generated text mentioned a different decision ({', '.join(sorted(set(claimed)))}); ignored"))
     return events

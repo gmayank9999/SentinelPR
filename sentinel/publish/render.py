@@ -4,12 +4,37 @@ from __future__ import annotations
 
 from collections import Counter
 
-ICON = {"PASS": "✅", "CANARY": "🟡", "BLOCK": "⛔"}
-CONCLUSION = {"PASS": "success", "CANARY": "neutral", "BLOCK": "failure"}
+ICON = {
+    # Legacy base decisions
+    "PASS": "✅", "CANARY": "🟡", "BLOCK": "⛔",
+    # 9-category fine-grained decisions
+    "PASS_LOW": "✅", "PASS_MEDIUM": "✅", "PASS_HIGH": "⚠️",
+    "CANARY_LOW": "🟡", "CANARY_MEDIUM": "🟡", "CANARY_HIGH": "🟠",
+    "BLOCK_LOW": "🔴", "BLOCK_MEDIUM": "⛔", "BLOCK_HIGH": "🚫",
+}
+CONCLUSION = {
+    # Legacy base decisions
+    "PASS": "success", "CANARY": "neutral", "BLOCK": "failure",
+    # 9-category fine-grained decisions
+    "PASS_LOW": "success", "PASS_MEDIUM": "success", "PASS_HIGH": "success",
+    "CANARY_LOW": "neutral", "CANARY_MEDIUM": "neutral", "CANARY_HIGH": "neutral",
+    "BLOCK_LOW": "failure", "BLOCK_MEDIUM": "failure", "BLOCK_HIGH": "failure",
+}
 ROLLOUT = {
+    # Legacy base decisions
     "PASS": "merge allowed, normal release",
     "CANARY": "merge allowed, deploy via canary (10% → 25% → 50% → 100%)",
     "BLOCK": "merge blocked until the issues below are addressed",
+    # 9-category fine-grained decisions
+    "PASS_LOW": "merge allowed — very low risk, normal release",
+    "PASS_MEDIUM": "merge allowed — moderate risk within safe zone, normal release",
+    "PASS_HIGH": "merge allowed — elevated risk, consider review",
+    "CANARY_LOW": "merge allowed, cautious canary deployment (10% → 25% → 50% → 100%)",
+    "CANARY_MEDIUM": "merge allowed, standard canary with extra monitoring",
+    "CANARY_HIGH": "merge allowed, slow canary — extended soak time recommended",
+    "BLOCK_LOW": "merge blocked — borderline risk, address the flagged issues",
+    "BLOCK_MEDIUM": "merge blocked — significant risk detected",
+    "BLOCK_HIGH": "merge blocked — critical risk, test failures or severe defects found",
 }
 MAX_ANNOTATIONS = 50
 
@@ -23,12 +48,22 @@ def _short(unit_id: str) -> str:
     return f"{path}::{name}" if name else path
 
 
+def _icon(decision: str) -> str:
+    """Return the icon for *decision*, falling back to the base tier icon."""
+    return ICON.get(decision, ICON.get(decision.split("_")[0], "❓"))
+
+
+def _rollout(decision: str) -> str:
+    """Return the rollout text for *decision*, falling back to the base tier text."""
+    return ROLLOUT.get(decision, ROLLOUT.get(decision.split("_")[0], "unknown"))
+
+
 def headline(report: dict) -> str:
     decision = report["decision"]
     if report.get("rejected"):
-        return f"## 🛡️ SentinelPR — {ICON[decision]} {decision} (analysis refused)"
+        return f"## 🛡️ SentinelPR — {_icon(decision)} {decision} (analysis refused)"
     calibrated = "calibrated" if report.get("calibrated") else "prior model"
-    return f"## 🛡️ SentinelPR — {ICON[decision]} {decision} (risk {report['risk']:.2f}, {calibrated})"
+    return f"## 🛡️ SentinelPR — {_icon(decision)} {decision} (risk {report['risk']:.2f}, {calibrated})"
 
 
 def summary_lines(report: dict) -> list[str]:
@@ -76,7 +111,7 @@ def summary_lines(report: dict) -> list[str]:
     guards = Counter(e["guard"] for e in report.get("guard_events", []) if e["severity"] != "info")
     if guards:
         lines.append("**Guardrails:** " + ", ".join(f"{k} ×{v}" for k, v in guards.items()))
-    lines.append(f"**Decision:** {ROLLOUT[report['decision']]} — {report.get('decision_reason', '')}")
+    lines.append(f"**Decision:** {_rollout(report['decision'])} — {report.get('decision_reason', '')}")
     return lines
 
 

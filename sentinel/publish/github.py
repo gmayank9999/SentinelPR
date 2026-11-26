@@ -73,7 +73,7 @@ class GitHubPublisher:
         can be made a required check in branch protection (what a Check Run would otherwise be used for)."""
         reason = (report.get("decision_reason") or "").strip()
         description = f"{report['decision']}: risk {report.get('risk', 0):.2f}" + (f", {reason}" if reason else "")
-        payload = {"state": self.STATE[report["decision"]], "context": context, "description": description[:140]}
+        payload = {"state": self.STATE[str(report["decision"]).split("_")[0]], "context": context, "description": description[:140]}
         if target_url:
             payload["target_url"] = target_url
         return self._id(self._send("POST", f"/repos/{self.repository}/statuses/{head_sha}", json=payload), "commit status")

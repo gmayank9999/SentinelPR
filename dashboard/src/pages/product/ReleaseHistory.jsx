@@ -7,8 +7,17 @@ import { Async, DecisionBadge, EmptyState, PageHeader, SkeletonRows } from "../.
 
 const ACTION = {
   PASS: "Merge normally.",
+  PASS_LOW: "Very low risk — merge normally.",
+  PASS_MEDIUM: "Low-medium risk within safe zone — merge normally.",
+  PASS_HIGH: "Borderline safe — merge normally, consider a quick review.",
   CANARY: "Merge, then release through the canary rollout with automatic rollback.",
+  CANARY_LOW: "Low canary risk — merge and deploy via standard canary rollout.",
+  CANARY_MEDIUM: "Moderate canary risk — merge and monitor canary soak closely.",
+  CANARY_HIGH: "High canary risk — merge only with extended canary soak time.",
   BLOCK: "Do not merge until the blocking reason is addressed.",
+  BLOCK_LOW: "Borderline block — address flagged risk factors before merging.",
+  BLOCK_MEDIUM: "Significant risk — do not merge until issues are resolved.",
+  BLOCK_HIGH: "Critical risk or test failure — merge blocked.",
 };
 
 /** The release decisions in order, by day: what the evidence said and what it means for shipping. */

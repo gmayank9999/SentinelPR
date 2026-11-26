@@ -167,6 +167,22 @@ class RunManager:
                 events.emit(node, "stage_skipped", "skipped", reason, {"reason": reason})
             meta.update(decision=report["decision"], risk=report["risk"], tokens=report.get("tokens", 0), elapsed_s=report.get("elapsed_s"),
                         config=run_config(report), pr={**meta["pr"], "title": report["pr"]["title"], "author": report["pr"]["author"]})
+            # Post to Slack if configured
+            try:
+                from sentinel.publish.slack import is_configured, post_analysis
+                if is_configured():
+                    dashboard_url = os.getenv("SENTINEL_DASHBOARD_URL")
+                    post_analysis(report, dashboard_url=dashboard_url)
+            except Exception as exc:
+                log.warning("Slack notification failed: %s", exc)
+            # Log to Notion if configured
+            try:
+                from sentinel.publish.notion import create_analysis_page, is_configured as notion_configured
+                if notion_configured():
+                    dashboard_url = os.getenv("SENTINEL_DASHBOARD_URL")
+                    create_analysis_page(report, dashboard_url=dashboard_url)
+            except Exception as exc:
+                log.warning("Notion logging failed: %s", exc)
             self._finish(meta, events, "completed")
         except RunCancelled as exc:
             self._finish(meta, events, "cancelled", error=f"Cancelled before {exc}.")
@@ -281,7 +297,7 @@ class RunManager:
                 elif k == "stage_completed" and stage == "score" and d.get("risk") is not None:
                     add(e, "risk", "info", f"Risk assessment completed: {d['risk']:.2f}")
                 elif k == "stage_completed" and stage == "decide" and d.get("decision"):
-                    sev = {"PASS": "ok", "CANARY": "warn", "BLOCK": "bad"}[d["decision"]]
+                    sev = {"PASS": "ok", "CANARY": "warn", "BLOCK": "bad"}.get(str(d["decision"]).split("_")[0], "info")
                     add(e, "decision", sev, f"Policy decision: {d['decision']}", d.get("reason", ""))
                 elif k == "run_failed":
                     add(e, "analysis_failed", "bad", "Analysis failed", e["message"])

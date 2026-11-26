@@ -80,11 +80,13 @@ def test_calibration_metrics():
 
 
 def test_policy():
+    from sentinel.risk.policy import base_decision
+
     t = {"canary": 0.3, "block": 0.7}
-    assert decide(0.1, 0, t).decision == "PASS"
-    assert decide(0.5, 0, t).decision == "CANARY"
-    assert decide(0.8, 0, t).decision == "BLOCK"
-    assert decide(0.05, 1, t).decision == "BLOCK"
+    assert base_decision(decide(0.1, 0, t).decision) == "PASS"
+    assert base_decision(decide(0.5, 0, t).decision) == "CANARY"
+    assert base_decision(decide(0.8, 0, t).decision) == "BLOCK"
+    assert decide(0.05, 1, t).decision == "BLOCK_HIGH"
 
 
 def test_choose_thresholds_respects_false_block_budget():

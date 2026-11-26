@@ -4,7 +4,9 @@ the LLM client, agent outputs with rich types) are held by the pipeline runtime.
 from __future__ import annotations
 
 import operator
-from typing import Annotated, Literal, TypedDict
+from typing import Annotated, TypedDict
+
+from sentinel.models import Decision
 
 
 def lowest(current: int, update: int) -> int:
@@ -22,7 +24,7 @@ class SentinelState(TypedDict, total=False):
     verdicts: list[dict]
     risk: float | None
     risk_explanation: str | None
-    decision: Literal["PASS", "CANARY", "BLOCK"] | None
+    decision: Decision | None
     guard_flags: Annotated[list[str], operator.add]
     trace: Annotated[list[dict], operator.add]
     budget_tokens_left: Annotated[int, lowest]

@@ -31,9 +31,10 @@ export function nextActions(r) {
   (tests(r).failed || []).slice(0, 5).forEach((f) => out.push(`Fix the failing test ${f.nodeid.split("::").pop()}.`));
   (lines(r).uncovered || []).slice(0, 4).forEach((ref) => out.push(`Add a test that executes ${ref}.`));
   (mutation(r).mutants || []).filter((m) => m.status === "survived").slice(0, 4).forEach((m) => out.push(`Strengthen assertions around ${m.file}#L${m.line}: changing "${m.original}" to "${m.mutated}" goes unnoticed.`));
-  if (r.decision === "CANARY") out.push("Merge, then release through the canary rollout (10% → 25% → 50% → 100%) with automatic rollback.");
-  if (r.decision === "PASS" && !out.length) out.push("Merge normally. Nothing in the verified evidence calls for extra caution.");
-  if (r.decision === "BLOCK" && !out.length) out.push(r.decision_reason || "Address the blocking reason above, then re-run the analysis.");
+  const base = r.decision ? String(r.decision).split("_")[0] : "";
+  if (base === "CANARY") out.push("Merge, then release through the canary rollout (10% → 25% → 50% → 100%) with automatic rollback.");
+  if (base === "PASS" && !out.length) out.push("Merge normally. Nothing in the verified evidence calls for extra caution.");
+  if (base === "BLOCK" && !out.length) out.push(r.decision_reason || "Address the blocking reason above, then re-run the analysis.");
   return out;
 }
 

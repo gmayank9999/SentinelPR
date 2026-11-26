@@ -26,7 +26,8 @@ export default function PullRequests() {
       if (q && !`${p.title} ${p.head_ref} ${p.author} ${p.repo_name} ${p.number ?? ""}`.toLowerCase().includes(q)) return false;
       if (filter === "awaiting") return !p.latest_run || p.stale;
       if (filter === "all") return true;
-      return p.latest_run?.decision === filter;
+      const d = p.latest_run?.decision;
+      return d === filter || (d && d.startsWith(`${filter}_`));
     });
   }, [pulls.data, query, filter]);
 

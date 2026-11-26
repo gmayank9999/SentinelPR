@@ -12,7 +12,14 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 ClaimType = Literal["test_impact", "module_impact", "api_break", "history_link", "rationale"]
-Decision = Literal["PASS", "CANARY", "BLOCK"]
+Decision = Literal[
+    # Legacy / base decisions (kept for backwards compatibility)
+    "PASS", "CANARY", "BLOCK",
+    # 9-category fine-grained decisions
+    "PASS_LOW", "PASS_MEDIUM", "PASS_HIGH",
+    "CANARY_LOW", "CANARY_MEDIUM", "CANARY_HIGH",
+    "BLOCK_LOW", "BLOCK_MEDIUM", "BLOCK_HIGH",
+]
 
 
 class FileChange(BaseModel):

@@ -21,7 +21,7 @@ export default function RiskIntelligence() {
                     <li key={r.run_id}><Link to={`/runs/${r.run_id}?tab=risk`} className="group grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1">
                       <span className="truncate text-sm group-hover:underline">{r.pr.title || prLabel(r.pr)} <span className="text-faint">· {prLabel(r.pr)}</span></span>
                       <DecisionBadge decision={r.decision} />
-                      <span className="col-span-2 flex items-center gap-2"><span className="h-1.5 flex-1 rounded bg-s3"><span className={cx("block h-1.5 rounded", BAR[r.decision])} style={{ width: `${r.risk * 100}%` }} /></span><span className="mono w-10 text-right text-xs text-muted">{r.risk.toFixed(2)}</span></span>
+                      <span className="col-span-2 flex items-center gap-2"><span className="h-1.5 flex-1 rounded bg-s3"><span className={cx("block h-1.5 rounded", BAR[r.decision?.split("_")[0]] || BAR[r.decision])} style={{ width: `${r.risk * 100}%` }} /></span><span className="mono w-10 text-right text-xs text-muted">{r.risk.toFixed(2)}</span></span>
                     </Link></li>))}
                 </ul>
               )}
